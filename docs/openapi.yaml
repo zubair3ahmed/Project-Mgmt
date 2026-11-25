@@ -1,0 +1,894 @@
+openapi: 3.0.3
+info:
+  title: StructFlow API
+  version: 1.0.0
+  description: Generated from src/design-system/backendSpec.js. Bearer JWT auth. Role scoping (admin, member) is enforced server-side.
+servers:
+  - url: http://localhost:4000/api
+security:
+  - bearerAuth: []
+paths:
+  /staff:
+    get:
+      summary: "List Staff records (create, read, update, delete)"
+      tags: [Staff]
+      parameters:
+        - { name: q, in: query, schema: { type: string } }
+        - { name: page, in: query, schema: { type: integer, default: 1 } }
+        - { name: pageSize, in: query, schema: { type: integer, default: 50 } }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/Staff' } }
+    post:
+      summary: "Create a Staff"
+      tags: [Staff]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/Staff' }
+      responses:
+        '201': { description: Created, content: { application/json: { schema: { $ref: '#/components/schemas/Staff' } } } }
+        '403': { description: Forbidden for this role }
+        '422': { description: Validation error }
+  /staff/{id}:
+    parameters:
+      - { name: id, in: path, required: true, schema: { type: string } }
+    get:
+      summary: "Get one Staff"
+      tags: [Staff]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/Staff' } } } }
+        '404': { description: Not found or not visible to this role }
+    patch:
+      summary: "Update a Staff (partial)"
+      tags: [Staff]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/Staff' }
+      responses:
+        '200': { description: Updated }
+        '403': { description: Forbidden for this role }
+    delete:
+      summary: "Delete a Staff"
+      tags: [Staff]
+      responses:
+        '204': { description: Deleted }
+        '403': { description: Forbidden for this role }
+  /clients:
+    get:
+      summary: "List Client records (create, read, update, delete)"
+      tags: [Client]
+      parameters:
+        - { name: q, in: query, schema: { type: string } }
+        - { name: page, in: query, schema: { type: integer, default: 1 } }
+        - { name: pageSize, in: query, schema: { type: integer, default: 50 } }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/Client' } }
+    post:
+      summary: "Create a Client"
+      tags: [Client]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/Client' }
+      responses:
+        '201': { description: Created, content: { application/json: { schema: { $ref: '#/components/schemas/Client' } } } }
+        '403': { description: Forbidden for this role }
+        '422': { description: Validation error }
+  /clients/{id}:
+    parameters:
+      - { name: id, in: path, required: true, schema: { type: string } }
+    get:
+      summary: "Get one Client"
+      tags: [Client]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/Client' } } } }
+        '404': { description: Not found or not visible to this role }
+    patch:
+      summary: "Update a Client (partial)"
+      tags: [Client]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/Client' }
+      responses:
+        '200': { description: Updated }
+        '403': { description: Forbidden for this role }
+    delete:
+      summary: "Delete a Client"
+      tags: [Client]
+      responses:
+        '204': { description: Deleted }
+        '403': { description: Forbidden for this role }
+  /project-stages:
+    get:
+      summary: "List ProjectStage records (read)"
+      tags: [ProjectStage]
+      parameters:
+        - { name: q, in: query, schema: { type: string } }
+        - { name: page, in: query, schema: { type: integer, default: 1 } }
+        - { name: pageSize, in: query, schema: { type: integer, default: 50 } }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/ProjectStage' } }
+  /project-stages/{id}:
+    parameters:
+      - { name: id, in: path, required: true, schema: { type: string } }
+    get:
+      summary: "Get one ProjectStage"
+      tags: [ProjectStage]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/ProjectStage' } } } }
+        '404': { description: Not found or not visible to this role }
+  /projects:
+    get:
+      summary: "List Project records (create, read, update, delete)"
+      tags: [Project]
+      parameters:
+        - { name: q, in: query, schema: { type: string } }
+        - { name: page, in: query, schema: { type: integer, default: 1 } }
+        - { name: pageSize, in: query, schema: { type: integer, default: 50 } }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/Project' } }
+    post:
+      summary: "Create a Project"
+      tags: [Project]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/Project' }
+      responses:
+        '201': { description: Created, content: { application/json: { schema: { $ref: '#/components/schemas/Project' } } } }
+        '403': { description: Forbidden for this role }
+        '422': { description: Validation error }
+  /projects/{id}:
+    parameters:
+      - { name: id, in: path, required: true, schema: { type: string } }
+    get:
+      summary: "Get one Project"
+      tags: [Project]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/Project' } } } }
+        '404': { description: Not found or not visible to this role }
+    patch:
+      summary: "Update a Project (partial)"
+      tags: [Project]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/Project' }
+      responses:
+        '200': { description: Updated }
+        '403': { description: Forbidden for this role }
+    delete:
+      summary: "Delete a Project"
+      tags: [Project]
+      responses:
+        '204': { description: Deleted }
+        '403': { description: Forbidden for this role }
+  /tasks:
+    get:
+      summary: "List Task records (create, read, update, delete)"
+      tags: [Task]
+      parameters:
+        - { name: q, in: query, schema: { type: string } }
+        - { name: page, in: query, schema: { type: integer, default: 1 } }
+        - { name: pageSize, in: query, schema: { type: integer, default: 50 } }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/Task' } }
+    post:
+      summary: "Create a Task"
+      tags: [Task]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/Task' }
+      responses:
+        '201': { description: Created, content: { application/json: { schema: { $ref: '#/components/schemas/Task' } } } }
+        '403': { description: Forbidden for this role }
+        '422': { description: Validation error }
+  /tasks/{id}:
+    parameters:
+      - { name: id, in: path, required: true, schema: { type: string } }
+    get:
+      summary: "Get one Task"
+      tags: [Task]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/Task' } } } }
+        '404': { description: Not found or not visible to this role }
+    patch:
+      summary: "Update a Task (partial)"
+      tags: [Task]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/Task' }
+      responses:
+        '200': { description: Updated }
+        '403': { description: Forbidden for this role }
+    delete:
+      summary: "Delete a Task"
+      tags: [Task]
+      responses:
+        '204': { description: Deleted }
+        '403': { description: Forbidden for this role }
+  /time-logs:
+    get:
+      summary: "List TimeLog records (create, read, update, delete)"
+      tags: [TimeLog]
+      parameters:
+        - { name: q, in: query, schema: { type: string } }
+        - { name: page, in: query, schema: { type: integer, default: 1 } }
+        - { name: pageSize, in: query, schema: { type: integer, default: 50 } }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/TimeLog' } }
+    post:
+      summary: "Create a TimeLog"
+      tags: [TimeLog]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/TimeLog' }
+      responses:
+        '201': { description: Created, content: { application/json: { schema: { $ref: '#/components/schemas/TimeLog' } } } }
+        '403': { description: Forbidden for this role }
+        '422': { description: Validation error }
+  /time-logs/{id}:
+    parameters:
+      - { name: id, in: path, required: true, schema: { type: string } }
+    get:
+      summary: "Get one TimeLog"
+      tags: [TimeLog]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/TimeLog' } } } }
+        '404': { description: Not found or not visible to this role }
+    patch:
+      summary: "Update a TimeLog (partial)"
+      tags: [TimeLog]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/TimeLog' }
+      responses:
+        '200': { description: Updated }
+        '403': { description: Forbidden for this role }
+    delete:
+      summary: "Delete a TimeLog"
+      tags: [TimeLog]
+      responses:
+        '204': { description: Deleted }
+        '403': { description: Forbidden for this role }
+  /milestones:
+    get:
+      summary: "List Milestone records (create, read, update, delete)"
+      tags: [Milestone]
+      parameters:
+        - { name: q, in: query, schema: { type: string } }
+        - { name: page, in: query, schema: { type: integer, default: 1 } }
+        - { name: pageSize, in: query, schema: { type: integer, default: 50 } }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/Milestone' } }
+    post:
+      summary: "Create a Milestone"
+      tags: [Milestone]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/Milestone' }
+      responses:
+        '201': { description: Created, content: { application/json: { schema: { $ref: '#/components/schemas/Milestone' } } } }
+        '403': { description: Forbidden for this role }
+        '422': { description: Validation error }
+  /milestones/{id}:
+    parameters:
+      - { name: id, in: path, required: true, schema: { type: string } }
+    get:
+      summary: "Get one Milestone"
+      tags: [Milestone]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/Milestone' } } } }
+        '404': { description: Not found or not visible to this role }
+    patch:
+      summary: "Update a Milestone (partial)"
+      tags: [Milestone]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/Milestone' }
+      responses:
+        '200': { description: Updated }
+        '403': { description: Forbidden for this role }
+    delete:
+      summary: "Delete a Milestone"
+      tags: [Milestone]
+      responses:
+        '204': { description: Deleted }
+        '403': { description: Forbidden for this role }
+  /files:
+    get:
+      summary: "List ProjectFile records (create, read, update, delete)"
+      tags: [ProjectFile]
+      parameters:
+        - { name: q, in: query, schema: { type: string } }
+        - { name: page, in: query, schema: { type: integer, default: 1 } }
+        - { name: pageSize, in: query, schema: { type: integer, default: 50 } }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/ProjectFile' } }
+    post:
+      summary: "Create a ProjectFile"
+      tags: [ProjectFile]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ProjectFile' }
+      responses:
+        '201': { description: Created, content: { application/json: { schema: { $ref: '#/components/schemas/ProjectFile' } } } }
+        '403': { description: Forbidden for this role }
+        '422': { description: Validation error }
+  /files/{id}:
+    parameters:
+      - { name: id, in: path, required: true, schema: { type: string } }
+    get:
+      summary: "Get one ProjectFile"
+      tags: [ProjectFile]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/ProjectFile' } } } }
+        '404': { description: Not found or not visible to this role }
+    patch:
+      summary: "Update a ProjectFile (partial)"
+      tags: [ProjectFile]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ProjectFile' }
+      responses:
+        '200': { description: Updated }
+        '403': { description: Forbidden for this role }
+    delete:
+      summary: "Delete a ProjectFile"
+      tags: [ProjectFile]
+      responses:
+        '204': { description: Deleted }
+        '403': { description: Forbidden for this role }
+  /activities:
+    get:
+      summary: "List Activity records (read)"
+      tags: [Activity]
+      parameters:
+        - { name: q, in: query, schema: { type: string } }
+        - { name: page, in: query, schema: { type: integer, default: 1 } }
+        - { name: pageSize, in: query, schema: { type: integer, default: 50 } }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/Activity' } }
+  /activities/{id}:
+    parameters:
+      - { name: id, in: path, required: true, schema: { type: string } }
+    get:
+      summary: "Get one Activity"
+      tags: [Activity]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/Activity' } } } }
+        '404': { description: Not found or not visible to this role }
+  /users:
+    get:
+      summary: "List User records (admin only (create, read, update, delete))"
+      tags: [User]
+      parameters:
+        - { name: q, in: query, schema: { type: string } }
+        - { name: page, in: query, schema: { type: integer, default: 1 } }
+        - { name: pageSize, in: query, schema: { type: integer, default: 50 } }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/User' } }
+    post:
+      summary: "Create a User"
+      tags: [User]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/User' }
+      responses:
+        '201': { description: Created, content: { application/json: { schema: { $ref: '#/components/schemas/User' } } } }
+        '403': { description: Forbidden for this role }
+        '422': { description: Validation error }
+  /users/{id}:
+    parameters:
+      - { name: id, in: path, required: true, schema: { type: string } }
+    get:
+      summary: "Get one User"
+      tags: [User]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/User' } } } }
+        '404': { description: Not found or not visible to this role }
+    patch:
+      summary: "Update a User (partial)"
+      tags: [User]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/User' }
+      responses:
+        '200': { description: Updated }
+        '403': { description: Forbidden for this role }
+    delete:
+      summary: "Delete a User"
+      tags: [User]
+      responses:
+        '204': { description: Deleted }
+        '403': { description: Forbidden for this role }
+  /tasks/{taskId}/comments:
+    parameters:
+      - { name: taskId, in: path, required: true, schema: { type: string } }
+    get:
+      summary: "List comments and history for a task"
+      tags: [TaskComment]
+      responses: { '200': { description: OK, content: { application/json: { schema: { type: array, items: { $ref: '#/components/schemas/TaskComment' } } } } } }
+    post:
+      summary: "Add a comment"
+      tags: [TaskComment]
+      requestBody: { required: true, content: { application/json: { schema: { type: object, required: [text], properties: { text: { type: string } } } } } }
+      responses: { '201': { description: Created } }
+  /comments/{id}:
+    parameters:
+      - { name: id, in: path, required: true, schema: { type: string } }
+    patch:
+      summary: "Edit own comment"
+      tags: [TaskComment]
+      responses: { '200': { description: Updated } }
+    delete:
+      summary: "Delete own comment (admin: any)"
+      tags: [TaskComment]
+      responses: { '204': { description: Deleted } }
+  /tasks/{taskId}/attachments:
+    parameters:
+      - { name: taskId, in: path, required: true, schema: { type: string } }
+    get:
+      summary: "List attachments"
+      tags: [TaskAttachment]
+      responses: { '200': { description: OK, content: { application/json: { schema: { type: array, items: { $ref: '#/components/schemas/TaskAttachment' } } } } } }
+    post:
+      summary: "Upload one or more files (multipart/form-data, field name \"files\")"
+      tags: [TaskAttachment]
+      requestBody: { required: true, content: { multipart/form-data: { schema: { type: object, properties: { files: { type: array, items: { type: string, format: binary } } } } } } }
+      responses: { '201': { description: Created }, '413': { description: File too large } }
+  /attachments/{id}:
+    parameters:
+      - { name: id, in: path, required: true, schema: { type: string } }
+    delete:
+      summary: "Remove an attachment (own, or any for admin)"
+      tags: [TaskAttachment]
+      responses: { '204': { description: Deleted } }
+  /auth/login:
+    post:
+      summary: "Sign in with email, password and the role tab used. Returns { token, user }."
+      tags: [Custom]
+      responses: { '200': { description: OK } }
+  /auth/me:
+    get:
+      summary: "Current user from the bearer token."
+      tags: [Custom]
+      responses: { '200': { description: OK } }
+  /auth/logout:
+    post:
+      summary: "Invalidate the session (optional for stateless JWT)."
+      tags: [Custom]
+      responses: { '200': { description: OK } }
+  /uploads:
+    post:
+      summary: "multipart/form-data upload to object storage. Returns { url, name, size, mimeType }."
+      tags: [Custom]
+      responses: { '200': { description: OK } }
+  /search:
+    get:
+      summary: "Global search used by the command palette. Returns projects, tasks, staff, files already filtered by the caller's access."
+      tags: [Custom]
+      responses: { '200': { description: OK } }
+  /projects/{id}/stage:
+    patch:
+      summary: "Move a project to a stage and recompute progress."
+      tags: [Custom]
+      responses: { '200': { description: OK } }
+  /reports/projects:
+    get:
+      summary: "Revenue, staff cost and margin per project."
+      tags: [Custom]
+      responses: { '200': { description: OK } }
+  /reports/staff:
+    get:
+      summary: "On-time rate, utilisation and performance score per person."
+      tags: [Custom]
+      responses: { '200': { description: OK } }
+components:
+  securitySchemes:
+    bearerAuth: { type: http, scheme: bearer, bearerFormat: JWT }
+  schemas:
+    Staff:
+      type: object
+      required: [name, role, department, email, status]
+      properties:
+        id:
+          type: string
+          readOnly: true
+        name:
+          type: string
+        role:
+          type: string
+          description: "Job title, e.g. Senior Structural Engineer"
+        department:
+          type: string
+          enum: [Engineering, Management, Drafting, Administration]
+        email:
+          type: string
+        phone:
+          type: string
+        avatar:
+          type: string
+          description: "Initials fallback. Photos are served from avatarUrl when present."
+        hourlyRate:
+          type: number
+          description: "Internal cost rate. Never returned to members."
+        monthlySalary:
+          type: number
+          description: "Admin only."
+        joinDate:
+          type: string
+          format: date
+        status:
+          type: string
+          enum: [active, inactive]
+        skills:
+          type: array
+          items: { type: string }
+    Client:
+      type: object
+      required: [name, contact]
+      properties:
+        id:
+          type: string
+          readOnly: true
+        name:
+          type: string
+        contact:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+    ProjectStage:
+      type: object
+      required: [name, order]
+      properties:
+        id:
+          type: string
+          readOnly: true
+        name:
+          type: string
+        order:
+          type: integer
+          description: "Stored in the SQL column sort_order because ORDER is reserved."
+        optional:
+          type: boolean
+    Project:
+      type: object
+      required: [name, clientId, type, location, priority, status, contractValue, managerId]
+      properties:
+        id:
+          type: string
+          readOnly: true
+        name:
+          type: string
+        clientId:
+          type: string
+        type:
+          type: string
+          enum: [Residential, Commercial, Industrial, Institutional, Infrastructure]
+        location:
+          type: string
+        priority:
+          type: string
+          enum: [low, medium, high, urgent]
+        status:
+          type: string
+          enum: [planning, in-progress, on-hold, completed]
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+        contractValue:
+          type: number
+          description: "Admin only. Omit from member responses."
+        description:
+          type: string
+        managerId:
+          type: string
+        teamIds:
+          type: array
+          items: { type: string }
+          description: "Members of the project team (manager excluded)."
+        currentStage:
+          type: string
+        progress:
+          type: integer
+          readOnly: true
+          description: "0-100, computed from currentStage order."
+    Task:
+      type: object
+      required: [title, projectId, assigneeId, status, priority, type]
+      properties:
+        id:
+          type: string
+          readOnly: true
+        title:
+          type: string
+        description:
+          type: string
+        projectId:
+          type: string
+        assigneeId:
+          type: string
+        reporterId:
+          type: string
+        status:
+          type: string
+          enum: [backlog, todo, in-progress, review, done]
+        priority:
+          type: string
+          enum: [low, medium, high, urgent]
+        type:
+          type: string
+          enum: [design, drafting, review, analysis, estimation, report, site-visit, coordination]
+        createdDate:
+          type: string
+          format: date
+          readOnly: true
+        dueDate:
+          type: string
+          format: date
+        completedDate:
+          type: string
+          format: date
+          readOnly: true
+          description: "Set by the server when status becomes done."
+        estimatedHours:
+          type: number
+        loggedHours:
+          type: number
+          readOnly: true
+          description: "Sum of TimeLog.hours for this task."
+        tags:
+          type: array
+          items: { type: string }
+        milestoneId:
+          type: string
+          description: "The milestone this task counts toward. Tasks carry no money: the milestone owns the payment."
+    TaskComment:
+      type: object
+      required: [taskId, type, authorName, text]
+      properties:
+        id:
+          type: string
+          readOnly: true
+        taskId:
+          type: string
+        type:
+          type: string
+          enum: [comment, system]
+        authorId:
+          type: string
+        authorName:
+          type: string
+          description: "Snapshot so history survives staff edits."
+        text:
+          type: string
+          description: "@FirstName mentions are plain text. Parse server-side to notify."
+        edited:
+          type: boolean
+          readOnly: true
+        timestamp:
+          type: string
+          format: date-time
+          readOnly: true
+    TaskAttachment:
+      type: object
+      required: [taskId, name, size]
+      properties:
+        id:
+          type: string
+          readOnly: true
+        taskId:
+          type: string
+        name:
+          type: string
+        size:
+          type: integer
+          description: "Bytes. Limit 10 MB per file, 10 files per task."
+        mimeType:
+          type: string
+        url:
+          type: string
+          readOnly: true
+        addedById:
+          type: string
+        addedAt:
+          type: string
+          format: date-time
+          readOnly: true
+    TimeLog:
+      type: object
+      required: [staffId, projectId, taskId, date, hours]
+      properties:
+        id:
+          type: string
+          readOnly: true
+        staffId:
+          type: string
+        projectId:
+          type: string
+        taskId:
+          type: string
+        date:
+          type: string
+          format: date
+        hours:
+          type: number
+          description: "0.5 to 12 per entry."
+        description:
+          type: string
+    Milestone:
+      type: object
+      required: [projectId, name, weightage, status, dueDate, paymentAmount, paymentStatus, paymentMode]
+      properties:
+        id:
+          type: string
+          readOnly: true
+        projectId:
+          type: string
+        name:
+          type: string
+        weightage:
+          type: integer
+          description: "Percent of contract value. Sum per project should be 100."
+        status:
+          type: string
+          enum: [pending, in-progress, completed]
+        dueDate:
+          type: string
+          format: date
+        completedDate:
+          type: string
+          format: date
+          readOnly: true
+        paymentAmount:
+          type: number
+        paymentStatus:
+          type: string
+          enum: [pending, ready, invoiced, paid]
+          description: "pending until its tasks are done, ready (waiting for admin approval), invoiced (request sent), paid."
+        paymentMode:
+          type: string
+          enum: [auto, manual]
+          description: "auto sends the payment request when the last linked task is done; manual sets paymentStatus=ready for an admin to approve."
+    ProjectFile:
+      type: object
+      required: [projectId, name, folder]
+      properties:
+        id:
+          type: string
+          readOnly: true
+        projectId:
+          type: string
+        name:
+          type: string
+        folder:
+          type: string
+          enum: [Drawings, Reports, Estimates, Contracts, "Site Photos", Correspondence, Specifications]
+        type:
+          type: string
+          description: "File extension without dot."
+        size:
+          type: integer
+          description: "Bytes."
+        uploadedBy:
+          type: string
+        date:
+          type: string
+          format: date
+          readOnly: true
+        url:
+          type: string
+          readOnly: true
+    Activity:
+      type: object
+      required: [type, message]
+      properties:
+        id:
+          type: string
+          readOnly: true
+        type:
+          type: string
+        userId:
+          type: string
+        projectId:
+          type: string
+        taskId:
+          type: string
+        message:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+          readOnly: true
+    User:
+      type: object
+      required: [email, passwordHash, role]
+      properties:
+        id:
+          type: string
+          readOnly: true
+        email:
+          type: string
+        passwordHash:
+          type: string
+          writeOnly: true
+          description: "bcrypt or argon2. Never returned."
+        role:
+          type: string
+          enum: [admin, member]
+        staffId:
+          type: string

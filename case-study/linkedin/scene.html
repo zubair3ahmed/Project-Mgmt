@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>StructFlow — task creation motion</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:540px;height:675px;overflow:hidden;background:#111419}
+#stage{position:relative;width:540px;height:675px;overflow:hidden;background:#111419;font-family:'Plus Jakarta Sans',sans-serif;color:#101828}
+.mono{font-family:'JetBrains Mono',monospace}
+/* headline zone */
+#kicker{position:absolute;left:36px;top:34px;font:600 9.5px/1 'JetBrains Mono',monospace;letter-spacing:.14em;color:#8A92A3;text-transform:uppercase}
+#kicker i{display:inline-block;width:6px;height:6px;border-radius:50%;background:#F25C05;margin-right:8px;vertical-align:1px}
+.hl{position:absolute;left:36px;right:36px;top:58px;font:800 33px/1.06 'Schibsted Grotesk',sans-serif;letter-spacing:-.035em;color:#fff;will-change:transform,opacity}
+.hl em{font-style:normal;color:#F25C05}
+.hl s{text-decoration:none;position:relative;color:#8A92A3}
+.hl s::after{content:"";position:absolute;left:-2px;right:-2px;top:52%;height:4px;background:#F25C05;transform-origin:left;transform:scaleX(var(--k,0))}
+/* modal */
+#modal{position:absolute;left:40px;top:172px;width:460px;background:#fff;border-radius:14px;box-shadow:0 30px 60px -20px rgba(0,0,0,.6);transform-origin:50% 0;will-change:transform,opacity}
+.mh{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid #EAECF0;font-weight:600;font-size:13px}
+.mh svg{width:14px;height:14px;stroke:#667085}
+.mb{padding:14px 18px 6px}
+#input{height:38px;border:1.5px solid #D0D5DD;border-radius:8px;display:flex;align-items:center;padding:0 11px;font-size:12.5px;white-space:nowrap;overflow:hidden;color:#101828}
+#input.focus{border-color:#1570EF;box-shadow:0 0 0 3px rgba(21,112,239,.16)}
+#input .ph{color:#98A2B3}
+#caret{display:inline-block;width:1.5px;height:15px;background:#1570EF;margin-left:1px;vertical-align:-3px}
+.tk{border-radius:4px;padding:1px 2px;transition:none}
+.k1{background:#D1E9FF;color:#175CD3}.k2{background:#D1FADF;color:#067647}.k3{background:#FEF0C7;color:#B54708}.k4{background:#FEE4E2;color:#B42318}.k5{background:#CCFBEF;color:#0E7067}
+#smart{margin-top:10px;border:1px solid #EAECF0;background:#F9FAFB;border-radius:10px;padding:10px 12px;overflow:hidden;will-change:opacity}
+.sh{display:flex;align-items:center;gap:6px;font-size:11.5px;font-weight:600}
+.sh span{font-weight:400;color:#667085}
+.sh b{margin-left:auto;color:#1570EF;font-size:11px;font-weight:600}
+.spark{width:13px;height:13px;color:#1570EF}
+#chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px;min-height:50px;align-content:flex-start}
+.chip{font-size:10.5px;font-weight:500;color:#175CD3;background:#EFF8FF;border:1px solid #B2DDFF;border-radius:6px;padding:3px 7px;will-change:transform,opacity}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:9px 12px;margin-top:12px}
+.f label{display:flex;align-items:center;gap:6px;font-size:10.5px;font-weight:600;color:#344054;margin-bottom:4px;height:15px}
+.f label .req{color:#D92D20}
+.auto{display:inline-flex;align-items:center;gap:3px;font-size:9px;font-weight:600;color:#175CD3;background:#EFF8FF;border-radius:4px;padding:1px 5px;will-change:transform,opacity}
+.auto svg{width:9px;height:9px}
+.fv{height:32px;border:1px solid #D0D5DD;border-radius:7px;display:flex;align-items:center;padding:0 10px;font-size:11.5px;color:#98A2B3;position:relative;overflow:hidden}
+.fv.on{color:#101828}
+.fv .flash{position:absolute;inset:0;background:#1570EF;opacity:0}
+.mf{display:flex;justify-content:flex-end;gap:8px;padding:12px 18px;border-top:1px solid #EAECF0;margin-top:12px}
+.btn{height:32px;border-radius:7px;padding:0 13px;display:flex;align-items:center;font-size:11.5px;font-weight:600}
+.btn.sec{border:1px solid #D0D5DD;color:#344054}
+#create{background:#1570EF;color:#fff;position:relative;overflow:hidden;will-change:transform}
+/* flying chip clones */
+.fly{position:absolute;z-index:20;font-size:10.5px;font-weight:600;color:#fff;background:#1570EF;border-radius:6px;padding:3px 7px;white-space:nowrap;will-change:transform,opacity;pointer-events:none}
+/* cursor + ripple */
+#cursor{position:absolute;width:22px;height:22px;z-index:30;will-change:transform,opacity;filter:drop-shadow(0 2px 3px rgba(0,0,0,.35))}
+.rip{position:absolute;width:16px;height:16px;margin:-8px 0 0 -8px;border-radius:50%;border:2px solid #F25C05;z-index:29;opacity:0}
+/* toast */
+#toast{position:absolute;left:50%;top:470px;width:420px;margin-left:-210px;background:#101828;color:#fff;border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:10px;box-shadow:0 16px 40px rgba(0,0,0,.5);will-change:transform,opacity;border:1px solid #2A303C}
+#toast .ic{width:20px;height:20px;color:#75E0A7;flex:none}
+#toast p{font-size:12px;font-weight:600}
+#toast small{display:block;font-size:10.5px;color:#98A2B3;font-weight:400;margin-top:1px}
+#toast b{margin-left:auto;font-size:12px}
+/* end card */
+#end{position:absolute;inset:0;background:#111419;z-index:50;padding:56px 36px 40px;display:flex;flex-direction:column;will-change:opacity}
+#end .big{font:800 54px/1 'Schibsted Grotesk',sans-serif;letter-spacing:-.045em;color:#fff;margin-top:18px}
+#end .big div{will-change:transform,opacity}
+#end .big em{font-style:normal;color:#F25C05}
+#end .pts{margin-top:28px;display:grid;gap:10px}
+#end .pts div{font:500 15px/1.35 'Schibsted Grotesk',sans-serif;color:#D3D8E2;display:flex;gap:10px;align-items:baseline;will-change:transform,opacity}
+#end .pts div i{font:600 10px/1 'JetBrains Mono',monospace;color:#F25C05;font-style:normal;width:22px;flex:none}
+#end .sig{margin-top:auto;border-top:1px solid #2E3440;padding-top:16px;display:flex;justify-content:space-between;align-items:flex-end;will-change:opacity}
+#end .sig b{display:block;font:700 15px/1.2 'Schibsted Grotesk',sans-serif;color:#fff}
+#end .sig span{display:block;font-size:11px;color:#8A92A3;margin-top:4px}
+#end .sig .r{text-align:right;font:600 9.5px/1.6 'JetBrains Mono',monospace;color:#8A92A3;letter-spacing:.08em;text-transform:uppercase}
+#prog{position:absolute;left:0;bottom:0;height:3px;background:#F25C05;z-index:60}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="kicker"><i></i>StructFlow · smart task creation</div>
+
+  <div class="hl" id="h0">Creating a task meant <s id="strike">11 fields.</s></div>
+  <div class="hl" id="h1">Now it's <em>one line.</em></div>
+  <div class="hl" id="h2">Type it the way<br>you'd <em>say it.</em></div>
+  <div class="hl" id="h3">It reads the line<br>and <em>shows its working.</em></div>
+  <div class="hl" id="h4">Every field filled,<br>every fill <em>labelled.</em></div>
+  <div class="hl" id="h5">Created, with<br><em>Undo</em> one tap away.</div>
+
+  <div id="modal">
+    <div class="mh">New Task <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></div>
+    <div class="mb">
+      <div id="input"><span id="itext"></span><span id="caret"></span></div>
+      <div id="smart">
+        <div class="sh"><svg class="spark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></svg>Smart fill <span id="scount">reading…</span><b>Why these?</b></div>
+        <div id="chips"></div>
+      </div>
+      <div class="grid" id="fields"></div>
+    </div>
+    <div class="mf"><span class="btn sec">Cancel</span><span class="btn" id="create">Create task</span></div>
+  </div>
+
+  <div id="toast">
+    <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><path d="M8 12.5l2.7 2.7L16 9.8"/></svg>
+    <p>Task created<small>Column schedule · Amit Desai · due Fri, 27 Nov</small></p>
+    <b>Undo</b>
+  </div>
+
+  <svg id="cursor" viewBox="0 0 24 24"><path d="M3 2l7.5 19 2.6-7.6L21 10.8z" fill="#fff" stroke="#101828" stroke-width="1.5" stroke-linejoin="round"/></svg>
+  <span class="rip" id="r1"></span><span class="rip" id="r2"></span>
+
+  <div id="end">
+    <div class="mono" style="font-size:9.5px;letter-spacing:.14em;color:#8A92A3;text-transform:uppercase"><i style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#F25C05;margin-right:8px;vertical-align:1px"></i>StructFlow · case study</div>
+    <div class="big"><div id="e1">One line in.</div><div id="e2"><em>Six fields</em> out.</div></div>
+    <div class="pts">
+      <div id="p1"><i>01</i>Every auto-filled field is labelled, with the reason one tap away.</div>
+      <div id="p2"><i>02</i>Unsure? It flags the field instead of guessing.</div>
+      <div id="p3"><i>03</i>Money gets a confirm step. Tasks don't.</div>
+    </div>
+    <div class="sig" id="sig">
+      <div><b>Syed Zubair Ahmed</b><span>Senior Product Designer · Dubai, UAE</span></div>
+      <div class="r">Designed &amp; built<br>with Claude · 2 days</div>
+    </div>
+  </div>
+  <div id="prog"></div>
+</div>
+
+<script>
+const DUR = 19;
+const LINE = 'Column schedule Prestige Towers @Amit !high due fri 8h';
+const TOKENS = [ // [start, end, class]
+  [16, 31, 'k1'], [32, 37, 'k2'], [38, 43, 'k3'], [44, 51, 'k4'], [52, 54, 'k5']
+];
+const CHIPS = ['Prestige Towers - Block A', '@Amit Desai', 'high priority', 'due Fri, 27 Nov', '8h', 'Design'];
+const FIELDS = [
+  ['Project', 'Select project…', 'Prestige Towers - Block A'],
+  ['Assignee', 'Select person…', 'Amit Desai'],
+  ['Priority', 'Medium', 'High'],
+  ['Due date', 'dd / mm / yyyy', 'Fri, 27 Nov'],
+  ['Estimate', '0h', '8h'],
+  ['Type', 'Select type…', 'Design'],
+];
+const SPARK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/></svg>';
+
+const $ = id => document.getElementById(id);
+const clamp = (v, a = 0, b = 1) => Math.max(a, Math.min(b, v));
+const seg = (t, a, b) => clamp((t - a) / (b - a));
+const eo = x => 1 - Math.pow(1 - x, 3);             // ease out cubic
+const eio = x => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+const back = x => { const c = 1.7; return 1 + (c + 1) * Math.pow(x - 1, 3) + c * Math.pow(x - 1, 2); };
+const lerp = (a, b, p) => a + (b - a) * p;
+
+// build static DOM
+const chipsEl = $('chips');
+CHIPS.forEach(c => { const s = document.createElement('span'); s.className = 'chip'; s.textContent = c; chipsEl.appendChild(s); });
+const fieldsEl = $('fields');
+FIELDS.forEach(([l, ph]) => {
+  const d = document.createElement('div'); d.className = 'f';
+  d.innerHTML = `<label>${l}${l === 'Project' || l === 'Assignee' ? '<span class="req">*</span>' : ''}<span class="auto">${SPARK}Auto</span></label><div class="fv"><span class="flash"></span><span class="v">${ph}</span></div>`;
+  fieldsEl.appendChild(d);
+});
+const chipEls = [...chipsEl.children];
+const fEls = [...fieldsEl.children];
+const flies = CHIPS.map(c => { const s = document.createElement('span'); s.className = 'fly'; s.textContent = c; $('stage').appendChild(s); return s; });
+
+function rel(el) { // position of el inside the stage, ignoring modal transform
+  const st = $('stage').getBoundingClientRect(); const r = el.getBoundingClientRect();
+  return { x: r.left - st.left, y: r.top - st.top, w: r.width, h: r.height };
+}
+let geo = null;
+function measure() {
+  const m = $('modal'); const keep = m.style.transform; m.style.transform = 'none';
+  chipEls.forEach(c => { c.style.transform = 'none'; c.style.opacity = 1; });
+  geo = { chips: chipEls.map(rel), fields: fEls.map(f => rel(f.querySelector('.fv'))), create: rel($('create')) };
+  m.style.transform = keep;
+}
+
+function inputHTML(n) {
+  const typed = LINE.slice(0, n);
+  let out = '', i = 0;
+  const done = TOKENS.filter(([s, e]) => n >= e);
+  for (const [s, e, k] of done) {
+    out += esc(typed.slice(i, s)) + `<span class="tk ${k}">${esc(typed.slice(s, e))}</span>`; i = e;
+  }
+  return out + esc(typed.slice(i));
+}
+const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+
+function headline(t) {
+  // [id, in, out]
+  const H = [['h0', 0.25, 2.6], ['h1', 2.0, 4.0], ['h2', 4.0, 7.9], ['h3', 7.9, 10.6], ['h4', 10.6, 13.6], ['h5', 13.9, 15.9]];
+  for (const [id, a, b] of H) {
+    const el = $(id);
+    const pin = eo(seg(t, a, a + .45)), pout = eio(seg(t, b - .3, b));
+    let y = (1 - pin) * 22 - pout * 14, o = pin * (1 - pout);
+    if (id === 'h0') { y += eio(seg(t, 1.9, 2.5)) * 0; }
+    el.style.opacity = o; el.style.transform = `translateY(${y}px)`;
+  }
+  // h0 and h1 stack: push h0 up when h1 enters
+  const up = eio(seg(t, 1.9, 2.4));
+  $('h0').style.transform += ` translateY(${-up * 0}px)`;
+  $('h1').style.top = '58px';
+  $('h0').style.top = (58 - 0) + 'px';
+  $('strike').style.setProperty('--k', eio(seg(t, 1.05, 1.55)));
+}
+
+function render(t) {
+  if (!geo) measure();
+  headline(t);
+  $('prog').style.width = (t / DUR * 100) + '%';
+
+  // modal entrance + gentle push-in + exit
+  const mi = back(seg(t, 1.2, 2.1));
+  const push = 1 + .03 * eio(seg(t, 4, 9)) - .03 * eio(seg(t, 9.5, 11));
+  const mo = eio(seg(t, 14.2, 14.8));
+  const mscale = (0.9 + 0.1 * mi) * push * (1 - .06 * mo);
+  const my = (1 - mi) * 120 - mo * 18;
+  $('modal').style.opacity = clamp(seg(t, 1.2, 1.6)) * (1 - mo);
+  $('modal').style.transform = `translateY(${my}px) scale(${mscale})`;
+
+  // typing
+  const n = Math.round(clamp((t - 4.1) / 3.2) * LINE.length);
+  const typing = t >= 3.7;
+  $('input').classList.toggle('focus', typing && t < 13.5);
+  $('itext').innerHTML = n > 0 ? inputHTML(n) : (t < 3.7 ? '<span class="ph">Describe the task in one line…</span>' : '');
+  $('caret').style.opacity = typing && t < 13.5 && (n < LINE.length || Math.floor(t * 2.2) % 2 === 0) ? 1 : 0;
+
+  // smart fill summary + chips
+  const reading = t >= 7.4;
+  $('scount').textContent = t < 7.4 ? 'waiting for text' : t < 8.0 ? 'reading…' : '6 values found · 1 assumed';
+  $('smart').style.opacity = .45 + .55 * seg(t, 7.3, 7.7);
+  chipEls.forEach((c, i) => {
+    const p = seg(t, 8.0 + i * .2, 8.0 + i * .2 + .35);
+    c.style.opacity = p > 0 ? clamp(p * 2) : 0;
+    c.style.transform = `scale(${p > 0 ? .55 + .45 * back(p) : .55})`;
+  });
+
+  // fly chips into fields, then fill
+  fEls.forEach((f, i) => {
+    const a = 10.4 + i * .32;
+    const p = seg(t, a, a + .55);
+    const fly = flies[i], from = geo.chips[i], to = geo.fields[i];
+    const e = eio(p);
+    if (p > 0 && p < 1) {
+      const x = lerp(from.x, to.x + 9, e), y = lerp(from.y, to.y + 7, e) - Math.sin(e * Math.PI) * 26;
+      fly.style.opacity = 1; fly.style.transform = `translate(${x}px,${y}px) scale(${1 - .08 * Math.sin(e * Math.PI)})`;
+    } else fly.style.opacity = 0;
+    const filled = t >= a + .5;
+    const fv = f.querySelector('.fv');
+    fv.classList.toggle('on', filled);
+    fv.querySelector('.v').textContent = filled ? FIELDS[i][2] : FIELDS[i][1];
+    const fl = seg(t, a + .5, a + .95);
+    fv.querySelector('.flash').style.opacity = fl > 0 && fl < 1 ? .16 * (1 - fl) : 0;
+    fv.style.borderColor = fl > 0 && fl < 1 ? '#84CAFF' : '';
+    const ap = seg(t, a + .55, a + .9);
+    const tag = f.querySelector('.auto');
+    tag.style.opacity = ap > 0 ? 1 : 0;
+    tag.style.transform = `scale(${ap > 0 ? .5 + .5 * back(ap) : .5})`;
+    // chip dims once it has been used
+    chipEls[i].style.opacity = t > a ? (t < a + .55 ? .35 : 1) * (chipEls[i].style.opacity || 1) : chipEls[i].style.opacity;
+  });
+
+  // cursor → Create task
+  const cs = geo.create; const cx = cs.x + cs.w * .55, cy = cs.y + cs.h * .6;
+  const cp = eio(seg(t, 12.6, 13.4));
+  const cur = $('cursor');
+  cur.style.opacity = seg(t, 12.5, 12.7) * (1 - seg(t, 14.3, 14.6));
+  cur.style.transform = `translate(${lerp(cx + 70, cx, cp)}px,${lerp(cy + 120, cy, cp)}px) scale(${t > 13.5 && t < 13.75 ? .86 : 1})`;
+  const press = t > 13.5 && t < 13.8;
+  $('create').style.transform = press ? 'scale(.95)' : 'none';
+  [['r1', 13.55], ['r2', 13.72]].forEach(([id, a]) => {
+    const p = seg(t, a, a + .6), r = $(id);
+    r.style.left = cx + 'px'; r.style.top = cy + 'px';
+    r.style.opacity = p > 0 && p < 1 ? (1 - p) : 0;
+    r.style.transform = `scale(${.4 + 4.2 * eo(p)})`;
+  });
+
+  // toast
+  const ti = back(seg(t, 14.5, 15.0)), to2 = eio(seg(t, 15.6, 16.0));
+  $('toast').style.opacity = clamp(seg(t, 14.5, 14.75)) * (1 - to2);
+  $('toast').style.transform = `translateY(${(1 - ti) * 40}px) scale(${.96 + .04 * ti})`;
+
+  // end card
+  const ei = seg(t, 15.7, 16.1);
+  $('end').style.opacity = eo(ei);
+  [['e1', 15.9], ['e2', 16.15], ['p1', 16.55], ['p2', 16.75], ['p3', 16.95]].forEach(([id, a]) => {
+    const p = eo(seg(t, a, a + .45));
+    $(id).style.opacity = p; $(id).style.transform = `translateY(${(1 - p) * 16}px)`;
+  });
+  $('sig').style.opacity = eo(seg(t, 17.1, 17.5));
+}
+
+window.DUR = DUR;
+window.render = render;
+document.fonts.ready.then(() => { measure(); render(0); window.ready = true; });
+
+// live preview: play in a loop when opened directly (?play)
+if (location.search.includes('play')) {
+  let t0 = performance.now();
+  (function loop(now) { const t = ((now - t0) / 1000) % DUR; if (window.ready) render(t); requestAnimationFrame(loop); })(t0);
+}
+</script>
+</body>
+</html>
