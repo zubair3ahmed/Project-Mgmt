@@ -16,6 +16,12 @@ const memberAccounts = STAFF.filter(s => s.id !== 'S009').map(s => ({
 
 const ACCOUNTS = [ADMIN_ACCOUNT, ...memberAccounts]
 
+// The app always opens on the sign-in page. A session only survives a refresh of the same tab;
+// opening the app again, a duplicated tab or a restored browser window starts signed out.
+try {
+  if (performance.getEntriesByType('navigation')[0]?.type !== 'reload') sessionStorage.removeItem('structflow-auth')
+} catch { /* storage blocked: nothing is kept anyway */ }
+
 const useAuth = create(
   persist(
     (set) => ({
