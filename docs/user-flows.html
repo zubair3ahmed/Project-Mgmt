@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>StructFlow User Flows</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#101828;--ink2:#344054;--mute:#667085;--line:#d0d5dd;--line2:#eaecf0;--bg:#f9fafb;--card:#fff;--brand:#175cd3;--admin:#175cd3;--member:#067647}
+*{box-sizing:border-box;margin:0}
+html{scroll-behavior:smooth}
+body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:var(--bg);color:var(--ink);font-size:14px;line-height:1.5}
+.layout{display:grid;grid-template-columns:240px minmax(0,1fr)}
+nav{position:sticky;top:0;height:100vh;overflow:auto;background:var(--card);border-right:1px solid var(--line2);padding:24px 16px}
+nav b{display:block;font-size:15px;padding:0 8px}
+nav p{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--mute);margin:20px 8px 6px}
+nav a{display:block;padding:6px 8px;border-radius:6px;color:var(--ink2);text-decoration:none;font-size:13px}
+nav a:hover{background:var(--bg);color:var(--ink)}
+main{padding:32px 40px 80px;max-width:1320px}
+h1{font-size:30px;letter-spacing:-.02em}
+.sub{color:var(--mute);max-width:70ch;margin-top:8px}
+.legend{display:flex;flex-wrap:wrap;gap:16px;margin-top:20px;font-size:12.5px;color:var(--ink2)}
+.legend span{display:flex;align-items:center;gap:8px}
+.legend i{width:28px;height:16px;border-radius:4px;border:1.5px solid}
+section{margin-top:48px;scroll-margin-top:16px}
+h2{font-size:20px;letter-spacing:-.01em;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.role{font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:3px 8px;border-radius:999px;border:1px solid}
+.role.admin{color:var(--admin);border-color:#b2ddff;background:#eff8ff}
+.role.member{color:var(--member);border-color:#75e0a7;background:#ecfdf3}
+.role.both{color:var(--ink2);border-color:var(--line);background:#f2f4f7}
+.goal{color:var(--mute);margin-top:4px;max-width:80ch}
+.canvas{margin-top:16px;background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:auto;padding:8px}
+.canvas svg{display:block;margin:0 auto}
+.notes{margin-top:12px;padding-left:18px;color:var(--ink2);font-size:13.5px;max-width:92ch;display:grid;gap:4px}
+table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);margin-top:16px;font-size:13.5px}
+th,td{text-align:left;padding:10px 14px;border-top:1px solid var(--line2);vertical-align:top}
+th{background:#f2f4f7;font-size:12px;color:var(--ink2);border-top:0}
+.tblw{overflow-x:auto}
+.nt{width:100%;height:100%;display:flex;align-items:center;justify-content:center;text-align:center;font-size:12.5px;line-height:1.35;font-weight:500;padding:0 14px;color:var(--ink);font-family:'Plus Jakarta Sans',system-ui,sans-serif}
+.nt.start,.nt.end{font-weight:700}
+.nt.start{color:#fff}
+@media(max-width:900px){.layout{grid-template-columns:1fr}nav{position:static;height:auto;border-right:0;border-bottom:1px solid var(--line2)}main{padding:24px 16px 64px}}
+@media print{nav{display:none}.layout{display:block}section{break-inside:avoid}.canvas{overflow:visible}.canvas svg{max-width:100%;height:auto}}
+</style>
+</head>
+<body>
+<div class="layout">
+<nav id="nav"><b>StructFlow flows</b></nav>
+<main>
+  <h1>StructFlow user flows</h1>
+  <p class="sub">How an admin and a team member move through the product, traced from the app's code on the <span style="font-family:'JetBrains Mono',monospace;font-size:12.5px">develop</span> branch. Where the app differs from the intended rules, it is listed under <a href="#gaps">Gaps found</a>.</p>
+  <div class="legend">
+    <span><i style="background:#101828;border-color:#101828;border-radius:999px"></i>Start</span>
+    <span><i style="background:#fff;border-color:#98a2b3"></i>User action or screen</span>
+    <span><i style="background:#fffaeb;border-color:#f79009;border-radius:2px;transform:skewX(-18deg)"></i>Decision</span>
+    <span><i style="background:#eff8ff;border-color:#53b1fd;border-style:dashed"></i>System does it</span>
+    <span><i style="background:#fef3f2;border-color:#f97066"></i>Blocked or error</span>
+    <span><i style="background:#ecfdf3;border-color:#32d583;border-radius:999px"></i>Outcome</span>
+  </div>
+  <div id="flows"></div>
+
+  <section id="permissions">
+    <h2>Who can do what <span class="role both">Both roles</span></h2>
+    <p class="goal">As the app behaves today.</p>
+    <div class="tblw"><table>
+      <thead><tr><th>Area</th><th>Admin</th><th>Team member</th></tr></thead>
+      <tbody>
+        <tr><td>Home</td><td>Dashboard: projects, open tasks, revenue, completion, needs attention</td><td>My Work: own tasks, due this week, hours, own projects</td></tr>
+        <tr><td>Projects</td><td>See all, create. Sees contract value</td><td>Only projects they manage or are on. No contract value</td></tr>
+        <tr><td>Tasks</td><td>See all, create, assign anyone, edit, change status, delete</td><td>See tasks on their projects. Create tasks for themselves. Edit and change status on their own only. No delete</td></tr>
+        <tr><td>Comments and attachments</td><td>Add; edit or remove anyone's</td><td>Add; edit or remove their own</td></tr>
+        <tr><td>Time log</td><td>See everyone's, log for anyone</td><td>See and log their own hours</td></tr>
+        <tr><td>Files</td><td>All projects. Upload, delete any</td><td>Their projects. Upload, delete their own</td></tr>
+        <tr><td>Staff</td><td>Add, edit, deactivate, activate, view profile with revenue and profit</td><td>No page. Can open a short person card from an avatar</td></tr>
+        <tr><td>Milestones and payments</td><td>Create (template or custom), edit, delete, approve, set payment status</td><td>No page. Can link own task to a milestone by name</td></tr>
+        <tr><td>Reports</td><td>Project margin and staff performance</td><td>No access (redirects home)</td></tr>
+        <tr><td>Settings</td><td>Organization, project stages, task types, notifications</td><td>Notifications only</td></tr>
+        <tr><td>Search (⌘K)</td><td>Projects, tasks, people, files</td><td>Own projects, their tasks and files</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section id="gaps">
+    <h2>Gaps found while tracing the flows</h2>
+    <p class="goal">These are in the app today. The diagrams show real behaviour, so none of them is drawn as if fixed.</p>
+    <div class="tblw"><table>
+      <thead><tr><th>Gap</th><th>What happens</th><th>Suggested fix</th></tr></thead>
+      <tbody id="gapRows"></tbody>
+    </table></div>
+  </section>
+</main>
+</div>
+
+<script>
+/* node: [id, type, col, row, text]   type: s start, a action, d decision, y system, x blocked, e outcome
+   edge: [from, to, label, route]     route: '' auto, 'L' loop via left gutter, 'R' via right gutter,
+                                      'hv' leave sideways then enter from top or bottom, 'vh' leave downwards then enter sideways */
+const FLOWS = [
+{group:'Both roles', id:'signin', role:'both', title:'Sign in and first run', goal:'Get the right person into the right workspace, and explain every way it can fail.',
+ nodes:[
+  ['o','s',1,0,'Open StructFlow'],['p','a',1,1,'Sign-in page. Pick Team member or Admin'],['f','a',2,1,'Forgot password: ask your admin to reset it'],
+  ['i','a',1,2,'Enter work email and password, or press Fill for a demo account'],
+  ['v','d',1,3,'Fields filled and email valid?'],['ve','x',0,3,'Field error shown. Focus jumps to it'],
+  ['on','d',1,4,'Online?'],['off','x',0,4,'Offline warning with Retry'],
+  ['c','d',1,5,'Email and password correct?'],['bad','d',2,5,'5th wrong try?'],['lock','x',3,5,'Sign-in paused for 30 seconds'],['warn','x',2,4,'Error shown. Warns from the 3rd try'],
+  ['ac','d',1,6,'Account active?'],['de','x',0,6,'Deactivated: contact admin, or use another account'],
+  ['ro','d',1,7,'Matches the chosen role?'],['sw','x',2,7,'Wrong role: one-click Switch sign in'],
+  ['ft','d',1,8,'First sign-in on this browser?'],['tour','y',2,8,'Guided tour: 8 steps for admin, 7 for member. Skippable'],
+  ['home','e',1,9,'Admin: Dashboard. Member: My Work']],
+ edges:[['o','p'],['p','f','Forgot?'],['p','i'],['i','v'],['v','ve','No'],['v','on','Yes'],['on','off','No'],['on','c','Yes'],['c','bad','No'],['bad','lock','Yes'],['bad','warn','No'],['c','ac','Yes'],['ac','de','No'],['ac','ro','Yes'],['ro','sw','No'],['ro','ft','Yes'],['ft','tour','Yes'],['ft','home','No'],['tour','home','','vh']],
+ notes:['A refresh keeps you signed in. Opening the app again starts at sign-in.','Each browser tab has its own session, so an admin and a member can be signed in side by side.','"Take the tour" in the account menu replays the walkthrough.']},
+
+{group:'Both roles', id:'handoff', role:'both', title:'End to end: from contract to payment', goal:'How work passes between the admin, the system and the team member.', lanes:['Admin','StructFlow','Team member'],
+ nodes:[
+  ['p','s',0,0,'Create the project'],['m','a',0,1,'Set up milestones (% of contract value)'],['t','a',0,2,'Create tasks, assign people, link to a milestone'],
+  ['n','y',1,3,'Member tab updates live: new task toast'],['st','a',2,3,'Start the task'],
+  ['w','a',2,4,'Work: comment, attach files, log hours'],['dn','a',2,5,'Mark task Done'],
+  ['q','d',1,5,'Last task in the milestone?'],['wait','y',1,6,'Milestone stays open. Progress updates'],
+  ['mc','y',1,7,'Milestone completes'],['md','d',1,8,'Payment mode automatic?'],
+  ['ap','a',0,8,'Ready to invoice: review, then Approve and invoice'],
+  ['inv','y',1,9,'Status: Invoiced (request sent)'],['pd','a',0,10,'Client pays: set status to Paid'],['rv','e',1,10,'Counts in revenue and margin']],
+ edges:[['p','m'],['m','t'],['t','n','','vh'],['n','st'],['st','w'],['w','dn'],['dn','q'],['q','wait','No'],['q','mc','Yes','L'],['mc','md'],['md','ap','No'],['md','inv','Yes'],['ap','inv','','B'],['inv','pd','','hv'],['pd','rv']],
+ notes:['The admin tab also gets a live toast when a member finishes or creates a task. Live updates work between tabs of one browser; other devices need the backend.','Team members never see amounts. They see "Milestone complete. Admin has been notified."']},
+
+{group:'Admin', id:'a-setup', role:'admin', title:'A1. Set up an empty workspace', goal:'The order that makes the numbers work: people, project, milestones, then tasks.',
+ nodes:[
+  ['s','s',1,0,'Dashboard: "Your workspace is ready"'],['t','a',1,1,'1. Add team members on Staff'],['pr','a',1,2,'2. Create a project'],
+  ['q','d',1,3,'Use the six delivery stages?'],['tm','a',0,4,'Use stage template: 5, 10, 25, 20, 30, 10 %'],['cu','a',2,4,'Add custom milestones one by one'],
+  ['w','d',1,5,'Weightages total 100%?'],['fx','x',2,5,'Warning on the project. Edit weightages'],
+  ['tk','a',1,6,'3. Create tasks and link them to milestones'],['e','e',1,7,'Dashboard fills with live numbers']],
+ edges:[['s','t'],['t','pr'],['pr','q'],['q','tm','Yes','hv'],['q','cu','No','hv'],['tm','w','','vh'],['cu','w','','B'],['w','fx','No'],['w','tk','Yes'],['tk','e']],
+ notes:['The warning does not block you: tasks can be created while weightages are off.','The account menu has "Start with empty workspace" and "Load demo data" to try this flow.']},
+
+{group:'Admin', id:'a-project', role:'admin', title:'A2. Create a project from one line', goal:'One typed sentence fills the form; money gets an explicit check.',
+ nodes:[
+  ['s','s',1,0,'Projects: New Project'],['ty','a',1,1,'Type e.g. "Prestige Tech Park Bangalore ₹2.5Cr client Prestige 12 months @Priya"'],
+  ['pa','y',1,2,'Fills client, type, city, value, duration, manager. Tags each Auto'],
+  ['cl','d',1,3,'Client clear?'],['nc','a',2,3,'Needs review: pick a client or add a new one'],
+  ['ed','a',1,4,'Review and edit any field. "Why these?" explains fills'],['sub','a',1,5,'Press Create Project'],
+  ['rq','d',1,6,'Required fields complete?'],['re','x',0,6,'Errors shown on the fields'],
+  ['mv','d',1,7,'Value read from text?'],['cf','a',2,7,'Check "₹2,50,00,000. Is that right?"'],['em','a',3,7,'Edit amount'],
+  ['cr','y',1,8,'Project created in Work Order stage'],['e','e',1,9,'Toast with Undo. Team sees it live']],
+ edges:[['s','ty'],['ty','pa'],['pa','cl'],['cl','nc','No'],['cl','ed','Yes'],['nc','ed','','vh'],['ed','sub'],['sub','rq'],['rq','re','No'],['rq','mv','Yes'],['mv','cf','Yes'],['cf','em','Edit'],['mv','cr','No'],['cf','cr','Yes, create','vh'],['em','sub','Fix and resubmit','T'],['cr','e']],
+ notes:['The reader is rule-based, not a language model.','Files can be attached while creating the project.']},
+
+{group:'Admin', id:'a-task', role:'admin', title:'A3. Create and assign a task', goal:'Type the work the way you would say it, then confirm what was understood.',
+ nodes:[
+  ['s','s',1,0,'Tasks: New Task'],['ty','a',1,1,'Type e.g. "Column schedule Prestige Towers @Amit !high due fri 8h"'],
+  ['pa','y',1,2,'Fills project, assignee, priority, due date, estimate, type'],
+  ['q','d',1,3,'Project understood?'],['nr','a',2,3,'Needs review tag: pick the project'],
+  ['as','d',1,4,'Assignee named?'],['sg','y',2,4,'Suggests by skills and workload. Or Assign to me'],
+  ['ms','a',1,5,'Optional: link a milestone, add files, notes, tags'],['v','d',1,6,'Title, project, assignee set?'],['er','x',0,6,'Errors shown on the fields'],
+  ['cr','y',1,7,'Task created. History starts'],['more','d',1,8,'"Create another" ticked?'],['again','a',0,8,'Form resets, project kept'],
+  ['e','e',1,9,'Toast with Undo. Assignee sees it live']],
+ edges:[['s','ty'],['ty','pa'],['pa','q'],['q','nr','No'],['q','as','Yes'],['nr','as','','B'],['as','sg','No'],['as','ms','Yes'],['sg','ms','','vh'],['ms','v'],['v','er','No'],['v','cr','Yes'],['cr','more'],['more','again','Yes'],['more','e','No'],['again','ty','Next task','L']],
+ notes:['Only open milestones of the chosen project are offered. Completed ones are closed to new tasks.']},
+
+{group:'Admin', id:'a-manage', role:'admin', title:'A4. Manage a task', goal:'Move work along, discuss it, and remove it safely.',
+ nodes:[
+  ['s','s',1,0,'Tasks: board or list. Filter by project'],['op','a',1,1,'Drag a card, or open the task'],['q','d',1,2,'What do you need?'],
+  ['st','a',0,3,'Change status: Backlog, To Do, In Progress, Review, Done'],['cm','a',1,3,'Comment with @mention, add files, read history'],['ed','a',2,3,'Edit details or reassign'],['dl','a',3,3,'Delete'],
+  ['cf','d',3,4,'Confirm delete?'],
+  ['h','y',1,5,'Change saved and written to task history'],['del','y',3,5,'Removed. Toast with Undo'],['e','e',1,6,'Milestone progress and dashboard update']],
+ edges:[['s','op'],['op','q'],['q','st','Status','hv'],['q','cm','Discuss'],['q','ed','Edit','hv'],['q','dl','Delete','hv'],['st','h','','vh'],['cm','h'],['ed','h','','vh'],['dl','cf'],['cf','del','Yes'],['h','e']],
+ notes:['Choosing No on the delete confirmation leaves the task as it was.']},
+
+{group:'Admin', id:'a-pay', role:'admin', title:'A5. Milestones and payments', goal:'Money lives on milestones. Tasks drive their completion.',
+ nodes:[
+  ['s','s',1,0,'Milestones page'],['o','a',1,1,'Open a milestone: progress, linked tasks'],['md','a',1,2,'Choose: send automatically, or wait for approval'],
+  ['q','d',1,3,'All linked tasks done?'],['op','y',0,3,'Open. Shows "3 of 4 tasks"'],
+  ['c','y',1,4,'Completes by itself'],['a','d',1,5,'Mode automatic?'],['rd','y',2,5,'Ready to invoice'],['ap','a',2,6,'Approve and invoice (confirm)'],
+  ['in','y',1,6,'Invoiced. Toast shown'],['pd','a',1,7,'When the client pays, set Paid (confirm)'],['e','e',1,8,'Revenue and margin update'],
+  ['ro','d',3,4,'A task leaves Done?'],['re','y',3,5,'Reopens if not yet invoiced or paid']],
+ edges:[['s','o'],['o','md'],['md','q'],['q','op','No'],['q','c','Yes'],['c','a'],['a','rd','No'],['a','in','Yes'],['rd','ap'],['ap','in'],['in','pd'],['pd','e'],['c','ro','Later'],['ro','re','Yes']],
+ notes:['Payment status can also be changed by hand from the table; each change asks for confirmation and offers Undo.','A milestone can also be marked complete by hand (see Gaps).']},
+
+{group:'Admin', id:'a-staff', role:'admin', title:'A6. Manage the team', goal:'Add people, and take access away only on purpose.',
+ nodes:[
+  ['s','s',1,0,'Staff page'],['q','d',1,1,'What do you need?'],
+  ['ad','a',0,2,'Add member: name, role, email, rate, skills'],['vw','a',1,2,'Open profile: workload, revenue, profit'],['de','a',2,2,'Deactivate'],['av','a',3,2,'Activate an inactive person'],
+  ['ok','y',0,3,'Can sign in with the default password'],['ed','a',1,3,'Edit details'],['c1','d',2,3,'Confirm: Deactivate?'],['c3','d',3,3,'Confirm: Activate?'],
+  ['c2','d',2,4,'Second check: absolutely sure?'],['kp','e',1,5,'Cancel at either step: nothing changes'],
+  ['dn','y',2,5,'Inactive. Sign-in blocked, history kept'],['on','y',3,5,'Active again'],['t','e',2,6,'Toast with Undo']],
+ edges:[['s','q'],['q','ad','Add','hv'],['q','vw','View'],['q','de','Remove access','hv'],['q','av','Restore','hv'],['ad','ok'],['vw','ed'],['de','c1'],['av','c3'],['c1','c2','Yes'],['c2','dn','Yes'],['c2','kp','No'],['c3','on','Yes'],['dn','t'],['on','t','','vh']],
+ notes:['The first confirmation lists open tasks that stay assigned to the person.']},
+
+{group:'Admin', id:'a-monitor', role:'admin', title:'A7. Daily review', goal:'Answer the three business questions: margin, contribution and what is about to slip.',
+ nodes:[
+  ['s','s',1,0,'Sign in: Dashboard'],['k','a',1,1,'Read the four numbers and charts'],['q','d',1,2,'What needs a look?'],
+  ['sl','a',0,3,'Needs attention: overdue and due soon'],['mg','a',1,3,'Reports: revenue, cost, margin per project'],['pe','a',2,3,'Reports: on-time rate, hours, score per person'],['pj','a',3,3,'Project page: tasks, milestones, files, stage'],
+  ['ac1','e',0,4,'Reassign or reprioritise'],['ac2','e',1,4,'Chase invoices on Milestones'],['ac3','e',2,4,'Inform bonus and salary review'],['ac4','e',3,4,'Move the project stage on']],
+ edges:[['s','k'],['k','q'],['q','sl','Slipping','hv'],['q','mg','Money'],['q','pe','People','hv'],['q','pj','A project','hv'],['sl','ac1'],['mg','ac2'],['pe','ac3'],['pj','ac4']],
+ notes:['Time Log (everyone\'s hours), Files and ⌘K search are available from any step.']},
+
+{group:'Team member', id:'m-day', role:'member', title:'M1. Work through the day', goal:'See what is next and finish it with as few clicks as possible.',
+ nodes:[
+  ['s','s',1,0,'Sign in: My Work'],['q','d',1,1,'Anything assigned?'],['none','e',2,1,'"Nothing assigned yet": add a task or log time'],
+  ['up','a',1,2,'Up next, ordered by due date'],['live','y',2,2,'New assignment arrives: live toast with View'],
+  ['go','a',1,3,'Press Start. Status: In Progress'],['wk','a',1,4,'Open the task: comment, @mention, attach files'],
+  ['rv','d',1,5,'Needs a check first?'],['re','a',2,5,'Move to Review'],
+  ['dn','a',1,6,'Press Done'],['ms','d',1,7,'Finished the milestone\'s last task?'],['nt','y',2,7,'"Milestone complete. Admin has been notified"'],
+  ['e','e',1,8,'Toast with Undo. Admin sees it live']],
+ edges:[['s','q'],['q','none','No'],['q','up','Yes'],['live','up'],['up','go'],['go','wk'],['wk','rv'],['rv','re','Yes'],['rv','dn','No'],['re','dn','When checked','vh'],['dn','ms'],['ms','nt','Yes'],['ms','e','No'],['nt','e','','vh']],
+ notes:['Review is a status, not an approval gate: a member can mark their own task Done directly.']},
+
+{group:'Team member', id:'m-task', role:'member', title:'M2. Add or update a task', goal:'Members can create their own work, and only change what is theirs.',
+ nodes:[
+  ['s','s',1,0,'My Tasks'],['f','a',1,1,'Switch Mine or Team. Filter by project'],['q','d',1,2,'New work, or existing?'],
+  ['nw','a',0,3,'New Task: type one line'],['pa','y',0,4,'Assigned to you. Fills the rest from your projects'],['ms','a',0,5,'Optional: link a milestone (names only)'],['cr','e',0,6,'Created. Toast with Undo. Admin sees it live'],
+  ['op','a',2,3,'Open a task'],['mine','d',2,4,'Assigned to you?'],['ed','a',1,5,'Edit, change status, drag on the board'],['ro','x',3,5,'View only. Can still comment and attach'],
+  ['h','e',1,6,'Saved to task history']],
+ edges:[['s','f'],['f','q'],['q','nw','New','hv'],['q','op','Existing','hv'],['nw','pa'],['pa','ms'],['ms','cr'],['op','mine'],['mine','ed','Yes','hv'],['mine','ro','No','hv'],['ed','h']],
+ notes:['Members cannot delete tasks.','If the project cannot be read from the line, it is flagged Needs review, as for the admin.']},
+
+{group:'Team member', id:'m-time', role:'member', title:'M3. Log time', goal:'Record hours so contribution and project cost are accurate.',
+ nodes:[
+  ['s','s',1,0,'Time Log, or "Log time" on My Work'],['n','a',1,1,'Press Log Time'],['fm','a',1,2,'Choose project and task. Enter date, hours, note'],
+  ['v','d',1,3,'Required fields filled?'],['er','x',0,3,'Form does not save until they are filled'],
+  ['sv','y',1,4,'Entry saved. Task\'s logged hours update'],['q','d',1,5,'Mistake?'],['ed','a',2,5,'Edit the entry, or delete it (confirm, then Undo)'],
+  ['e','e',1,6,'Hours count toward your record and project cost']],
+ edges:[['s','n'],['n','fm'],['fm','v'],['v','er','No'],['v','sv','Yes'],['sv','q'],['q','ed','Yes'],['q','e','No'],['ed','e','','vh']],
+ notes:['A member only ever sees their own entries.']},
+
+{group:'Team member', id:'m-files', role:'member', title:'M4. Projects and files', goal:'Find project context and share documents.',
+ nodes:[
+  ['s','s',1,0,'Projects (only yours)'],['o','a',1,1,'Open a project: Tasks, Milestones, Files, Stages'],['q','d',1,2,'Need a document?'],['ctx','e',0,2,'Read status, team, timeline. No contract value'],
+  ['fp','a',1,3,'Files page: filter by project'],['w','d',1,4,'Download or upload?'],['dw','e',0,4,'Download the file'],['up','a',2,4,'Upload: project and folder'],
+  ['ok','y',2,5,'Added to your project'],['own','d',2,6,'Your own upload?'],['del','e',3,6,'Can delete (confirm, then Undo)'],['keep','e',1,6,'Others\' files: no delete']],
+ edges:[['s','o'],['o','q'],['q','ctx','No'],['q','fp','Yes'],['fp','w'],['w','dw','Get'],['w','up','Add'],['up','ok'],['ok','own'],['own','del','Yes'],['own','keep','No']],
+ notes:['Download is available for files uploaded in the current tab session; the sample files are records without content.','⌘K searches only your projects, tasks and files.']}
+];
+
+const GAPS = [
+  ['Members can change a project\'s stage','On the project page, the Stages tab is clickable for everyone, and one click moves the stage and progress with no confirmation.','Limit to admins and add a confirmation.'],
+  ['"Mark complete" skips the payment request','The tick button on Milestones sets the milestone to Completed but leaves payment as "Not yet earned", so no request is raised.','Run the same step as task-driven completion (Invoiced or Ready to invoice), or remove the button.'],
+  ['No way to edit or delete a project','The project form supports editing, but no screen opens it for an existing project.','Add Edit on the project page (admin), with delete behind a double confirmation.'],
+  ['Members see milestone weightage','The project\'s Milestones tab shows members each milestone\'s percentage of the contract. No rupee amounts are shown.','Decide whether the percentage is sensitive; if so, hide it from members.'],
+  ['Settings do not persist','Save Changes shows "Saved", but organization and notification choices are not stored.','Store them, or mark the page as not yet connected.'],
+  ['No password change or reset','"Forgot password" says to ask the admin, but the admin has no reset action. New members share one default password.','Needs the backend: invite link, first-login password change and admin reset.']
+];
+
+/* ---------- renderer ---------- */
+const CW = 236, RH = 100, NW = 196, NH = 66, PAD = 34;
+const STYLE = {
+  s:{fill:'#101828',stroke:'#101828'}, a:{fill:'#ffffff',stroke:'#98a2b3'}, d:{fill:'#fffaeb',stroke:'#f79009'},
+  y:{fill:'#eff8ff',stroke:'#53b1fd',dash:'5 4'}, x:{fill:'#fef3f2',stroke:'#f97066'}, e:{fill:'#ecfdf3',stroke:'#32d583'}
+};
+const CLS = {s:'start',e:'end'};
+const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;');
+
+function draw(flow){
+  const maxC = Math.max(...flow.nodes.map(n=>n[2])), maxR = Math.max(...flow.nodes.map(n=>n[3]));
+  const top = flow.lanes ? 44 : 14;
+  const W = (maxC+1)*CW + PAD*2, H = (maxR+1)*RH + top + 14;
+  const N = {};
+  flow.nodes.forEach(([id,t,c,r,text])=>{ const cx = PAD + c*CW + CW/2, cy = top + r*RH + RH/2; N[id]={id,t,c,r,text,cx,cy,l:cx-NW/2,rt:cx+NW/2,tp:cy-NH/2,bt:cy+NH/2}; });
+  const mk = 'm-'+flow.id;
+  let s = `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(flow.title)} flow chart"><defs><marker id="${mk}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#667085"/></marker></defs>`;
+  if(flow.lanes) flow.lanes.forEach((l,i)=>{ const x=PAD+i*CW; s+=`<rect x="${x+4}" y="6" width="${CW-8}" height="${H-12}" rx="10" fill="${i%2?'#ffffff':'#f9fafb'}" stroke="#eaecf0"/><text x="${x+CW/2}" y="28" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif" font-size="12" font-weight="800" fill="#344054" letter-spacing=".04em">${l.toUpperCase()}</text>`; });
+  let labels = '';
+  flow.edges.forEach(([f,t,label,route])=>{
+    const a=N[f], b=N[t]; let pts, lp;
+    const right = b.cx > a.cx, sideX = right ? a.rt : a.l;
+    if(route==='L'){ const gx = Math.min(a.l,b.l)-18; pts=[[a.l,a.cy],[gx,a.cy],[gx,b.cy],[b.l,b.cy]]; lp=[gx+4,(a.cy+b.cy)/2,'start']; }
+    else if(route==='R'){ const gx = Math.max(a.rt,b.rt)+18; pts=[[a.rt,a.cy],[gx,a.cy],[gx,b.cy],[b.rt,b.cy]]; lp=[gx-6,(a.cy+b.cy)/2,'end']; }
+    else if(route==='B'){ /* drop into the row gap, travel sideways, then enter the target from above */
+      const gy = a.bt+11; pts=[[a.cx,a.bt],[a.cx,gy],[b.cx,gy],[b.cx,b.tp]]; lp=[(a.cx+b.cx)/2,gy,'middle']; }
+    else if(route==='T'){ /* loop back up through the gutter to the right of the source */
+      const gx=a.rt+16, gy=b.cy; pts=[[a.rt,a.cy],[gx,a.cy],[gx,gy],[b.rt,gy]]; lp=[(gx+b.rt)/2,gy,'middle']; }
+    else if(route==='hv'){ const down=b.cy>a.cy; pts=[[sideX,a.cy],[b.cx,a.cy],[b.cx,down?b.tp:b.bt]]; lp=[(sideX+b.cx)/2,a.cy,'middle']; }
+    else if(route==='vh'){ const down=b.cy>a.cy, endX = a.cx>b.cx ? b.rt : b.l; if(Math.abs(a.cy-b.cy)<1){pts=[[sideX,a.cy],[right?b.l:b.rt,b.cy]];} else { pts=[[a.cx,down?a.bt:a.tp],[a.cx,b.cy],[endX,b.cy]]; } lp=[a.cx+6,(a.bt+b.cy)/2,'start']; }
+    else if(a.c===b.c){ const down=b.r>a.r; pts=[[a.cx,down?a.bt:a.tp],[b.cx,down?b.tp:b.bt]]; lp=[a.cx+8,(pts[0][1]+pts[1][1])/2,'start']; }
+    else if(a.r===b.r){ pts=[[sideX,a.cy],[right?b.l:b.rt,b.cy]]; lp=[(pts[0][0]+pts[1][0])/2,a.cy-9,'middle']; }
+    else { const down=b.r>a.r, gy = down ? a.bt+16 : a.tp-16; pts=[[a.cx,down?a.bt:a.tp],[a.cx,gy],[b.cx,gy],[b.cx,down?b.tp:b.bt]]; lp=[(a.cx+b.cx)/2,gy,'middle']; }
+    s+=`<polyline points="${pts.map(p=>p.join(',')).join(' ')}" fill="none" stroke="#667085" stroke-width="1.4" stroke-linejoin="round" marker-end="url(#${mk})"/>`;
+    if(label){ const w=label.length*6.1+10, x = lp[2]==='middle'?lp[0]-w/2 : lp[2]==='end'?lp[0]-w : lp[0];
+      labels+=`<rect x="${x}" y="${lp[1]-9}" width="${w}" height="17" rx="4" fill="#fff" stroke="#eaecf0"/><text x="${x+w/2}" y="${lp[1]+3.5}" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif" font-size="10.5" font-weight="700" fill="#475467">${esc(label)}</text>`; }
+  });
+  Object.values(N).forEach(n=>{
+    const st=STYLE[n.t], attr=`fill="${st.fill}" stroke="${st.stroke}" stroke-width="1.5"${st.dash?` stroke-dasharray="${st.dash}"`:''}`;
+    if(n.t==='d') s+=`<polygon points="${n.l+16},${n.tp} ${n.rt-16},${n.tp} ${n.rt},${n.cy} ${n.rt-16},${n.bt} ${n.l+16},${n.bt} ${n.l},${n.cy}" ${attr}/>`;
+    else s+=`<rect x="${n.l}" y="${n.tp}" width="${NW}" height="${NH}" rx="${n.t==='s'||n.t==='e'?NH/2:10}" ${attr}/>`;
+    s+=`<foreignObject x="${n.l}" y="${n.tp}" width="${NW}" height="${NH}"><div xmlns="http://www.w3.org/1999/xhtml" class="nt ${CLS[n.t]||''}">${esc(n.text)}</div></foreignObject>`;
+  });
+  return s+labels+'</svg>';
+}
+
+const host=document.getElementById('flows'), nav=document.getElementById('nav');
+let lastGroup='';
+FLOWS.forEach(f=>{
+  if(f.group!==lastGroup){ const p=document.createElement('p'); p.textContent=f.group; nav.appendChild(p); lastGroup=f.group; }
+  const a=document.createElement('a'); a.href='#'+f.id; a.textContent=f.title; nav.appendChild(a);
+  const sec=document.createElement('section'); sec.id=f.id;
+  const roleLabel={admin:'Admin',member:'Team member',both:'Both roles'}[f.role];
+  sec.innerHTML=`<h2>${esc(f.title)} <span class="role ${f.role}">${roleLabel}</span></h2><p class="goal">${esc(f.goal)}</p><div class="canvas">${draw(f)}</div><ul class="notes">${f.notes.map(n=>`<li>${esc(n)}</li>`).join('')}</ul>`;
+  host.appendChild(sec);
+});
+nav.insertAdjacentHTML('beforeend','<p>Reference</p><a href="#permissions">Who can do what</a><a href="#gaps">Gaps found</a>');
+document.getElementById('gapRows').innerHTML=GAPS.map(g=>`<tr><td><b>${esc(g[0])}</b></td><td>${esc(g[1])}</td><td>${esc(g[2])}</td></tr>`).join('');
+</script>
+</body>
+</html>
