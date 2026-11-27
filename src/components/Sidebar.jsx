@@ -2,7 +2,7 @@ import { NavLink, useLocation } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import {
   LayoutDashboard, FolderKanban, ListTodo, Users, Clock, FileText, Milestone, BarChart3,
-  Settings, PanelLeftClose, PanelLeft, LogOut, Palette, ExternalLink,
+  Settings, PanelLeftClose, PanelLeft, LogOut, Palette, ExternalLink, Workflow,
 } from 'lucide-react'
 import clsx from 'clsx'
 import Avatar from './Avatar'
@@ -138,6 +138,18 @@ export default function Sidebar() {
       </nav>
 
       <div className="shrink-0 border-t border-surface-300 p-3 flex flex-col gap-3">
+        {/* Demo call to action: opens the user flow charts */}
+        <a
+          href="./user-flows.html"
+          target="_blank"
+          rel="noreferrer"
+          aria-label="View user flows (opens in a new tab)"
+          title={collapsed ? 'View user flows (opens in a new tab)' : undefined}
+          className={clsx('flex items-center justify-center gap-2 h-10 shrink-0 rounded-md bg-brand-600 text-white text-sm font-semibold shadow-xs hover:bg-brand-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-600 focus-visible:ring-offset-2', !collapsed && 'px-3')}
+        >
+          <Workflow size={18} className="shrink-0" />
+          {!collapsed && <><span className="truncate">View user flows</span><ExternalLink size={14} className="shrink-0 opacity-80" /></>}
+        </a>
         <NavItem to="/settings" icon={Settings} label="Settings" collapsed={collapsed} />
         {collapsed && (
           <button onClick={toggle} aria-label="Expand sidebar" title="Expand sidebar" className="h-10 flex items-center justify-center rounded-md text-surface-500 hover:bg-surface-300/50 hover:text-surface-800 transition-colors">
