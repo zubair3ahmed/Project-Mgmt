@@ -1,10 +1,11 @@
 import EmptyState from '../components/EmptyState'
 import { Milestone } from 'lucide-react'
 import { Fragment, useState } from 'react'
-import { Plus, Pencil, Trash2, CheckCircle, ChevronRight, AlertTriangle, Zap, Hand } from 'lucide-react'
+import { Lock, Plus, Pencil, Trash2, CheckCircle, ChevronRight, AlertTriangle, Zap, Hand } from 'lucide-react'
 import clsx from 'clsx'
 import Avatar from '../components/Avatar'
 import { inr, milestoneProgress, PAYMENT_MODES } from '../lib/payments'
+import { isClosed } from '../lib/access'
 import Header from '../components/Header'
 import { StatusBadge } from '../components/Badge'
 import ProgressBar from '../components/ProgressBar'
@@ -208,7 +209,7 @@ export default function MilestonesPage() {
               <div className="flex items-center justify-between mb-3">
                 <div>
                   <h3 className="text-sm font-semibold text-surface-900">{project?.name}</h3>
-                  <p className="text-2xs text-surface-400">{project?.type} · Contract: {formatCurrency(project?.contractValue || 0)}{(() => { const w = ms.reduce((n, x) => n + x.weightage, 0); return w === 100 ? '' : <span className="text-warning-dark font-medium"> · weightage adds up to {w}%, should be 100%</span> })()}</p>
+                  <p className="text-2xs text-surface-400">{project?.type} · Contract: {formatCurrency(project?.contractValue || 0)}{(() => { const w = ms.reduce((n, x) => n + x.weightage, 0); return w === 100 ? '' : <span className="text-warning-dark font-medium"> · weightage adds up to {w}%, should be 100%</span> })()}{isClosed(project) && <span className="font-medium text-surface-600"> · Completed project: read-only, payments can still be updated</span>}</p>
                 </div>
                 <div className="text-right">
                   <p className="text-xs font-mono text-surface-600">{formatCurrency(projectPaid)} / {formatCurrency(projectTotal)}</p>
@@ -260,17 +261,19 @@ export default function MilestonesPage() {
                         </td>
                         <td className="px-4 py-3 text-right">
                           <div className="flex items-center justify-end gap-1">
+                            {isClosed(project) ? <span className="h-8 w-8 flex items-center justify-center text-surface-400" title="Completed project: milestones cannot be changed"><Lock size={13} /></span> : <>
                             {m.status !== 'completed' && (
                               <button onClick={() => handleComplete(m)} title="Mark complete"
                                 className="w-8 h-8 flex items-center justify-center rounded-md hover:bg-green-50 text-surface-400 hover:text-success"><CheckCircle size={14} /></button>
                             )}
                             <button onClick={() => openEdit(m)} className="w-8 h-8 flex items-center justify-center rounded-md hover:bg-surface-100 text-surface-400 hover:text-surface-600"><Pencil size={13} /></button>
                             <button onClick={() => handleDelete(m)} className="w-8 h-8 flex items-center justify-center rounded-md hover:bg-red-50 text-surface-400 hover:text-danger"><Trash2 size={13} /></button>
+                            </>}
                           </div>
                         </td>
                       </tr>
                       {open.has(m.id) && (
-                        <tr><td colSpan={7} className="p-0 bg-surface-25"><ProgressPanel m={m} tasks={tasks} staff={staff} onApprove={handleApprove} onMode={mode => updateMilestone(m.id, { paymentMode: mode })} /></td></tr>
+                        <tr><td colSpan={7} className="p-0 bg-surface-25"><ProgressPanel closed={isClosed(project)} m={m} tasks={tasks} staff={staff} onApprove={handleApprove} onMode={mode => updateMilestone(m.id, { paymentMode: mode })} /></td></tr>
                       )}
                       </Fragment>
                     ))}
@@ -280,7 +283,7 @@ export default function MilestonesPage() {
             </div>
           )
         })}
-        {(filterProject === 'all' ? projects : projects.filter(p => p.id === filterProject)).filter(p => !milestones.some(m => m.projectId === p.id)).map(p => (
+        {(filterProject === 'all' ? projects : projects.filter(p => p.id === filterProject)).filter(p => !isClosed(p) && !milestones.some(m => m.projectId === p.id)).map(p => (
           <div key={p.id} className="rounded-lg border border-dashed border-surface-300 bg-surface-0 p-5 flex flex-wrap items-center justify-between gap-4">
             <div><p className="text-sm font-semibold text-surface-900">{p.name} has no milestones</p><p className="text-xs text-surface-500 mt-0.5">Start from the six delivery stages, or add your own. Weightages should add up to 100% of {inr(p.contractValue)}.</p></div>
             <div className="flex gap-2"><Button size="sm" variant="secondary" onClick={() => handleTemplate(p)}>Use stage template</Button><Button size="sm" onClick={() => { setForm({ ...emptyForm, projectId: p.id }); setEditId(null); setShowForm(true) }}>Add milestone</Button></div>
@@ -301,21 +304,24 @@ export default function MilestonesPage() {
           <FormField label="Project" required>
             <Select value={form.projectId} onChange={e => setForm(f => { const proj = projects.find(p => p.id === e.target.value); const amt = proj && f.weightage ? Math.round(proj.contractValue * Number(f.weightage) / 100) : f.paymentAmount; return { ...f, projectId: e.target.value, paymentAmount: String(amt) } })} required>
               <option value="">Select project…</option>
-              {projects.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+              {projects.filter(p => !isClosed(p) || p.id === form.projectId).map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
             </Select>
           </FormField>
-          <div className="grid grid-cols-3 gap-4">
-            <FormField label="Weightage (%)" required>
-              <Input type="number" min="1" max="100" value={form.weightage} onChange={e => setForm(f => { const proj = projects.find(p => p.id === f.projectId); return { ...f, weightage: e.target.value, paymentAmount: proj && e.target.value ? String(Math.round(proj.contractValue * Number(e.target.value) / 100)) : f.paymentAmount } })} placeholder="25" required />
-            </FormField>
-            <FormField label="Due Date" required>
-              <Input type="date" value={form.dueDate} onChange={e => setForm(f => ({ ...f, dueDate: e.target.value }))} required />
-            </FormField>
-            <FormField label="Payment Amount (₹)" required hint="Contract value × weightage">
-              <Input type="number" value={form.paymentAmount} onChange={e => setForm(f => ({ ...f, paymentAmount: e.target.value }))} placeholder="500000" required />
-            </FormField>
+          <div className="flex flex-col gap-2">
+            <div className="grid grid-cols-2 gap-4">
+              <FormField label="Weightage (%)" required>
+                <Input type="number" min="1" max="100" value={form.weightage} onChange={e => setForm(f => { const proj = projects.find(p => p.id === f.projectId); return { ...f, weightage: e.target.value, paymentAmount: proj && e.target.value ? String(Math.round(proj.contractValue * Number(e.target.value) / 100)) : f.paymentAmount } })} placeholder="25" required />
+              </FormField>
+              <FormField label="Payment amount (₹)" required>
+                <Input type="number" value={form.paymentAmount} onChange={e => setForm(f => ({ ...f, paymentAmount: e.target.value }))} placeholder="500000" required />
+              </FormField>
+            </div>
+            <p className="text-xs text-surface-500">The amount is filled from the contract value × weightage. You can change it.</p>
           </div>
-          <FormField label="When a job is done" hint="How its share of this milestone's payment is triggered">
+          <FormField label="Due Date" required>
+            <Input type="date" value={form.dueDate} onChange={e => setForm(f => ({ ...f, dueDate: e.target.value }))} required />
+          </FormField>
+          <FormField label="When the last job is done" hint="Sets how this milestone's payment request is raised.">
             <div className="grid grid-cols-2 gap-3">
               {PAYMENT_MODES.map(([v, l, d]) => (
                 <button key={v} type="button" onClick={() => setForm(f => ({ ...f, paymentMode: v }))} className={clsx('text-left rounded-lg border p-3 transition-colors', form.paymentMode === v ? 'border-brand-600 bg-brand-50' : 'border-surface-300 hover:bg-surface-50')}>
@@ -337,7 +343,7 @@ export default function MilestonesPage() {
 
 const TASK_TONE = { done: 'bg-success-light text-success-dark border-success-border', 'in-progress': 'bg-info-light text-brand-700 border-brand-200', review: 'bg-warning-light text-warning-dark border-warning-border' }
 
-function ProgressPanel({ m, tasks, staff, onApprove, onMode }) {
+function ProgressPanel({ closed, m, tasks, staff, onApprove, onMode }) {
   const pr = milestoneProgress(m, tasks)
   return (
     <div className="px-6 py-4 flex flex-col gap-4 border-t border-surface-200">
@@ -355,12 +361,14 @@ function ProgressPanel({ m, tasks, staff, onApprove, onMode }) {
               : pr.total ? 'The payment request is raised when the last job is marked done.' : 'Link jobs to this milestone when creating them.'}
           </p>
         </div>
+        {!closed && (
         <label className="flex items-center gap-2 text-xs text-surface-600">
           When the last job is done
           <Select size="sm" className="w-auto min-w-44" value={m.paymentMode || 'manual'} onChange={e => onMode(e.target.value)}>
             {PAYMENT_MODES.map(([v, l]) => <option key={v} value={v}>{l === 'Automatic' ? 'Send request automatically' : 'Wait for my approval'}</option>)}
           </Select>
         </label>
+        )}
         {m.paymentStatus === 'ready' && <Button size="sm" onClick={() => onApprove(m)}>Approve and invoice</Button>}
       </div>
       {pr.total === 0 ? (

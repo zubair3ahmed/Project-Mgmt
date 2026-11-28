@@ -12,7 +12,7 @@ import useQuickAdd from '../store/useQuickAdd'
 import { projectProgress } from '../lib/progress'
 import { Input, Select, Button } from '../components/FormField'
 import useStore from '../store/useStore'
-import { useAccess, accessLevel } from '../lib/access'
+import { useAccess, accessLevel, isClosed } from '../lib/access'
 
 const formatContract = n => (n >= 1e7 ? `₹${+(n / 1e7).toFixed(2)}Cr` : `₹${(n / 1e5).toFixed(1)}L`)
 
@@ -144,7 +144,7 @@ export default function Projects() {
                     {!isAdmin && <td className="px-4 py-3 text-xs text-surface-600 whitespace-nowrap">{accessLevel(p, user) === 'write' ? 'Can add jobs' : 'View only'}</td>}
                     <td className="px-4 py-3">
                       <div className="flex items-center justify-end gap-1">
-                        {isAdmin && <button type="button" onClick={() => openProject(p)} aria-label={`Edit ${p.name}`} title="Edit project" className="w-8 h-8 flex items-center justify-center rounded-md hover:bg-surface-100 text-surface-500"><Pencil size={14} /></button>}
+                        {isAdmin && !isClosed(p) && <button type="button" onClick={() => openProject(p)} aria-label={`Edit ${p.name}`} title="Edit project" className="w-8 h-8 flex items-center justify-center rounded-md hover:bg-surface-100 text-surface-500"><Pencil size={14} /></button>}
                         <Link to={`/projects/${p.id}`} aria-label={`Open ${p.name}`} className="w-8 h-8 flex items-center justify-center rounded-md hover:bg-surface-100 text-surface-500">
                           <ArrowUpRight size={14} />
                         </Link>

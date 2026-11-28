@@ -18,7 +18,7 @@ import { FormField, Input, Select, Textarea, Button } from '../components/FormFi
 import useStore from '../store/useStore'
 import useToast from '../store/useToast'
 import { confirm } from '../store/useConfirm'
-import { useAccess } from '../lib/access'
+import { useAccess, isClosed } from '../lib/access'
 
 const STATUS_LABELS = { 'backlog': 'Backlog', 'todo': 'To Do', 'in-progress': 'In Progress', 'review': 'Review', 'done': 'Done' }
 const STATUS_DOT = { 'backlog': 'bg-surface-300', 'todo': 'bg-surface-500', 'in-progress': 'bg-info', 'review': 'bg-warning', 'done': 'bg-success' }
@@ -43,7 +43,10 @@ export default function Tasks() {
   // staff see only their own jobs here; the project board shows the rest of a project
   const tasks = isAdmin ? allTasks : allTasks.filter(t => t.assigneeId === staffId && myProjectIds.has(t.projectId))
   const logHours = useQuickAdd(s => s.logHours)
-  const canEdit = t => isAdmin || t.assigneeId === staffId
+  // jobs of a completed project are a record: no status changes, edits, deletes or new hours
+  const closedJob = t => isClosed(allProjects.find(p => p.id === t?.projectId))
+  const canEdit = t => !closedJob(t) && (isAdmin || t.assigneeId === staffId)
+  const canLog = t => !closedJob(t) && (isAdmin || t.assigneeId === staffId)
   const staff = useStore(s => s.staff)
   const updateTaskStatus = useStore(s => s.updateTaskStatus)
   const milestones = useStore(s => s.milestones)
@@ -157,7 +160,7 @@ export default function Tasks() {
                               <span className="text-surface-400">Milestone</span> · {milestones.find(m => m.id === t.milestoneId)?.name}
                             </p>
                           )}
-                          {(isAdmin || t.assigneeId === staffId) && (
+                          {canLog(t) && (
                             <button type="button" onClick={e => { e.stopPropagation(); logHours({ taskId: t.id }) }} className="mt-2 w-full h-8 flex items-center justify-center gap-1.5 rounded-md border border-surface-300 text-xs font-semibold text-brand-700 hover:bg-brand-50">
                               <Clock size={13} /> Log hours
                             </button>
@@ -203,7 +206,7 @@ export default function Tasks() {
                       <td className="px-4 py-3">
                         <p className="text-sm font-medium text-surface-800">{t.title}</p>
                         <div className="flex gap-1 mt-1 max-md:hidden">{t.tags?.slice(0, 3).map(tag => <Tag key={tag}>{tag}</Tag>)}</div>
-                        {(isAdmin || t.assigneeId === staffId) && (
+                        {canLog(t) && (
                           <button type="button" onClick={e => { e.stopPropagation(); logHours({ taskId: t.id }) }} className="md:hidden mt-2 h-8 px-2.5 inline-flex items-center gap-1.5 rounded-md border border-surface-300 text-xs font-semibold text-brand-700 whitespace-nowrap">
                             <Clock size={13} /> Log hours
                           </button>
@@ -222,7 +225,7 @@ export default function Tasks() {
                       <td className="px-4 py-3 text-xs font-mono text-surface-500">{t.loggedHours || 0}/{t.estimatedHours}h</td>
                       <td className="px-4 py-3 text-xs text-surface-500">{t.dueDate}</td>
                       <td className="px-4 py-3 text-right max-md:hidden">
-                        {(isAdmin || t.assigneeId === staffId) && (
+                        {canLog(t) && (
                           <button type="button" onClick={e => { e.stopPropagation(); logHours({ taskId: t.id }) }} aria-label={`Log hours on ${t.title}`} className="h-8 px-2.5 inline-flex items-center gap-1.5 rounded-md border border-surface-300 text-xs font-semibold text-brand-700 hover:bg-brand-50 whitespace-nowrap">
                             <Clock size={13} /> <span className="max-md:hidden">Log hours</span>
                           </button>
@@ -242,9 +245,10 @@ export default function Tasks() {
         {task && (
           <TaskDetail task={task} projects={projects} staff={staff}
             canEdit={canEdit(task)}
-            canEditDetails={isAdmin || (task.assigneeId === staffId && canWrite(task.projectId))}
-            canDelete={isAdmin}
-            onLogHours={isAdmin || task.assigneeId === staffId ? () => { setSelectedTask(null); logHours({ taskId: task.id }) } : undefined}
+            readOnly={closedJob(task)}
+            canEditDetails={!closedJob(task) && (isAdmin || (task.assigneeId === staffId && canWrite(task.projectId)))}
+            canDelete={isAdmin && !closedJob(task)}
+            onLogHours={canLog(task) ? () => { setSelectedTask(null); logHours({ taskId: task.id }) } : undefined}
             onEdit={() => openEdit(task)}
             onDelete={() => handleDelete(task.id)}
             onStatusChange={(s) => updateTaskStatus(task.id, s)}
@@ -263,7 +267,7 @@ export default function Tasks() {
   )
 }
 
-export function TaskDetail({ task, projects, staff, canEdit, canEditDetails = canEdit, canDelete, onEdit, onDelete, onStatusChange, onLogHours }) {
+export function TaskDetail({ task, projects, staff, canEdit, canEditDetails = canEdit, canDelete, onEdit, onDelete, onStatusChange, onLogHours, readOnly }) {
   const assignee = staff.find(s => s.id === task.assigneeId)
   const reporter = staff.find(s => s.id === task.reporterId)
   const project = projects.find(p => p.id === task.projectId)
@@ -339,7 +343,7 @@ export function TaskDetail({ task, projects, staff, canEdit, canEditDetails = ca
       )}
 
       <div className="border-t border-surface-200 pt-6">
-        <TaskAttachments taskId={task.id} />
+        <TaskAttachments taskId={task.id} readOnly={readOnly} />
       </div>
 
       <div className="border-t border-surface-200 pt-6">

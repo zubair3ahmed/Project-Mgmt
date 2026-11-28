@@ -43,6 +43,7 @@ Generated from `src/design-system/backendSpec.js`. Regenerate with `npm run docs
 - Only an admin creates, edits or approves milestones, from the six-stage template or as custom ones. Anyone may link their own task to an open milestone.
 - Project access is per person: write may add jobs and upload files in that project, read may only view it. Either may change status and log hours on jobs assigned to them. Only an admin changes access. When an admin assigns a job to someone outside the project, add them with read access.
 - Project progress = sum of weightage of completed milestones / total weightage.
+- A project can be set to completed only when it has milestones, all of them are completed and every job is done. A completed project is read-only (milestones, jobs, hours, files, access) until an admin reopens it. Milestone.paymentStatus may still be updated.
 - Enforce role scoping on the server. The React app hides UI by role but the API must refuse the request too.
 - Members must never receive hourlyRate, monthlySalary or contractValue. They can link their own tasks to a milestone but cannot see or change contract money.
 - Uploads are limited to 10 MB per file and 10 files per task. Validate size and type on the server.

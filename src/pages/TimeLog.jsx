@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Clock, Plus, Pencil, Trash2 } from 'lucide-react'
+import { Clock, Lock, Plus, Pencil, Trash2 } from 'lucide-react'
 import Header from '../components/Header'
 import Avatar from '../components/Avatar'
 import EmptyState from '../components/EmptyState'
@@ -8,7 +8,7 @@ import useStore from '../store/useStore'
 import useToast from '../store/useToast'
 import useQuickAdd from '../store/useQuickAdd'
 import { confirm } from '../store/useConfirm'
-import { useAccess } from '../lib/access'
+import { useAccess, isClosed } from '../lib/access'
 
 // one colour per project, reused by the chart, the legend and the day breakdown
 const COLORS = ['#1570ef', '#0e9384', '#dc6803', '#7a5af8', '#d92d20', '#475467']
@@ -118,10 +118,14 @@ export default function TimeLog() {
                           <p className="text-xs text-surface-500 truncate">{nameOf(log.projectId)}{isAdmin && member ? ` · ${member.name}` : ''}{log.description ? ` · ${log.description}` : ''}</p>
                         </div>
                         <span className="text-sm font-mono font-semibold text-surface-800 w-12 text-right shrink-0">{log.hours}h</span>
+                        {isClosed(projects.find(p => p.id === log.projectId)) ? (
+                          <span className="w-[4.25rem] shrink-0 flex justify-end pr-2 text-surface-400" title="Completed project: this entry cannot be changed"><Lock size={13} /></span>
+                        ) : (
                         <div className="flex gap-1 shrink-0">
-                          <button onClick={() => logHours({ entry: log })} aria-label="Edit entry" className="w-8 h-8 flex items-center justify-center rounded-md hover:bg-surface-100 text-surface-500"><Pencil size={13} /></button>
-                          <button onClick={() => handleDelete(log)} aria-label="Delete entry" className="w-8 h-8 flex items-center justify-center rounded-md hover:bg-red-50 text-surface-500 hover:text-danger"><Trash2 size={13} /></button>
-                        </div>
+                            <button onClick={() => logHours({ entry: log })} aria-label="Edit entry" className="w-8 h-8 flex items-center justify-center rounded-md hover:bg-surface-100 text-surface-500"><Pencil size={13} /></button>
+                            <button onClick={() => handleDelete(log)} aria-label="Delete entry" className="w-8 h-8 flex items-center justify-center rounded-md hover:bg-red-50 text-surface-500 hover:text-danger"><Trash2 size={13} /></button>
+                          </div>
+                        )}
                       </li>
                     )
                   })}

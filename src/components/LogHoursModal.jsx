@@ -3,7 +3,7 @@ import Modal from './Modal'
 import { FormField, Input, Select, Textarea, Button } from './FormField'
 import useStore from '../store/useStore'
 import useToast from '../store/useToast'
-import { useAccess } from '../lib/access'
+import { useAccess, isClosed } from '../lib/access'
 
 const today = () => new Date().toISOString().split('T')[0]
 
@@ -32,7 +32,8 @@ export default function LogHoursModal({ open, preset, onClose }) {
   }, [open, preset])
 
   // staff log against their own jobs; an admin can log against any job
-  const loggable = tasks.filter(t => (isAdmin ? true : t.assigneeId === staffId && myProjectIds.has(t.projectId)))
+  const closedIds = new Set(projects.filter(isClosed).map(p => p.id))
+  const loggable = tasks.filter(t => (entry || !closedIds.has(t.projectId)) && (isAdmin ? true : t.assigneeId === staffId && myProjectIds.has(t.projectId)))
   const projectOptions = projects.filter(p => loggable.some(t => t.projectId === p.id))
   const jobOptions = loggable.filter(t => t.projectId === form.projectId)
 

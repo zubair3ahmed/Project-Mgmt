@@ -38,6 +38,8 @@ npm run docs:backend # regenerate docs/openapi.yaml, schema.sql, BACKEND.md from
 - **Progress is milestone achievement** (weightage of completed milestones), drawn with `components/MilestoneProgress.jsx`.
 - **Access is per project and set by the admin:** `write` (add jobs, upload files) or `read` (view only). People see only
   projects they are on. Anyone can update status and log hours on jobs assigned to them. Rules live in `lib/access.js`.
+- **A completed project is read-only** (`isClosed` in `lib/access.js`) until an admin reopens it; payment status can still
+  be updated. It can only be completed when every milestone and job is finished.
 - Project categories: To Do (`planning`), In Progress, Completed. The six delivery stages are the milestone template.
 - Top bar: centred search with one global action (admin: Add project, staff: Add job). Other actions sit in the page bar.
 
