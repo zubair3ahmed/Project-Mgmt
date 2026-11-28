@@ -84,7 +84,7 @@ const DATA_KEYS = ['tasks', 'projects', 'staff', 'clients', 'timeLogs', 'milesto
 const persistOptions = {
   name: 'structflow-data',
   // v2 adds per-person project access; older saved demo data is replaced by the new sample data.
-  version: 3,
+  version: 4,
   migrate: () => undefined,
   // Blob URLs only exist in the tab that made them, so attachment links are not saved.
   partialize: s => {

@@ -3,7 +3,7 @@ import { CountBadge } from './Badge'
 import useStore from '../store/useStore'
 import useAuth from '../store/useAuth'
 
-export default function TaskAttachments({ taskId }) {
+export default function TaskAttachments({ taskId, readOnly }) {
   const task = useStore(s => s.tasks.find(t => t.id === taskId))
   const addAttachments = useStore(s => s.addAttachments)
   const removeAttachment = useStore(s => s.removeAttachment)
@@ -19,10 +19,11 @@ export default function TaskAttachments({ taskId }) {
       </h3>
       <AttachmentList
         items={items}
-        canRemove={a => isAdmin || a.addedById === myId}
+        canRemove={a => !readOnly && (isAdmin || a.addedById === myId)}
         onRemove={a => removeAttachment(taskId, a.id)}
       />
-      <DropZone compact count={items.length} onAdd={atts => addAttachments(taskId, atts)} />
+      {!readOnly && <DropZone compact count={items.length} onAdd={atts => addAttachments(taskId, atts)} />}
+      {readOnly && !items.length && <p className="text-xs text-surface-500">No attachments.</p>}
     </section>
   )
 }

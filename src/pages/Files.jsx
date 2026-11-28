@@ -9,7 +9,7 @@ import { FormField, Input, Select, Button } from '../components/FormField'
 import useStore from '../store/useStore'
 import { confirm } from '../store/useConfirm'
 import useToast from '../store/useToast'
-import { useAccess } from '../lib/access'
+import { useAccess, isClosed } from '../lib/access'
 
 const FILE_ICONS = {
   pdf: FileText,
@@ -145,7 +145,7 @@ export default function FilesPage() {
                           <td className="px-4 py-2 align-middle">
                             <div className="flex items-center justify-end gap-1">
                               {f.url ? <a href={f.url} download={f.name} aria-label={`Download ${f.name}`} className="w-8 h-8 flex items-center justify-center rounded-md hover:bg-surface-100 text-surface-500"><Download size={14} /></a> : <span className="w-8 h-8 flex items-center justify-center rounded-md text-surface-300" title="Demo file, no download"><Download size={14} /></span>}
-                              {isAdmin || (f.uploadedBy === staffId && canWrite(f.projectId)) ? (
+                              {!isClosed(project) && (isAdmin || (f.uploadedBy === staffId && canWrite(f.projectId))) ? (
                                 <button onClick={() => handleDelete(f)} aria-label={`Delete ${f.name}`} className="w-8 h-8 flex items-center justify-center rounded-md hover:bg-red-50 text-surface-400 hover:text-danger"><Trash2 size={13} /></button>
                               ) : <span className="w-8 h-8" aria-hidden="true" />}
                             </div>
@@ -175,7 +175,7 @@ export default function FilesPage() {
             <FormField label="Project" required>
               <Select value={form.projectId} onChange={e => setForm(f => ({ ...f, projectId: e.target.value }))} required>
                 <option value="">Select project…</option>
-                {(isAdmin ? projects : writableProjects).map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+                {(isAdmin ? projects.filter(p => !isClosed(p)) : writableProjects).map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
               </Select>
             </FormField>
             <FormField label="Folder" required>

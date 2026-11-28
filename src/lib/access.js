@@ -8,6 +8,10 @@ export const ACCESS_LEVELS = [
   ['read', 'View only', 'View the project. Cannot add jobs or upload files.'],
 ]
 
+// A completed project is closed: its milestones, jobs, hours and files are read-only until an admin
+// reopens it. Payment status is the one exception, because clients often pay after handover.
+export const isClosed = project => project?.status === 'completed'
+
 export function accessLevel(project, user) {
   if (!project || !user) return null
   if (user.role === 'admin') return 'write'
@@ -23,7 +27,7 @@ export function useAccess() {
   const staffId = user?.staffId ?? null
   const myProjects = isAdmin ? projects : projects.filter(p => accessLevel(p, user))
   const myProjectIds = new Set(myProjects.map(p => p.id))
-  const writableProjects = myProjects.filter(p => accessLevel(p, user) === 'write')
+  const writableProjects = myProjects.filter(p => !isClosed(p) && accessLevel(p, user) === 'write')
   const canWrite = projectId => writableProjects.some(p => p.id === projectId)
   return { user, isAdmin, staffId, myProjects, myProjectIds, writableProjects, canWrite }
 }

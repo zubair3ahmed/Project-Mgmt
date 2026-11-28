@@ -67,6 +67,7 @@ th{background:#f2f4f7;font-size:12px;color:var(--ink2);border-top:0}
     <div class="tblw"><table>
       <thead><tr><th>Area</th><th>Admin</th><th>Team member</th></tr></thead>
       <tbody>
+        <tr><td>Completed project</td><td>Read-only. Can reopen it, and still update payment status</td><td>Read-only record: every milestone and job shown in full</td></tr>
         <tr><td>Home</td><td>Dashboard: projects, open jobs, revenue, completion, needs attention</td><td>My Work: open jobs, due this week, completed, hours</td></tr>
         <tr><td>Top bar action</td><td>Add project, on every page</td><td>Add job (off if they have no write access)</td></tr>
         <tr><td>Projects</td><td>See all, add, edit, set access. Sees contract value</td><td>Only projects they were added to. No contract value</td></tr>
@@ -155,7 +156,7 @@ const FLOWS = [
   ['sv','y',0,4,'Saved. Milestones not yet invoiced are re-priced'],['up','y',1,4,'Access applies at once. Undo offered'],['pg','y',2,4,'Progress recalculates. Undo offered'],
   ['e','e',1,5,'The team sees the change live']],
  edges:[['s','q'],['q','ed','Details','hv'],['q','ac','Access'],['q','bd','Work','hv'],['ed','fm'],['ac','lv'],['bd','mv'],['fm','sv'],['lv','up'],['mv','pg'],['sv','e','','vh'],['up','e'],['pg','e','','vh']],
- notes:['An unfinished job cannot be dragged into a milestone that is already achieved.','A drag that would complete a milestone asks for confirmation first, because it raises the payment request.','Assigning a job to someone outside the project gives them View only access.']},
+ notes:['A project can be completed only when every milestone and job is finished. It then becomes read-only until reopened; payments can still be marked paid.','An unfinished job cannot be dragged into a milestone that is already achieved.','A drag that would complete a milestone asks for confirmation first, because it raises the payment request.','Assigning a job to someone outside the project gives them View only access.']},
 
 {group:'Admin', id:'a-task', role:'admin', title:'A4. Create and assign a job', goal:'Type the work the way you would say it, then confirm what was understood.',
  nodes:[

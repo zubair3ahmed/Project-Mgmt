@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { ArrowLeft, Check, Clock, Pencil, Plus, Milestone as MilestoneIcon } from 'lucide-react'
+import { ArrowLeft, Check, Clock, Lock, Pencil, Plus, RotateCcw, Milestone as MilestoneIcon } from 'lucide-react'
 import clsx from 'clsx'
 import Header from '../components/Header'
 import Tabs from '../components/Tabs'
@@ -17,7 +17,7 @@ import useStore from '../store/useStore'
 import useToast from '../store/useToast'
 import useQuickAdd from '../store/useQuickAdd'
 import { confirm } from '../store/useConfirm'
-import { useAccess, accessLevel, ACCESS_LEVELS } from '../lib/access'
+import { useAccess, accessLevel, isClosed, ACCESS_LEVELS } from '../lib/access'
 import { milestoneProgress, inr } from '../lib/payments'
 import { deleteJobWithConfirm } from '../lib/deleteJob'
 
@@ -53,7 +53,20 @@ export default function ProjectDetail() {
   const milestones = allMilestones.filter(m => m.projectId === id).sort((a, b) => (a.dueDate || '').localeCompare(b.dueDate || ''))
   const files = allFiles.filter(f => f.projectId === id)
   const members = (project.teamIds || []).map(tid => staff.find(s => s.id === tid)).filter(Boolean)
+  const closed = isClosed(project)
   const write = canWrite(project.id)
+
+  async function reopen() {
+    const ok = await confirm({
+      title: 'Reopen this project?',
+      message: `“${project.name}” moves back to In Progress, and its milestones, jobs and hours can be changed again.`,
+      details: ['Achieved milestones and their payments stay as they are.'],
+      confirmLabel: 'Reopen project',
+    })
+    if (!ok) return
+    useStore.getState().updateProject(project.id, { status: 'in-progress' })
+    useToast.getState().show({ title: 'Project reopened', detail: project.name, actions: [{ label: 'Undo', onClick: () => useStore.getState().updateProject(project.id, { status: 'completed' }) }] })
+  }
   const openJob = jobs.find(t => t.id === openJobId)
   const isMine = t => t.assigneeId === staffId
 
@@ -76,9 +89,10 @@ export default function ProjectDetail() {
     <div className="flex flex-col h-full">
       <Header
         title={project.name}
-        subtitle={`${project.type} · ${project.location}${isAdmin ? '' : ` · ${accessLevel(project, user) === 'write' ? 'You can add jobs' : 'View only'}`}`}
+        subtitle={`${project.type} · ${project.location}${closed ? ' · Closed, read-only' : isAdmin ? '' : ` · ${accessLevel(project, user) === 'write' ? 'You can add jobs' : 'View only'}`}`}
         actions={<>
-          {isAdmin && <Button variant="secondary" onClick={() => openProject(project)}><Pencil size={14} /> Edit project</Button>}
+          {isAdmin && closed && <Button variant="secondary" onClick={reopen}><RotateCcw size={14} /> Reopen project</Button>}
+          {isAdmin && !closed && <Button variant="secondary" onClick={() => openProject(project)}><Pencil size={14} /> Edit project</Button>}
           {write && <Button variant="secondary" onClick={() => addJob({ projectId: project.id })}><Plus size={14} /> Add job to this project</Button>}
         </>}
       />
@@ -91,29 +105,36 @@ export default function ProjectDetail() {
             ))}
           </dl>
           <MilestoneProgress project={project} />
+          {closed && (
+            <div className="flex items-start gap-2 rounded-lg border border-surface-300 bg-surface-50 px-3 py-2.5 text-sm text-surface-600">
+              <Lock size={15} className="shrink-0 mt-0.5 text-surface-500" />
+              <p>This project is completed. Its milestones, jobs and hours are kept as a record and cannot be changed.{isAdmin && <> Payments can still be marked paid on <Link to="/milestones" className="font-semibold text-brand-700 hover:underline">Milestones</Link>. Reopen the project to change anything else.</>}</p>
+            </div>
+          )}
         </div>
 
         <div className="px-6 pt-3"><Tabs tabs={TABS} active={tab} onChange={setTab} /></div>
 
         <div className="p-6">
           {tab === 'board' && (
-            <Board project={project} milestones={milestones} jobs={jobs} write={write} isAdmin={isAdmin} isMine={isMine} onOpen={setOpenJobId} />
+            <Board project={project} milestones={milestones} jobs={jobs} write={write} isAdmin={isAdmin} closed={closed} onReopen={reopen} isMine={isMine} onOpen={setOpenJobId} />
           )}
           {tab === 'files' && <FilesTab files={files} staff={staff} />}
-          {tab === 'team' && <TeamTab project={project} manager={manager} members={members} isAdmin={isAdmin} onEdit={() => openProject(project)} />}
+          {tab === 'team' && <TeamTab project={project} manager={manager} members={members} isAdmin={isAdmin && !closed} onEdit={() => openProject(project)} />}
         </div>
       </div>
 
       <Modal open={!!openJob} onClose={() => setOpenJobId(null)} title={openJob?.title || ''} wide>
         {openJob && (
           <TaskDetail task={openJob} projects={projects} staff={staff}
-            canEdit={isAdmin || isMine(openJob)}
-            canEditDetails={isAdmin || (isMine(openJob) && write)}
-            canDelete={isAdmin}
+            readOnly={closed}
+            canEdit={!closed && (isAdmin || isMine(openJob))}
+            canEditDetails={!closed && (isAdmin || (isMine(openJob) && write))}
+            canDelete={!closed && isAdmin}
             onEdit={() => { setEditJob(openJob); setOpenJobId(null) }}
             onDelete={async () => { if (await deleteJobWithConfirm(openJob.id)) setOpenJobId(null) }}
             onStatusChange={s => useStore.getState().updateTaskStatus(openJob.id, s)}
-            onLogHours={isAdmin || isMine(openJob) ? () => { setOpenJobId(null); useQuickAdd.getState().logHours({ taskId: openJob.id }) } : undefined}
+            onLogHours={!closed && (isAdmin || isMine(openJob)) ? () => { setOpenJobId(null); useQuickAdd.getState().logHours({ taskId: openJob.id }) } : undefined}
           />
         )}
       </Modal>
@@ -123,7 +144,10 @@ export default function ProjectDetail() {
 }
 
 // Project → Milestones → Jobs: one column per milestone, its jobs underneath.
-function Board({ project, milestones, jobs, write, isAdmin, isMine, onOpen }) {
+function Board({ project, milestones, jobs, write, isAdmin, closed, onReopen, isMine, onOpen }) {
+  // A finished project has no active milestone: everyone sees every milestone in full, as a record.
+  const focusMode = !isAdmin && !closed
+  const manage = isAdmin && !closed
   const addJob = useQuickAdd(s => s.addJob)
   const logHours = useQuickAdd(s => s.logHours)
   const staff = useStore(s => s.staff)
@@ -142,7 +166,7 @@ function Board({ project, milestones, jobs, write, isAdmin, isMine, onOpen }) {
     if (col && box.scrollWidth > box.clientWidth) box.scrollLeft += col.getBoundingClientRect().left - box.getBoundingClientRect().left - 8
   }, [focusId])
   const unlinked = jobs.filter(t => !milestones.some(m => m.id === t.milestoneId))
-  const canMove = t => isAdmin || (write && isMine(t))
+  const canMove = t => !closed && (isAdmin || (write && isMine(t)))
 
   async function useTemplate() {
     const ok = await confirm({ title: 'Create the six stage milestones?', message: `“${project.name}” gets the six delivery stages as milestones, weighted 5, 10, 25, 20, 30 and 10 percent.`, confirmLabel: 'Create milestones' })
@@ -176,6 +200,12 @@ function Board({ project, milestones, jobs, write, isAdmin, isMine, onOpen }) {
     if (!finishes.length) useToast.getState().show({ title: 'Job moved', detail: `${job.title} → ${milestone?.name || 'No milestone'}`, actions: [{ label: 'Undo', onClick: () => useStore.getState().updateTask(job.id, { milestoneId: before }) }] })
   }
 
+  if (closed && !milestones.length && !jobs.length) {
+    return <EmptyState icon={MilestoneIcon} title="No milestones were recorded"
+      description={isAdmin ? 'This project was closed without milestones. Reopen it if they need to be added.' : 'This project was closed without milestones.'}
+      secondary={isAdmin ? { label: 'Reopen project', onClick: onReopen } : undefined} />
+  }
+
   if (!milestones.length && !jobs.length) {
     return <EmptyState icon={MilestoneIcon} title="No milestones yet"
       description={isAdmin ? 'A project is planned as milestones, and jobs sit under each one. Start from the six delivery stages or add your own.' : 'Your admin has not set up milestones for this project yet.'}
@@ -187,27 +217,27 @@ function Board({ project, milestones, jobs, write, isAdmin, isMine, onOpen }) {
 
   return (
     <div className="flex flex-col gap-3">
-      {isAdmin && (
+      {manage && (
         <div className="flex flex-wrap items-center justify-end gap-2">
           {!milestones.length && <Button size="sm" variant="secondary" onClick={useTemplate}>Use the six stages</Button>}
           <Link to="/milestones"><Button size="sm" variant="secondary"><Plus size={14} /> Add or edit milestones</Button></Link>
         </div>
       )}
-      <div ref={scroller} className={clsx('flex overflow-x-auto pb-3 p-0.5', isAdmin ? 'gap-4 items-start' : 'gap-3 items-stretch')}>
+      <div ref={scroller} className={clsx('flex overflow-x-auto pb-3 p-0.5', focusMode ? 'gap-3 items-stretch' : 'gap-4 items-start')}>
         {columns.map(m => {
           const list = m ? jobs.filter(t => t.milestoneId === m.id) : unlinked
           const pr = m ? milestoneProgress(m, jobs) : null
           const achieved = m?.status === 'completed'
           const key = m?.id || 'none'
-          if (!isAdmin && milestones.length && key !== focusId) {
+          if (focusMode && milestones.length && key !== focusId) {
             return <OutlineColumn key={key} milestone={m} jobs={list} mine={list.filter(isMine).length} progress={pr} onFocus={() => setPicked(key)} onDrop={() => drop(m)} />
           }
           return (
-            <section key={key} aria-label={m?.name || 'No milestone'} data-focused={isAdmin ? undefined : 'true'} className={clsx('shrink-0 flex flex-col rounded-lg bg-surface-100 border', isAdmin ? 'w-72 border-surface-200' : 'w-80 max-sm:w-[17rem] border-brand-600 ring-1 ring-brand-600')} onDragOver={e => e.preventDefault()} onDrop={() => drop(m)}>
+            <section key={key} aria-label={m?.name || 'No milestone'} data-focused={focusMode ? 'true' : undefined} className={clsx('shrink-0 flex flex-col rounded-lg bg-surface-100 border', focusMode ? 'w-80 max-sm:w-[17rem] border-brand-600 ring-1 ring-brand-600' : 'w-72 border-surface-200')} onDragOver={e => e.preventDefault()} onDrop={() => drop(m)}>
               <header className="p-3 flex flex-col gap-2 border-b border-surface-200">
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
-                    {!isAdmin && <p className="text-2xs font-semibold uppercase tracking-wide text-brand-700 mb-0.5">{key === activeId ? 'Active milestone' : 'Viewing'}</p>}
+                    {focusMode && <p className="text-2xs font-semibold uppercase tracking-wide text-brand-700 mb-0.5">{key === activeId ? 'Active milestone' : 'Viewing'}</p>}
                     <h3 className="text-sm font-semibold text-surface-900 leading-snug">{m?.name || 'No milestone'}</h3>
                   </div>
                   <CountBadge count={list.length} />
@@ -219,7 +249,7 @@ function Board({ project, milestones, jobs, write, isAdmin, isMine, onOpen }) {
                     <p className="text-xs text-surface-500">{achieved ? 'Milestone achieved' : `${pr.done} of ${pr.total} jobs done`}</p>
                     {isAdmin && <p className="text-xs text-surface-500"><span className="font-mono font-semibold text-surface-700">{inr(m.paymentAmount)}</span> · {PAY_LABEL[m.paymentStatus] || m.paymentStatus}</p>}
                   </>
-                ) : <p className="text-xs text-surface-500">Jobs not yet linked. Drag one onto a milestone.</p>}
+                ) : <p className="text-xs text-surface-500">{closed ? 'Not linked to a milestone.' : 'Jobs not yet linked. Drag one onto a milestone.'}</p>}
               </header>
               <ul className="p-2 flex flex-col gap-2 min-h-20">
                 {list.map(t => {
@@ -233,7 +263,7 @@ function Board({ project, milestones, jobs, write, isAdmin, isMine, onOpen }) {
                       </div>
                       <div className="flex items-center justify-between gap-2">
                         <span className="text-xs font-mono text-surface-500">{t.loggedHours || 0}/{t.estimatedHours || 0}h</span>
-                        {(isAdmin || isMine(t)) && <button type="button" onClick={() => logHours({ taskId: t.id })} className="flex items-center gap-1 text-xs font-semibold text-brand-700 hover:underline"><Clock size={12} /> Log hours</button>}
+                        {!closed && (isAdmin || isMine(t)) && <button type="button" onClick={() => logHours({ taskId: t.id })} className="flex items-center gap-1 text-xs font-semibold text-brand-700 hover:underline"><Clock size={12} /> Log hours</button>}
                       </div>
                     </li>
                   )

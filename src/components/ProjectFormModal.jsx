@@ -7,6 +7,7 @@ import { FormField, Input, Select, Textarea, Button, Alert, Checkbox } from './F
 import useStore from '../store/useStore'
 import useToast from '../store/useToast'
 import useAuth from '../store/useAuth'
+import { confirm } from '../store/useConfirm'
 import { AutoTag, SmartSummary, Starters } from './SmartFill'
 import { DropZone, AttachmentList } from './Attachments'
 import { extOf, folderFor, formatSize } from '../lib/attachments'
@@ -173,7 +174,7 @@ export default function ProjectFormModal({ open, onClose, project, onAddClient }
     setForm(f => ({ ...f, teamIds: f.teamIds.includes(id) ? f.teamIds.filter(t => t !== id) : [...f.teamIds, id] }))
   }
 
-  function submit(e) {
+  async function submit(e) {
     e?.preventDefault()
     const name = editing ? form.raw.trim() : (parsed.name || form.raw.trim())
     const errs = {}
@@ -183,8 +184,19 @@ export default function ProjectFormModal({ open, onClose, project, onAddClient }
     if (!form.location.trim()) errs.location = 'Add a location'
     if (!Number(form.contractValue)) errs.contractValue = 'Add the contract value'
     if (form.endDate && form.startDate && form.endDate < form.startDate) errs.endDate = 'End date is before the start'
+    // a project can only be completed once everything in it is finished
+    const completing = editing && form.status === 'completed' && project.status !== 'completed'
+    if (completing) {
+      const ms = useStore.getState().milestones.filter(m => m.projectId === project.id)
+      const openMs = ms.filter(m => m.status !== 'completed')
+      const openJobs = tasks.filter(t => t.projectId === project.id && t.status !== 'done')
+      if (!ms.length) errs.status = 'This project has no milestones. Add and finish them before completing it.'
+      else if (openMs.length || openJobs.length) errs.status = `Not ready to complete: ${[openMs.length && `${openMs.length} milestone${openMs.length > 1 ? 's' : ''} still open`, openJobs.length && `${openJobs.length} job${openJobs.length > 1 ? 's' : ''} not done`].filter(Boolean).join(' and ')}.`
+      if (errs.status) setMore(true)
+    }
     setErrors(errs)
     if (Object.keys(errs).length) return
+    if (completing && !(await confirm({ title: 'Complete this project?', message: `“${name}” will be closed. Its milestones, jobs and hours become read-only.`, details: ['Payments can still be marked paid. You can reopen the project later.'], confirmLabel: 'Complete project' }))) return
     if (!editing && valueFromText && valueStage !== 'ok') { setValueStage('asking'); return }
 
     const data = {
@@ -272,6 +284,7 @@ export default function ProjectFormModal({ open, onClose, project, onAddClient }
 
         <Starters items={starters} onPick={t => onTitle({ target: { value: t } })} />
         <SmartSummary detected={detected} assumed={assumed} notes={notes} />
+        {errors.status && <Alert tone="error">{errors.status}</Alert>}
         <p className="sr-only" aria-live="polite">
           {detected.length ? `Filled ${detected.length} fields from your text: ${detected.join(', ')}` : ''}
         </p>
@@ -417,8 +430,9 @@ export default function ProjectFormModal({ open, onClose, project, onAddClient }
           <div className="flex flex-col gap-4">
             <FormField label="Status">
               <Select value={form.status} onChange={e => setField('status', e.target.value)}>
-                {STATUSES.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
+                {STATUSES.filter(([v]) => editing || v !== 'completed').map(([v, l]) => <option key={v} value={v}>{l}</option>)}
               </Select>
+              {errors.status && <p className="text-xs text-danger" role="alert">{errors.status}</p>}
             </FormField>
             <FormField label="Description">
               <Textarea value={form.description} onChange={e => setField('description', e.target.value)} placeholder="Scope, floors, key constraints…" />

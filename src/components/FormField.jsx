@@ -11,9 +11,9 @@ import { Select as UISelect, SelectContent, SelectItem, SelectTrigger, SelectVal
 export function FormField({ label, required, children, hint, tag }) {
   return (
     <div className="flex flex-col gap-2">
-      <Label className="text-sm font-medium text-surface-700">
-        {label}{required && <span className="text-danger ml-1">*</span>}
-        {tag && <span className="ml-2">{tag}</span>}
+      <Label className="text-sm font-medium leading-5 text-surface-700 min-h-5">
+        <span>{label}{required && <span className="text-danger ml-1">*</span>}</span>
+        {tag}
       </Label>
       {children}
       {hint && <p className="text-xs text-surface-500">{hint}</p>}

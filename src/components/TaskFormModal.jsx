@@ -8,7 +8,7 @@ import useStore from '../store/useStore'
 import useToast from '../store/useToast'
 import { AutoTag, SmartSummary, Starters } from './SmartFill'
 import { DropZone, AttachmentList } from './Attachments'
-import { useAccess } from '../lib/access'
+import { useAccess, isClosed } from '../lib/access'
 import { addDays, iso, parseTaskText, suggestAssignees, TYPE_HOURS } from '../lib/smartTask'
 import { milestoneProgress } from '../lib/payments'
 
@@ -48,7 +48,7 @@ export default function TaskFormModal({ open, onClose, task, presetStatus, defau
   const allProjects = useStore(s => s.projects)
   const { isAdmin, staffId, myProjects, writableProjects } = useAccess()
   // new jobs can only go into projects where this person has write access
-  const projects = isAdmin ? allProjects : task ? myProjects : writableProjects
+  const projects = task ? (isAdmin ? allProjects : myProjects) : isAdmin ? allProjects.filter(p => !isClosed(p)) : writableProjects
   const staff = useStore(s => s.staff)
   const tasks = useStore(s => s.tasks)
   const allMilestones = useStore(s => s.milestones)
