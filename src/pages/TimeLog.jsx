@@ -56,7 +56,7 @@ export default function TimeLog() {
         subtitle={isAdmin ? 'Work hours per day across projects' : 'Your work hours per day, across all your projects'}
         actions={<Button onClick={() => logHours()}><Clock size={14} /> Log hours</Button>}
       />
-      <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-6">
+      <div className="flex-1 overflow-y-auto p-6 space-y-6">
         {mine.length === 0 ? (
           <EmptyState icon={Clock} title="No time logged yet" description="Log hours against a job, here or from the job itself. Each day's total across projects appears on this page." action={{ label: 'Log hours', icon: Plus, onClick: () => logHours() }} />
         ) : (

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>StructFlow — Case study</title>
-<meta name="description" content="A structural design firm's projects, tasks, hours and payments in one workspace, where you create a task by typing one line.">
+<meta name="description" content="A structural design firm's projects, jobs, hours and payments in one workspace, where you create a job by typing one line.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -174,7 +174,7 @@ td:first-child{color:var(--mute);width:38%}
 .tbl-scroll{overflow-x:auto}
 
 /* process */
-.tl{list-style:none;padding:0;display:grid;grid-template-columns:repeat(5,1fr);gap:0;border-top:1px solid var(--line2)}
+.tl{list-style:none;padding:0;display:grid;grid-template-columns:repeat(6,1fr);gap:0;border-top:1px solid var(--line2)}
 .tl li{padding:20px 18px 0 0;position:relative}
 .tl li::before{content:"";position:absolute;left:0;top:-6px;width:11px;height:11px;border-radius:50%;background:var(--ink);box-shadow:0 0 0 4px var(--paper)}
 .tl time{font-family:var(--mono);font-size:12px;color:var(--mute);display:block;margin-bottom:6px;font-weight:600}
@@ -263,15 +263,15 @@ footer a{color:#fff}
   <div class="wrap">
     <p class="eyebrow">StructFlow · Product design case study · 2026</p>
     <h1>Know which projects <i>make money</i>, who delivered, and what is about to slip.</h1>
-    <p class="lede">A structural design firm had three questions it could not answer quickly: project margin, each engineer's contribution, and delivery schedules. StructFlow puts projects, tasks, hours and payments in one workspace, and keeps the data fresh by making a task <em>one typed line</em> instead of an 11-field form.</p>
+    <p class="lede">A structural design firm had three questions it could not answer quickly: project margin, each engineer's contribution, and delivery schedules. StructFlow puts projects, jobs, hours and payments in one workspace, and keeps the data fresh by making a job <em>one typed line</em> instead of an 11-field form.</p>
     <ul class="pains"><li><b>Margin</b><span>Revenue, staff cost and profit per project</span></li><li><b>Contribution</b><span>Logged hours and on-time rate behind every bonus</span></li><li><b>Schedule</b><span>Overdue and due-soon work surfaced first</span></li></ul>
-    <p class="cta"><a class="btn-main" href="prototype.html" target="_blank" rel="noopener">Open the clickable prototype ↗</a><a class="btn-ghost" href="#walkthrough">Watch the 50-second walkthrough</a><span>Opens in a new window. Sign in with the Fill button, no account needed.</span></p>
+    <p class="cta"><a class="btn-main" href="prototype.html" target="_blank" rel="noopener">Open the clickable prototype ↗</a><a class="btn-ghost" href="#walkthrough">Watch the one-minute walkthrough</a><span>Opens in a new window. Sign in with the Fill button, no account needed.</span></p>
     <dl class="meta">
       <div><dt>Role</dt><dd>Product designer<span>Research to prototype</span></dd></div>
       <div><dt>Client</dt><dd>Structural design consultancy<span>India</span></dd></div>
       <div><dt>Scope</dt><dd>Web app, 2 roles, 12 screens<span>Design system + backend handoff</span></dd></div>
       <div><dt>Built with</dt><dd>Claude, AI-native<span>Opus 4.6 · Sonnet 5.5</span></dd></div>
-      <div><dt>Turnaround</dt><dd>2 days<span>Nov 23–24, 2026</span></dd></div>
+      <div><dt>Turnaround</dt><dd>2 days<span>Nov 23–24, then a feedback round Nov 28</span></dd></div>
     </dl>
     <div class="hero-shot"><img src="img/dashboard.jpg" alt="StructFlow admin dashboard with four KPI tiles, a task status donut, an hours chart, a needs-attention list and upcoming milestones"></div>
   </div>
@@ -282,7 +282,7 @@ footer a{color:#fff}
 <!-- 01 WALKTHROUGH -->
 <section class="sec" id="walkthrough">
 <div class="wrap">
-  <header><span class="no">01</span><h2>Watch it, then click it</h2><p>A 50-second guided walkthrough of the product. Or skip the video and use the real prototype.</p></header>
+  <header><span class="no">01</span><h2>Watch it, then click it</h2><p>A one-minute guided walkthrough of the product. Or skip the video and use the real prototype.</p></header>
 
   <div class="player" id="player">
     <div class="tabs" role="tablist">
@@ -299,7 +299,7 @@ footer a{color:#fff}
           <svg class="cursor" id="cursor" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 2l7.5 19 2.6-7.6L21 10.8z" fill="#fff" stroke="#0E1014" stroke-width="1.5" stroke-linejoin="round"/></svg>
           <span class="ripple" id="rip1"></span><span class="ripple two" id="rip2"></span>
         </div>
-        <div class="cap-bar" id="capbar" aria-live="polite"><span class="k" id="capk">01 / 09</span><p id="capt"></p></div>
+        <div class="cap-bar" id="capbar" aria-live="polite"><span class="k" id="capk">01 / 11</span><p id="capt"></p></div>
         </div>
         <aside class="chap">
           <h4>Chapters</h4>
@@ -309,7 +309,7 @@ footer a{color:#fff}
           <button class="p" id="btnPlay" aria-label="Play or pause"><svg viewBox="0 0 24 24" id="icoPlay"><path d="M7 4l13 8-13 8z"/></svg></button>
           <button id="btnPrev" aria-label="Previous step"><svg viewBox="0 0 24 24"><path d="M6 5h2v14H6zM20 5v14L9 12z"/></svg></button>
           <button id="btnNext" aria-label="Next step"><svg viewBox="0 0 24 24"><path d="M16 5h2v14h-2zM4 5l11 7L4 19z"/></svg></button>
-          <span class="t" id="tm">0:00 / 0:50</span>
+          <span class="t" id="tm">0:00 / 1:00</span>
         </div>
       </div>
     </div>
@@ -317,7 +317,7 @@ footer a{color:#fff}
     <div class="pane" id="pane-live" role="tabpanel" aria-labelledby="tab-live" hidden>
       <div class="live-wrap"><iframe id="liveFrame" title="StructFlow live prototype" data-src="prototype.html" loading="lazy"></iframe></div>
       <div class="live-note">
-        <span>On the sign-in screen choose a role and press <code>Fill</code> under Demo access. Try typing a line into <b style="color:#fff">New Task</b>.</span>
+        <span>On the sign-in screen press <code>Fill admin</code> or <code>Fill team member</code>, then Sign in. Try <b style="color:#fff">Add project</b> or <b style="color:#fff">Add job</b> in the top bar.</span>
         <a href="prototype.html" target="_blank" rel="noopener">Open full screen ↗</a>
       </div>
     </div>
@@ -331,7 +331,7 @@ footer a{color:#fff}
 <div class="wrap">
   <header><span class="no">02</span><h2>Brief and research artifacts</h2><p>The inputs I was given, and what each one changed in the product.</p></header>
   <div class="body-gap">
-    <p class="lg">The firm wanted a single portal for staff, projects, tasks, files, milestones and payments, used internally and later by clients. Their questionnaire named three problems. I used them as the acceptance test for every screen.</p>
+    <p class="lg">The firm wanted a single portal for staff, projects, jobs, files, milestones and payments, used internally and later by clients. Their questionnaire named three problems. I used them as the acceptance test for every screen.</p>
 
     <div class="hs solo" id="hs-problems">
       <div class="hs-img" data-img="research-q-problems.png" data-alt="Questionnaire answer listing three problems: project cost and profit margin, each employee's contribution for bonuses, and work and delivery scheduling" data-w="1115" data-h="352" data-pins='[{"x":50,"y":25,"t":"1 · Cost and margin","d":"Became the Reports screen: revenue, staff cost and margin per project."},{"x":50,"y":52,"t":"2 · Contribution","d":"Became the time log, on-time rate and a performance score per person."},{"x":50,"y":79,"t":"3 · Scheduling","d":"Became the task board, due dates and the Needs attention list."}]'></div>
@@ -356,12 +356,12 @@ footer a{color:#fff}
     <div class="tbl-scroll"><table>
       <thead><tr><th>Research said</th><th>I designed</th></tr></thead>
       <tbody>
-        <tr><td>Access: Admin and Employees</td><td>Two roles. Team members never see pay rates, contract value or payments.</td></tr>
-        <tr><td>Six delivery stages</td><td>A stage tracker on every project. Progress is derived from the stage.</td></tr>
+        <tr><td>Access: Admin and Employees</td><td>Two roles. The admin gives each person view or add access per project. Team members never see pay rates, contract value or payments.</td></tr>
+        <tr><td>Six delivery stages</td><td>The starting milestones of a new project. Progress is the share of milestones achieved.</td></tr>
         <tr><td>Problem 1: profit margin</td><td>Reports: revenue, staff cost and margin per project.</td></tr>
         <tr><td>Problem 2: contribution</td><td>Time log feeds on-time rate, utilisation and a performance score.</td></tr>
-        <tr><td>Problem 3: scheduling</td><td>Task board, due dates and a Needs attention list.</td></tr>
-        <tr><td>Milestones trigger payment</td><td>Finishing a milestone&#39;s last task raises the payment request, automatically or after admin approval.</td></tr>
+        <tr><td>Problem 3: scheduling</td><td>Milestone boards, due dates and a Needs attention list.</td></tr>
+        <tr><td>Milestones trigger payment</td><td>Finishing a milestone&#39;s last job raises the payment request, automatically or after admin approval.</td></tr>
       </tbody>
     </table></div>
   </div>
@@ -378,6 +378,7 @@ footer a{color:#fff}
     <li><time>Nov 24 · 00:02</time><b>Product layer</b><p>Roles and route guards, dashboards, the 4/8 spacing pass and the first smart-fill forms.</p></li>
     <li><time>00:14 – 01:00</time><b>Depth</b><p>Comments with automatic history, attachments, a redesigned sidebar, ⌘K search, project filters.</p></li>
     <li><time>after 01:00</time><b>Trust and handoff</b><p>Sign-in error states, confirmations and toasts with Undo, a standalone design-system page, generated OpenAPI and SQL, this case study.</p></li>
+    <li><time>Nov 28</time><b>Feedback round</b><p>Jobs replace tasks, Project → Milestones → Jobs, per-project access, a simpler top bar, hours per day. Re-checked item by item.</p></li>
   </ol>
   <p class="cap">Between steps: review in the browser, fix, repeat. Each prompt averaged about four minutes of hands-on time.</p>
 </div>
@@ -386,8 +387,8 @@ footer a{color:#fff}
 <!-- 04 USER FLOWS -->
 <section class="sec" id="flows">
 <div class="wrap">
-  <header><span class="no">04</span><h2>User flows</h2><p>Three of the thirteen I mapped: the ones that carry the business value, the AI design and the everyday experience.</p></header>
-  <div class="uf-tabs" role="tablist" aria-label="Choose a user flow"><button type="button" role="tab" id="uft-handoff" aria-controls="ufp-handoff" aria-selected="true" data-flow="handoff">Contract to payment</button><button type="button" role="tab" id="uft-a-task" aria-controls="ufp-a-task" aria-selected="false" data-flow="a-task">AI-assisted task creation</button><button type="button" role="tab" id="uft-m-day" aria-controls="ufp-m-day" aria-selected="false" data-flow="m-day">A team member's day</button></div>
+  <header><span class="no">04</span><h2>User flows</h2><p>Three of the fourteen I mapped: the ones that carry the business value, the AI design and the everyday experience.</p></header>
+  <div class="uf-tabs" role="tablist" aria-label="Choose a user flow"><button type="button" role="tab" id="uft-handoff" aria-controls="ufp-handoff" aria-selected="true" data-flow="handoff">Contract to payment</button><button type="button" role="tab" id="uft-a-task" aria-controls="ufp-a-task" aria-selected="false" data-flow="a-task">AI-assisted job creation</button><button type="button" role="tab" id="uft-m-day" aria-controls="ufp-m-day" aria-selected="false" data-flow="m-day">A team member's day</button></div>
   <p class="uf-swipe">Swipe the chart sideways to follow the branches.</p>
   <div class="uf-legend">
     <span><i style="background:#101828;border-color:#101828;border-radius:999px"></i>Start</span>
@@ -400,29 +401,29 @@ footer a{color:#fff}
     <div class="uf-pane" id="ufp-handoff" role="tabpanel" aria-labelledby="uft-handoff">
       <div class="uf-grid">
         <div class="uf-canvas" id="ufc-handoff" tabindex="0" aria-label="Contract to payment flow chart, scrolls sideways on small screens"></div>
-        <aside class="uf-why"><h3>Money follows the work</h3><ul><li><b>Milestones own the money</b>The brief ties payment to milestones, never to tasks. Tasks only say which milestone they count toward.</li><li><b>Two trigger modes</b>The payment request goes out automatically, or waits as Ready to invoice for the admin to approve.</li><li><b>Roles stay clean</b>The team member never sees an amount. They finish work and the admin handles money.</li></ul></aside>
+        <aside class="uf-why"><h3>Money follows the work</h3><ul><li><b>Milestones own the money</b>The brief ties payment to milestones, never to jobs. Jobs only say which milestone they count toward.</li><li><b>Two trigger modes</b>The payment request goes out automatically, or waits as Ready to invoice for the admin to approve.</li><li><b>Roles stay clean</b>The team member never sees an amount. They finish work and the admin handles money.</li></ul></aside>
       </div>
     </div>
     <div class="uf-pane" id="ufp-a-task" role="tabpanel" aria-labelledby="uft-a-task" hidden>
       <div class="uf-grid">
-        <div class="uf-canvas" id="ufc-a-task" tabindex="0" aria-label="AI-assisted task creation flow chart, scrolls sideways on small screens"></div>
-        <aside class="uf-why"><h3>One line, with checks where it can be wrong</h3><ul><li><b>Type it, don't fill it</b>One sentence fills project, person, priority, date, estimate and type.</li><li><b>Doubt is a visible branch</b>An unclear project is flagged Needs review instead of guessed.</li><li><b>A way back</b>Every create ends with Undo, and Create another keeps the project for the next task.</li></ul></aside>
+        <div class="uf-canvas" id="ufc-a-task" tabindex="0" aria-label="AI-assisted job creation flow chart, scrolls sideways on small screens"></div>
+        <aside class="uf-why"><h3>One line, with checks where it can be wrong</h3><ul><li><b>Type it, don't fill it</b>One sentence fills project, person, priority, date, estimate and type.</li><li><b>Doubt is a visible branch</b>An unclear project is flagged Needs review instead of guessed.</li><li><b>A way back</b>Every create ends with Undo, and Create another keeps the project for the next job.</li></ul></aside>
       </div>
     </div>
     <div class="uf-pane" id="ufp-m-day" role="tabpanel" aria-labelledby="uft-m-day" hidden>
       <div class="uf-grid">
         <div class="uf-canvas" id="ufc-m-day" tabindex="0" aria-label="A team member&#39;s day flow chart, scrolls sideways on small screens"></div>
-        <aside class="uf-why"><h3>The shortest path to Done</h3><ul><li><b>Next thing first</b>My Work orders tasks by due date, with Start and Done on the row.</li><li><b>Review is optional</b>It is a status, not an approval gate, so small tasks are not held up.</li><li><b>Feedback closes the loop</b>Finishing a milestone's last task tells the member the admin has been told.</li></ul></aside>
+        <aside class="uf-why"><h3>The shortest path to Done</h3><ul><li><b>Next thing first</b>My Work orders jobs by due date, with Start and Done on the row.</li><li><b>Review is optional</b>It is a status, not an approval gate, so small jobs are not held up.</li><li><b>Feedback closes the loop</b>Finishing a milestone's last job tells the member the admin has been told.</li></ul></aside>
       </div>
     </div>
-  <p style="margin-top:18px"><a href="user-flows.html" target="_blank" rel="noopener" style="font-weight:600">See all 13 flows, with the role permissions ↗</a></p>
+  <p style="margin-top:18px"><a href="user-flows.html" target="_blank" rel="noopener" style="font-weight:600">See all 14 flows, with the role permissions ↗</a></p>
 </div>
 </section>
 
 <!-- 05 DECISIONS -->
 <section class="sec" id="decisions">
 <div class="wrap">
-  <header><span class="no">05</span><h2>Design decisions</h2><p>Five calls that shaped how it looks and behaves. Every screenshot is live: click the pins.</p></header>
+  <header><span class="no">05</span><h2>Design decisions</h2><p>Nine calls that shaped how it looks and behaves, the last four from the feedback round. Every screenshot is live: click the pins.</p></header>
 
   <div class="dec">
     <div class="hs" id="hs-dash">
@@ -432,7 +433,7 @@ footer a{color:#fff}
         <ol class="hs-note"></ol>
         <p class="hs-hint">Click a pin or a point on the screenshot</p>
       </div>
-      <div class="hs-img" data-img="dashboard.jpg" data-alt="Admin dashboard" data-w="2160" data-h="1350" data-pins='[{"x":68,"y":15.5,"t":"KPI tiles","d":"Four headline numbers with one line of context each, such as ₹4.9M pending. Tiles are links into the filtered list."},{"x":25.5,"y":41,"t":"Status donut","d":"One chart for where work stands. Counts sit in the legend as badges so it reads without hovering."},{"x":25,"y":66.4,"t":"Needs attention","d":"The only list on the page. Overdue work first, with how late it is, so the next action is obvious."},{"x":60,"y":2.8,"t":"Global search","d":"A full-width bar and ⌘K open one palette that searches projects, tasks, people and files."}]'></div>
+      <div class="hs-img" data-img="dashboard.jpg" data-alt="Admin dashboard with a centred search and Add project button, four KPI tiles, charts and a needs-attention list" data-w="2720" data-h="1700" data-pins='[{"x": 70.9, "y": 3.2, "t": "One universal action", "d": "Add project sits beside a compact, centred search on every page. Everything else lives on its own page."}, {"x": 58.8, "y": 25.1, "t": "KPI tiles", "d": "Four headline numbers with one line of context each."}, {"x": 27.9, "y": 53.3, "t": "Status donut", "d": "One chart for where work stands. Counts sit in the legend, so it reads without hovering."}, {"x": 33.4, "y": 73.0, "t": "Needs attention", "d": "Overdue work first, with how late it is, so the next action is obvious."}]'></div>
     </div>
   </div>
 
@@ -440,10 +441,10 @@ footer a{color:#fff}
     <div class="hs flip" id="hs-member">
       <div>
         <div class="hs-title"><div class="k">02 / ROLES</div><h3>The role decides the product</h3>
-          <p>Admins get a business dashboard. Team members get My Work: their tasks, their hours, their projects. No money anywhere.</p></div>
+          <p>Admins get a business dashboard. Team members get My Work: their jobs, their hours and only the projects they were added to. No money anywhere.</p></div>
         <ol class="hs-note"></ol>
       </div>
-      <div class="hs-img" data-img="member-dashboard.jpg" data-alt="Team member dashboard titled Good evening, Sneha" data-w="2160" data-h="1350" data-pins='[{"x":7.5,"y":12,"t":"My Work","d":"The first nav item is renamed for the role. Staff, Milestones and Reports are not in the DOM for a team member."},{"x":61,"y":34.4,"t":"One-click Start and Done","d":"The two actions a team member takes most, on the row itself. No modal, no status dropdown."},{"x":46,"y":15,"t":"No cost data","d":"Tiles show open tasks, due this week and hours. Pay rates, contract value and payments never reach this view."}]'></div>
+      <div class="hs-img" data-img="member-dashboard.jpg" data-alt="Team member home with open jobs, due this week, completed and hours logged" data-w="2720" data-h="1700" data-pins='[{"x": 7.2, "y": 13.7, "t": "My Work", "d": "The first nav item is named for the role. Staff, Milestones and Reports are not there for a team member."}, {"x": 50.9, "y": 21.1, "t": "Counters in work order", "d": "Open jobs, due this week, completed, then hours logged: the order the team asked for."}, {"x": 61.3, "y": 45.2, "t": "One-click Start and Done", "d": "The two actions a team member takes most, on the row itself."}, {"x": 70.9, "y": 3.2, "t": "Add job", "d": "The universal action changes with the role. It is switched off, with the reason, for someone with view-only access."}]'></div>
     </div>
   </div>
 
@@ -454,7 +455,7 @@ footer a{color:#fff}
           <p>Header band, softly striped rows, a tint on hover. Status is a pill with a dot and a word, never color alone.</p></div>
         <ol class="hs-note"></ol>
       </div>
-      <div class="hs-img" data-img="projects-table.jpg" data-alt="Projects page with status tabs, filter bar and a striped table" data-w="2160" data-h="1350" data-pins='[{"x":23,"y":9.8,"t":"Count badges on tabs","d":"Each status tab says how many projects it holds before you click it."},{"x":35.6,"y":16.2,"t":"Filter bar","d":"Search, client, type, priority and manager, with a live count of how many are shown."},{"x":52.5,"y":36.1,"t":"Status pill","d":"Dot plus word. Readable in grayscale and for color-blind users."},{"x":73,"y":36.1,"t":"Progress bar","d":"Derived from the project stage, so the number is never typed by hand."}]'></div>
+      <div class="hs-img" data-img="projects-table.jpg" data-alt="Projects list with To Do, In Progress and Completed tabs and milestone progress bars" data-w="2720" data-h="1800" data-pins='[{"x": 35.2, "y": 18.0, "t": "To Do, In Progress, Completed", "d": "Three categories with a count on each."}, {"x": 28.8, "y": 24.4, "t": "Filter bar", "d": "Search, client, type, priority and manager, with a live count of how many are shown."}, {"x": 67.8, "y": 67.4, "t": "Progress is milestones", "d": "One bar, one segment per milestone, sized by its share of the contract. The number counts only achieved milestones."}, {"x": 93.2, "y": 42.2, "t": "Edit after creation", "d": "Admins can change any project detail, team or access later."}]'></div>
     </div>
   </div>
 
@@ -466,8 +467,8 @@ footer a{color:#fff}
         <ol class="hs-note"></ol>
       </div>
       <div style="display:grid;gap:28px">
-        <div class="hs-img" data-img="command-palette.jpg" data-alt="Command palette searching prestige" data-w="1044" data-h="927" data-pins='[{"x":30,"y":9.5,"t":"One search box","d":"Results are grouped into Projects and Tasks, with matched text highlighted."},{"x":30,"y":22,"t":"Keyboard first","d":"Arrow keys move, Enter opens, Esc closes. The hint bar at the bottom says so."}]'></div>
-        <div class="hs-img" data-img="confirm-dialog.jpg" data-alt="Confirmation dialog: Deactivate Sneha Kulkarni" data-w="840" data-h="540" data-pins='[{"x":50,"y":42,"t":"Names the consequence","d":"Not Are you sure. It says what is lost and what stays: two open tasks remain assigned."},{"x":60.7,"y":79,"t":"Safe default","d":"Focus starts on Cancel, so a stray Enter does nothing."},{"x":79,"y":79,"t":"Red only when it destroys","d":"The destructive button is the only red thing in the dialog."}]'></div>
+        <div class="hs-img" data-img="command-palette.jpg" data-alt="Command palette searching prestige" data-w="1328" data-h="1172" data-pins='[{"x": 30.8, "y": 7.0, "t": "One search box", "d": "Results are grouped into Projects and Jobs, with matched text highlighted."}, {"x": 21.9, "y": 22.0, "t": "Keyboard first", "d": "Arrow keys move, Enter opens, Esc closes. Results are scoped to what your role can see."}]'></div>
+        <div class="hs-img" data-img="confirm-dialog.jpg" data-alt="Confirmation dialog: Deactivate Sneha Kulkarni" data-w="1080" data-h="680" data-pins='[{"x": 53.1, "y": 48.8, "t": "Names the consequence", "d": "Not \"Are you sure\". It says what is lost and what stays: open jobs remain assigned."}, {"x": 61.1, "y": 80.3, "t": "Safe default", "d": "Focus starts on Cancel, so a stray Enter does nothing. A second check follows before anyone is deactivated."}, {"x": 80.0, "y": 80.3, "t": "Red only when it destroys", "d": "The destructive button is the only red thing in the dialog."}]'></div>
       </div>
     </div>
   </div>
@@ -476,10 +477,50 @@ footer a{color:#fff}
     <div class="hs" id="hs-err">
       <div>
         <div class="hs-title"><div class="k">05 / ERRORS</div><h3>Design the failure, not just the happy path</h3>
-          <p>Sign-in covers empty fields, a bad email, a wrong password, wrong role, deactivated accounts, a 30-second lockout after five tries, Caps Lock and offline. Each state says what happened and offers the next step.</p></div>
+          <p>Sign-in covers empty fields, a bad email, a wrong password with the tries left, deactivated accounts, a 30-second lockout after five tries, Caps Lock and offline. There is no role picker: the account decides.</p></div>
         <ol class="hs-note"></ol>
       </div>
-      <div class="hs-img" data-img="login-error.jpg" data-alt="Sign-in page with an amber alert saying this is a team member account" data-w="2160" data-h="1350" data-pins='[{"x":31,"y":25.5,"t":"Role first","d":"The two roles are a toggle at the top, because the role changes which accounts are valid."},{"x":24,"y":36.5,"t":"Plain-language error","d":"This is a team member account, so it needs the Team member sign in. It says what happened, not error 403."},{"x":19.1,"y":41.3,"t":"One-click recovery","d":"A button that switches the role instead of making the person start over."},{"x":36,"y":86.5,"t":"Demo access","d":"Fills a working account, so a reviewer is never stuck at the door."}]'></div>
+      <div class="hs-img" data-img="login-error.jpg" data-alt="Sign-in page with no role selector and a clear error after a wrong password" data-w="2160" data-h="1560" data-pins='[{"x": 23.8, "y": 33.8, "t": "Plain-language error", "d": "It says what is wrong and warns how many tries remain before sign-in pauses."}, {"x": 36.6, "y": 61.8, "t": "A way forward", "d": "Forgot password explains who can reset it."}, {"x": 23.8, "y": 86.0, "t": "Prototype only", "d": "No role picker: the account decides the role, as it will in the live product. Demo accounts are labelled as prototype only."}]'></div>
+    </div>
+  </div>
+
+  <div class="dec">
+    <div class="hs solo" id="hs-board" style="max-width:100%">
+      <div class="hs-title"><div class="k">06 / STRUCTURE</div><h3>Project, then milestones, then jobs</h3>
+        <p>The first version kept jobs in a flat list with stages beside them. The feedback made the order explicit, so a project now opens as one column per milestone with its jobs underneath. The six delivery stages became the starting milestones, and the progress bar is drawn from them.</p></div>
+      <div class="hs-img" data-img="project-board.jpg" data-alt="Admin project page: milestone progress bar above one column per milestone with its jobs" data-w="2560" data-h="1720" data-pins='[{"x": 43.9, "y": 31.4, "t": "Progress and milestones together", "d": "Each segment is a milestone, named, sized by its share and filled as its jobs finish."}, {"x": 79.6, "y": 62.7, "t": "A milestone is a column", "d": "Status, due date and jobs done. The admin also sees its amount and payment status."}, {"x": 85.8, "y": 83.9, "t": "Log hours on the job", "d": "Time is recorded where the work is."}, {"x": 77.0, "y": 10.3, "t": "Edit project", "d": "Details, team and access can all be changed after creation."}]'></div>
+      <ol class="hs-note"></ol>
+    </div>
+  </div>
+
+  <div class="dec">
+    <div class="hs solo" id="hs-staffboard" style="max-width:100%">
+      <div class="hs-title"><div class="k">07 / FOCUS FOR STAFF</div><h3>The whole project in view, one milestone in focus</h3>
+        <p>A team member needs the shape of the project without reading every job. Every milestone stays on screen: the active one in full, the rest as quiet outlines that open when selected.</p></div>
+      <div class="hs-img" data-img="staff-board.jpg" data-alt="Team member project view: the active milestone expanded, all other milestones as outlines" data-w="2720" data-h="2000" data-pins='[{"x": 58.8, "y": 48.7, "t": "Active milestone", "d": "Opens in full with its job cards, so today is the first thing read."}, {"x": 26.1, "y": 59.1, "t": "Achieved, as an outline", "d": "Name, due date and jobs done, with skeleton cards in place of detail. Select it to open it."}, {"x": 91.7, "y": 59.1, "t": "What is coming", "d": "Upcoming milestones stay visible, so people know what follows."}, {"x": 65.9, "y": 86.9, "t": "Only their own jobs take hours", "d": "Log hours appears on the jobs assigned to this person."}]'></div>
+      <ol class="hs-note"></ol>
+    </div>
+  </div>
+
+  <div class="dec">
+    <div class="hs" id="hs-access">
+      <div>
+        <div class="hs-title"><div class="k">08 / ACCESS</div><h3>Access is given per project</h3>
+          <p>Staff see only the projects they were added to. For each one the admin chooses whether they can add jobs or only view.</p></div>
+        <ol class="hs-note"></ol>
+      </div>
+      <div class="hs-img" data-img="project-access.jpg" data-alt="Team and access tab listing each person with an access level" data-w="2560" data-h="1720" data-pins='[{"x": 65.5, "y": 68.0, "t": "Can add jobs or View only", "d": "Set per person, per project. The change applies at once and can be undone."}, {"x": 27.5, "y": 53.8, "t": "Who is on the project", "d": "Only these people see it."}]'></div>
+    </div>
+  </div>
+
+  <div class="dec">
+    <div class="hs flip" id="hs-time">
+      <div>
+        <div class="hs-title"><div class="k">09 / TIME</div><h3>A day, across every project</h3>
+          <p>Hours are logged from the job where the work happened, or from this page. The page answers a different question: what did each day add up to, and on which projects?</p></div>
+        <ol class="hs-note"></ol>
+      </div>
+      <div class="hs-img" data-img="time-log.jpg" data-alt="Time Log: a chart of hours per day split by project, above a list for each day" data-w="2360" data-h="1600" data-pins='[{"x": 79.1, "y": 41.6, "t": "Hours per day by project", "d": "Stacked bars show how a day was split across projects."}, {"x": 52.7, "y": 68.4, "t": "Each day totals up", "d": "Total hours and the projects behind them, then every entry."}, {"x": 93.1, "y": 11.1, "t": "Log hours on the page", "d": "The same dialog as the one on a job."}]'></div>
     </div>
   </div>
 </div>
@@ -488,9 +529,9 @@ footer a{color:#fff}
 <!-- 06 AI -->
 <section class="sec" id="ai">
 <div class="wrap">
-  <header><span class="no">06</span><h2>AI-assisted creation</h2><p>The centerpiece: task and project forms that fill themselves, and show their working.</p></header>
+  <header><span class="no">06</span><h2>AI-assisted creation</h2><p>The centerpiece: job and project forms that fill themselves, and show their working.</p></header>
   <div class="body-gap">
-    <p class="lg">A task has 11 fields. Nobody wants to fill 11 fields, so the only required work is typing the title, and the title can carry the rest.</p>
+    <p class="lg">A job has 11 fields. Nobody wants to fill 11 fields, so the only required work is typing the title, and the title can carry the rest.</p>
 
     <div>
       <div class="line" role="img" aria-label="Column schedule Prestige Towers at Amit exclamation high due fri 8h"><span class="tk t6">Column schedule</span> <span class="tk t1">Prestige Towers</span> <span class="tk t2">@Amit</span> <span class="tk t3">!high</span> <span class="tk t4">due fri</span> <span class="tk t5">8h</span></div>
@@ -498,7 +539,7 @@ footer a{color:#fff}
         <div><small>Project</small><b>Prestige Towers - Block A</b></div>
         <div><small>Assignee</small><b>Amit Desai</b></div>
         <div><small>Priority</small><b>High</b></div>
-        <div><small>Due date</small><b>Fri, 27 Nov</b></div>
+        <div><small>Due date</small><b>Fri, 4 Dec</b></div>
         <div><small>Estimate</small><b>8h</b></div>
         <div><small>Type</small><b>Design</b> <span style="color:var(--mute)">from "column"</span></div>
       </div>
@@ -506,20 +547,20 @@ footer a{color:#fff}
 
     <div class="hs" id="hs-task">
       <div>
-        <div class="hs-title"><div class="k">TASK</div><h3>One line in, six values out</h3>
+        <div class="hs-title"><div class="k">JOB</div><h3>One line in, six values out</h3>
           <p>Every filled field is tagged Auto and the full form stays editable underneath.</p></div>
         <ol class="hs-note"></ol>
       </div>
-      <div class="hs-img" data-img="task-smart-top.jpg" data-alt="New Task modal after typing one line, with the Smart fill summary" data-w="1002" data-h="650" data-pins='[{"x":65,"y":29.7,"t":"Type one line","d":"The title field is the only thing a person must fill. Project, person, priority, date and estimate are read from it."},{"x":45,"y":56,"t":"The summary shows its working","d":"Six values read from your text, one assumed. Each chip is something the parser found."},{"x":85,"y":45,"t":"Why these?","d":"Opens a list of each assumption with its reason, and an Undo for the whole fill."},{"x":23.5,"y":72,"t":"Auto tags","d":"Every field the parser touched is labeled, so nothing changes silently."},{"x":16,"y":92,"t":"Assign to me","d":"A shortcut for the most common assignee, next to suggestions ranked by skill, project and workload."}]'></div>
+      <div class="hs-img" data-img="task-smart-top.jpg" data-alt="New Job form after typing one line, with the Smart fill summary" data-w="1328" data-h="810" data-pins='[{"x": 69.6, "y": 31.1, "t": "Type one line", "d": "The title is the only thing a person must write. Project, person, priority, date and estimate are read from it."}, {"x": 50.1, "y": 56.3, "t": "The summary shows its working", "d": "What was read from your text, and what was assumed."}, {"x": 85.2, "y": 47.7, "t": "Why these?", "d": "Lists each assumption with its reason, and an Undo for the whole fill."}, {"x": 18.6, "y": 69.2, "t": "Auto tags", "d": "Every field the reader touched is labelled, so nothing changes silently."}, {"x": 15.8, "y": 90.4, "t": "Assign to me", "d": "A shortcut for the most common assignee, next to suggestions ranked by skill, project and workload."}]'></div>
     </div>
 
     <div class="hs flip" id="hs-proj">
       <div>
         <div class="hs-title"><div class="k">PROJECT</div><h3>Risk decides the friction</h3>
-          <p>A misread ₹2.5Cr would create a ₹2.5Cr project. The value is spelled out and confirmed before anything is created. Tasks get no gate.</p></div>
+          <p>A misread ₹2.5Cr would create a ₹2.5Cr project. The value is spelled out and confirmed before anything is created. Jobs get no gate.</p></div>
         <ol class="hs-note"></ol>
       </div>
-      <div class="hs-img" data-img="project-smart-top.jpg" data-alt="New Project modal with an amber contract value confirmation" data-w="1002" data-h="752" data-pins='[{"x":55,"y":25.7,"t":"Client, type, city, value, duration, manager","d":"Six details from one sentence."},{"x":10,"y":64.5,"t":"Amount spelled out","d":"₹2,50,00,000 in Indian grouping, next to the shorthand, so a wrong zero is obvious."},{"x":67,"y":67.7,"t":"Explicit confirm","d":"Yes, create or Edit amount. The one place the form slows down."},{"x":22,"y":81,"t":"Provenance again","d":"The same Auto tag language as the task form, so the pattern is learned once."}]'></div>
+      <div class="hs-img" data-img="project-smart-top.jpg" data-alt="New Project form with an amber contract value confirmation" data-w="1328" data-h="1000" data-pins='[{"x": 82.1, "y": 25.2, "t": "One sentence", "d": "Client, type, city, value, duration and manager come from one line."}, {"x": 10.9, "y": 67.4, "t": "Amount spelled out", "d": "Rupees in Indian grouping next to the shorthand, so a wrong zero is obvious."}, {"x": 67.0, "y": 67.4, "t": "Explicit confirm", "d": "Yes, create or Edit amount. The one place the form slows down."}, {"x": 18.6, "y": 80.8, "t": "Provenance again", "d": "The same Auto tag as the job form, so the pattern is learned once."}]'></div>
     </div>
 
     <h3 style="margin-top:8px">What I audited against, and what changed</h3>
@@ -529,7 +570,7 @@ footer a{color:#fff}
       <tbody>
         <tr><td>Fills were invisible</td><td><b>Auto</b> tags, plus "Why these?" that lists each assumption with its reason and an Undo.</td></tr>
         <tr><td>Silent when unsure</td><td>An amber needs-review note and tag when the project or client can't be told.</td></tr>
-        <tr><td>A misread ₹2.5Cr would create a ₹2.5Cr project</td><td>Friction scales with risk: the value is spelled out and confirmed. Tasks get no gate.</td></tr>
+        <tr><td>A misread ₹2.5Cr would create a ₹2.5Cr project</td><td>Friction scales with risk: the value is spelled out and confirmed. Jobs get no gate.</td></tr>
         <tr><td>The modal just closed</td><td>An outcome toast with Undo, and a Create another path.</td></tr>
         <tr><td>A blank form</td><td>Starter lines built from the firm's real clients, projects and people.</td></tr>
         <tr><td>Assignee was a guess</td><td>Ranked by skill match, project membership and open workload, with Assign to me.</td></tr>
@@ -539,14 +580,14 @@ footer a{color:#fff}
     <div class="hs" id="hs-review">
       <div>
         <div class="hs-title"><div class="k">UNSURE</div><h3>When it can't tell, it says so</h3>
-          <p>Type a task with no project and the form does not guess. It flags the field and explains.</p></div>
+          <p>Type a job with no project and the form does not guess. It flags the field and explains.</p></div>
         <ol class="hs-note"></ol>
       </div>
-      <div class="hs-img" data-img="task-review-top.jpg" data-alt="Typing a task with no project: the Project field is tagged Needs review" data-w="1002" data-h="655" data-pins='[{"x":27,"y":72,"t":"Needs review tag","d":"An amber tag replaces Auto on the field it could not fill."},{"x":40,"y":60,"t":"Says why, and what to do","d":"I couldn&#39;t tell which project this belongs to. Pick one below. Plain words and a next step."},{"x":45,"y":91.8,"t":"Suggested people","d":"The assignee is still offered, because that part was understood."}]'></div>
+      <div class="hs-img" data-img="task-review-top.jpg" data-alt="Typing a job with no project: the Project field is tagged Needs review" data-w="1328" data-h="820" data-pins='[{"x": 25.0, "y": 76.2, "t": "Needs review tag", "d": "An amber tag replaces Auto on the field it could not fill."}, {"x": 33.0, "y": 63.2, "t": "Says why, and what to do", "d": "It could not tell which project this belongs to. Plain words and a next step."}, {"x": 50.1, "y": 96, "t": "Suggested people", "d": "The assignee is still offered, because that part was understood."}]'></div>
     </div>
 
     <div class="hs solo toast-wrap" id="hs-toast">
-      <div class="hs-img" data-img="task-toast.jpg" data-alt="Toast reading Task created with an Undo button" data-w="944" data-h="190" data-pins='[{"x":82.6,"y":50.5,"t":"Outcome with Undo","d":"Names the task, person and due date, and a way back. Not a window that just closes."}]'></div>
+      <div class="hs-img" data-img="task-toast.jpg" data-alt="Toast reading Job created with an Undo button" data-w="1232" data-h="200" data-pins='[{"x": 83.5, "y": 50.0, "t": "Outcome with Undo", "d": "Names the job, person and due date, and a way back. Not a window that just closes."}]'></div>
       <ol class="hs-note"></ol>
     </div>
 
@@ -623,7 +664,7 @@ footer a{color:#fff}
     <div class="g2">
       <div><h3>Delivered</h3><ul>
         <li>A working prototype: 12 screens, 2 roles, full create / edit / delete</li>
-        <li>Smart-fill task and project creation with provenance and Undo</li>
+        <li>Smart-fill job and project creation with provenance and Undo</li>
         <li>⌘K search, comments with history, attachments, confirmations</li>
         <li>A standalone design-system page with live components</li>
         <li>Backend handoff generated from one spec: OpenAPI, SQL and a written guide</li></ul></div>
@@ -631,7 +672,7 @@ footer a{color:#fff}
         <li><b>No usability test yet.</b> I have not measured time-to-create against the 11-field form.</li>
         <li>Data lives in the browser. The API layer is ready but not connected.</li>
         <li>The parser is rule-based. Next: an LLM behind the same interface.</li>
-        <li>Next test: three project managers creating five tasks each, old form against one line.</li></ul></div>
+        <li>Next test: three project managers creating five jobs each, old form against one line.</li></ul></div>
     </div>
     <div class="hs solo" id="hs-ds">
       <div class="hs-img" data-img="design-system.jpg" data-alt="Design system page showing live badge, count and tag components with code and props" data-w="2160" data-h="1350" data-pins='[{"x":50,"y":50,"t":"Design system, separate from the app","d":"Live components, copyable code, a tokens export and the backend handoff in one page. Built on Core UI."}]'></div>
@@ -725,15 +766,17 @@ footer a{color:#fff}
 
   /* ---------- Walkthrough player ---------- */
   var steps = [
-    {img:'dashboard.jpg',w:2160,h:1350,c:[68,15.5],r:[18.3,8,80,15.2],t:'Sign in as admin and land on four numbers, not forty. Revenue, open tasks and overdue work are visible in one glance.',ch:'The first screen'},
-    {img:'command-palette.jpg',w:1044,h:927,c:[30,22],r:[5,19.5,90,8.5],t:'Press ⌘K from anywhere. One search finds projects, tasks, people and files, scoped to what your role can see.',ch:'Find anything'},
-    {img:'task-smart-top.jpg',w:1002,h:650,c:[62,29.7],r:[5.8,24,88.4,11],t:'Create a task by typing one line: title, project, person, priority, due date and estimate in plain words.',ch:'Type one line'},
-    {img:'task-smart-top.jpg',w:1002,h:650,c:[45,56],r:[7.5,49,76,13.5],t:'The form reads the line and shows what it found. Six values detected, one assumed.',ch:'It shows its working'},
-    {img:'task-smart-top.jpg',w:1002,h:650,c:[85,45],r:[77,41.5,16,7],t:'Why these? opens the reason behind each fill, with an Undo for the whole thing.',ch:'Why these?'},
-    {img:'task-review-top.jpg',w:1002,h:655,c:[27,72],r:[18,69.5,15.5,5],t:'When it cannot tell, it says so. No project in the line means a Needs review tag, not a guess.',ch:'Honest when unsure'},
-    {img:'project-smart-top.jpg',w:1002,h:752,c:[67,67.7],r:[59.5,64,15,7.2],t:'Projects carry money, so there is a gate. The amount is spelled out as ₹2,50,00,000 and confirmed.',ch:'Risk adds friction'},
-    {img:'member-dashboard.jpg',w:2160,h:1350,c:[61,34.4],r:[58.2,32,6.2,4.6],t:'A team member signs in to My Work: their tasks, with one-click Start and Done. No money in sight.',ch:'A different product per role'},
-    {img:'confirm-dialog.jpg',w:840,h:540,c:[60.7,79],r:[43,72.5,20,12],t:'Critical actions name the consequence first. Focus lands on Cancel, so a stray Enter is harmless.',ch:'Safe to change'}
+    {"img": "dashboard.jpg", "w": 2720, "h": 1700, "c": [70.6, 25.1], "r": [19.0, 16.6, 79.6, 17.0], "t": "Sign in as admin and land on four numbers, not forty. Add project sits beside search on every page.", "ch": "The first screen"},
+    {"img": "command-palette.jpg", "w": 1328, "h": 1172, "c": [21.9, 22.0], "r": [3.2, 17.9, 93.7, 8.2], "t": "Press ⌘K from anywhere. One search finds projects, jobs, people and files, scoped to your role.", "ch": "Find anything"},
+    {"img": "task-smart-top.jpg", "w": 1328, "h": 810, "c": [67.8, 31.1], "r": [5.6, 25.2, 88.9, 11.9], "t": "Create a job by typing one line: title, project, person, priority, due date and estimate in plain words.", "ch": "Type one line"},
+    {"img": "task-smart-top.jpg", "w": 1328, "h": 810, "c": [45.6, 55.9], "r": [5.6, 42, 88.9, 19.8], "t": "The form reads the line and shows what it found, and what it assumed.", "ch": "It shows its working"},
+    {"img": "task-review-top.jpg", "w": 1328, "h": 820, "c": [22.9, 76.2], "r": [5.6, 73.7, 43.2, 4.9], "t": "When it cannot tell, it says so. No project in the line means a Needs review tag, not a guess.", "ch": "Honest when unsure"},
+    {"img": "project-smart-top.jpg", "w": 1328, "h": 1000, "c": [67.0, 67.4], "r": [59.1, 63.3, 15.9, 8.2], "t": "Projects carry money, so there is a gate. The amount is spelled out as ₹2,50,00,000 and confirmed.", "ch": "Risk adds friction"},
+    {"img": "project-board.jpg", "w": 2560, "h": 1720, "c": [47.7, 31.4], "r": [20.2, 26.2, 78.3, 11.3], "t": "Inside a project: milestones, then the jobs under each one. Progress is drawn from the milestones themselves.", "ch": "Project, milestones, jobs"},
+    {"img": "member-dashboard.jpg", "w": 2720, "h": 1700, "c": [61.3, 45.2], "r": [57.9, 42.5, 6.9, 5.4], "t": "A team member lands on My Work, with one-click Start and Done. No money in sight.", "ch": "A different product per role"},
+    {"img": "staff-board.jpg", "w": 2720, "h": 2000, "c": [58.8, 48.7], "r": [46.8, 41.4, 24.0, 14.6], "t": "Their project view keeps every milestone on screen, with the active one in focus.", "ch": "One milestone in focus"},
+    {"img": "time-log.jpg", "w": 2360, "h": 1600, "c": [79.1, 43.5], "r": [22.4, 25.3, 75.6, 36.3], "t": "Time Log shows what each day added up to across projects.", "ch": "Hours per day"},
+    {"img": "confirm-dialog.jpg", "w": 1080, "h": 680, "c": [61.1, 80.3], "r": [52.8, 73.2, 16.7, 14.2], "t": "Critical actions name the consequence first. Focus lands on Cancel, so a stray Enter is harmless.", "ch": "Safe to change"}
   ];
   var DUR = 5500;
   var stage=$('#stage'), frame=$('#frame'), ring=$('#ring'), cur=$('#cursor'), r1=$('#rip1'), r2=$('#rip2');
@@ -830,38 +873,38 @@ footer a{color:#fff}
 const FLOWS = [
 {group:'Both roles', id:'handoff', role:'both', title:'End to end: from contract to payment', goal:'How work passes between the admin, the system and the team member.', lanes:['Admin','StructFlow','Team member'],
  nodes:[
-  ['p','s',0,0,'Create the project'],['m','a',0,1,'Set up milestones (% of contract value)'],['t','a',0,2,'Create tasks, assign people, link to a milestone'],
-  ['n','y',1,3,'Member tab updates live: new task toast'],['st','a',2,3,'Start the task'],
-  ['w','a',2,4,'Work: comment, attach files, log hours'],['dn','a',2,5,'Mark task Done'],
-  ['q','d',1,5,'Last task in the milestone?'],['wait','y',1,6,'Milestone stays open. Progress updates'],
-  ['mc','y',1,7,'Milestone completes'],['md','d',1,8,'Payment mode automatic?'],
+  ['p','s',0,0,'Add the project and its team'],['m','a',0,1,'Set up milestones (% of contract value)'],['t','a',0,2,'Create jobs under each milestone and assign them'],
+  ['n','y',1,3,'Member tab updates live: new job toast'],['st','a',2,3,'Start the job'],
+  ['w','a',2,4,'Work: comment, attach files, log hours'],['dn','a',2,5,'Mark job Done'],
+  ['q','d',1,5,'Last job in the milestone?'],['wait','y',1,6,'Milestone stays open. Progress updates'],
+  ['mc','y',1,7,'Milestone achieved. Project progress moves'],['md','d',1,8,'Payment mode automatic?'],
   ['ap','a',0,8,'Ready to invoice: review, then Approve and invoice'],
   ['inv','y',1,9,'Status: Invoiced (request sent)'],['pd','a',0,10,'Client pays: set status to Paid'],['rv','e',1,10,'Counts in revenue and margin']],
  edges:[['p','m'],['m','t'],['t','n','','vh'],['n','st'],['st','w'],['w','dn'],['dn','q'],['q','wait','No'],['q','mc','Yes','L'],['mc','md'],['md','ap','No'],['md','inv','Yes'],['ap','inv','','B'],['inv','pd','','hv'],['pd','rv']],
- notes:['The admin tab also gets a live toast when a member finishes or creates a task. Live updates work between tabs of one browser; other devices need the backend.','Team members never see amounts. They see "Milestone complete. Admin has been notified."']},
+ notes:['The order of information is Project, then Milestones, then Jobs.','The admin tab also gets a live toast when a member finishes or creates a job. Live updates work between tabs of one browser; other devices need the backend.','Team members never see amounts. They see "Milestone complete. Admin has been notified."']},
 
-{group:'Admin', id:'a-task', role:'admin', title:'A3. Create and assign a task', goal:'Type the work the way you would say it, then confirm what was understood.',
+{group:'Admin', id:'a-task', role:'admin', title:'A4. Create and assign a job', goal:'Type the work the way you would say it, then confirm what was understood.',
  nodes:[
-  ['s','s',1,0,'Tasks: New Task'],['ty','a',1,1,'Type e.g. "Column schedule Prestige Towers @Amit !high due fri 8h"'],
+  ['s','s',1,0,'Jobs: New Job, or Add job on a milestone column'],['ty','a',1,1,'Type e.g. "Column schedule Prestige Towers @Amit !high due fri 8h"'],
   ['pa','y',1,2,'Fills project, assignee, priority, due date, estimate, type'],
   ['q','d',1,3,'Project understood?'],['nr','a',2,3,'Needs review tag: pick the project'],
   ['as','d',1,4,'Assignee named?'],['sg','y',2,4,'Suggests by skills and workload. Or Assign to me'],
-  ['ms','a',1,5,'Optional: link a milestone, add files, notes, tags'],['v','d',1,6,'Title, project, assignee set?'],['er','x',0,6,'Errors shown on the fields'],
-  ['cr','y',1,7,'Task created. History starts'],['more','d',1,8,'"Create another" ticked?'],['again','a',0,8,'Form resets, project kept'],
+  ['ms','a',1,5,'Link a milestone, add files, notes, tags'],['v','d',1,6,'Title, project, assignee set?'],['er','x',0,6,'Errors shown on the fields'],
+  ['cr','y',1,7,'Job created. An outsider gets View only access'],['more','d',1,8,'"Create another" ticked?'],['again','a',0,8,'Form resets, project kept'],
   ['e','e',1,9,'Toast with Undo. Assignee sees it live']],
- edges:[['s','ty'],['ty','pa'],['pa','q'],['q','nr','No'],['q','as','Yes'],['nr','as','','B'],['as','sg','No'],['as','ms','Yes'],['sg','ms','','vh'],['ms','v'],['v','er','No'],['v','cr','Yes'],['cr','more'],['more','again','Yes'],['more','e','No'],['again','ty','Next task','L']],
- notes:['Only open milestones of the chosen project are offered. Completed ones are closed to new tasks.']},
+ edges:[['s','ty'],['ty','pa'],['pa','q'],['q','nr','No'],['q','as','Yes'],['nr','as','','B'],['as','sg','No'],['as','ms','Yes'],['sg','ms','','vh'],['ms','v'],['v','er','No'],['v','cr','Yes'],['cr','more'],['more','again','Yes'],['more','e','No'],['again','ty','Next job','L']],
+ notes:['From a milestone column, the project and milestone are already filled in.','Only open milestones of the chosen project are offered.']},
 
 {group:'Team member', id:'m-day', role:'member', title:'M1. Work through the day', goal:'See what is next and finish it with as few clicks as possible.',
  nodes:[
-  ['s','s',1,0,'Sign in: My Work'],['q','d',1,1,'Anything assigned?'],['none','e',2,1,'"Nothing assigned yet": add a task or log time'],
+  ['s','s',1,0,'Sign in: My Work'],['q','d',1,1,'Anything assigned?'],['none','e',2,1,'"Nothing assigned to you yet"'],
   ['up','a',1,2,'Up next, ordered by due date'],['live','y',2,2,'New assignment arrives: live toast with View'],
-  ['go','a',1,3,'Press Start. Status: In Progress'],['wk','a',1,4,'Open the task: comment, @mention, attach files'],
+  ['go','a',1,3,'Press Start. Status: In Progress'],['wk','a',1,4,'Work: comment, attach files, Log hours on the job'],
   ['rv','d',1,5,'Needs a check first?'],['re','a',2,5,'Move to Review'],
-  ['dn','a',1,6,'Press Done'],['ms','d',1,7,'Finished the milestone\'s last task?'],['nt','y',2,7,'"Milestone complete. Admin has been notified"'],
+  ['dn','a',1,6,'Press Done'],['ms','d',1,7,'Finished the milestone\'s last job?'],['nt','y',2,7,'"Milestone complete. Admin has been notified"'],
   ['e','e',1,8,'Toast with Undo. Admin sees it live']],
  edges:[['s','q'],['q','none','No'],['q','up','Yes'],['live','up'],['up','go'],['go','wk'],['wk','rv'],['rv','re','Yes'],['rv','dn','No'],['re','dn','When checked','vh'],['dn','ms'],['ms','nt','Yes'],['ms','e','No'],['nt','e','','vh']],
- notes:['Review is a status, not an approval gate: a member can mark their own task Done directly.']}
+ notes:['Review is a status, not an approval gate: a member can mark their own job Done directly.']}
 ];
 
 const CW = 236, RH = 100, NW = 196, NH = 66, PAD = 34;

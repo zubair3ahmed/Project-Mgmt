@@ -31,7 +31,7 @@ export function Badge({ tone = 'gray', size = 'md', dot = true, children, classN
 
 export function StatusBadge({ status }) {
   // 'planning' is a project that has not started, shown to people as To Do
-  const label = status === 'planning' ? 'To Do' : status.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
+  const label = status === 'planning' || status === 'todo' ? 'To Do' : status.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
   return <Badge tone={STATUS_TONE[status] || 'gray'}>{label}</Badge>
 }
 

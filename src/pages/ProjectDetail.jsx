@@ -1,6 +1,6 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { ArrowLeft, Clock, Pencil, Plus, Milestone as MilestoneIcon } from 'lucide-react'
+import { ArrowLeft, Check, Clock, Pencil, Plus, Milestone as MilestoneIcon } from 'lucide-react'
 import clsx from 'clsx'
 import Header from '../components/Header'
 import Tabs from '../components/Tabs'
@@ -130,6 +130,17 @@ function Board({ project, milestones, jobs, write, isAdmin, isMine, onOpen }) {
   const updateTask = useStore(s => s.updateTask)
   const addFromTemplate = useStore(s => s.addMilestonesFromTemplate)
   const [dragged, setDragged] = useState(null)
+  // Staff see every milestone as an overview: the active one in full, the rest as outlines they can open.
+  const activeId = (milestones.find(m => m.status === 'in-progress') || milestones.find(m => m.status !== 'completed') || milestones.at(-1))?.id
+  const [picked, setPicked] = useState(null)
+  const focusId = milestones.some(m => m.id === picked) || picked === 'none' ? picked : activeId
+  const scroller = useRef(null)
+  // on a narrow screen the board scrolls sideways: bring the focused milestone into view
+  useEffect(() => {
+    const box = scroller.current
+    const col = box?.querySelector('[data-focused=true]')
+    if (col && box.scrollWidth > box.clientWidth) box.scrollLeft += col.getBoundingClientRect().left - box.getBoundingClientRect().left - 8
+  }, [focusId])
   const unlinked = jobs.filter(t => !milestones.some(m => m.id === t.milestoneId))
   const canMove = t => isAdmin || (write && isMine(t))
 
@@ -140,7 +151,7 @@ function Board({ project, milestones, jobs, write, isAdmin, isMine, onOpen }) {
     useToast.getState().show({ title: `${ids.length} milestones created`, detail: project.name, actions: [{ label: 'Undo', onClick: () => useStore.getState().removeMilestones(ids) }] })
   }
 
-  function drop(milestone) {
+  async function drop(milestone) {
     const job = jobs.find(t => t.id === dragged)
     setDragged(null)
     if (!job || !canMove(job) || (job.milestoneId || null) === (milestone?.id || null)) return
@@ -149,8 +160,20 @@ function Board({ project, milestones, jobs, write, isAdmin, isMine, onOpen }) {
       return
     }
     const before = job.milestoneId
+    // a move can finish a milestone, which raises its payment request, so never do that on a drag alone
+    const after = jobs.map(t => (t.id === job.id ? { ...t, milestoneId: milestone?.id } : t))
+    const finishes = [milestone, milestones.find(m => m.id === before)].filter(m => m && m.status !== 'completed' && milestoneProgress(m, after).complete)
+    if (finishes.length) {
+      const ok = await confirm({
+        title: 'This move completes a milestone',
+        message: `Moving “${job.title}” leaves every job done in ${finishes.map(m => `“${m.name}”`).join(' and ')}.`,
+        details: finishes.map(m => (m.paymentMode === 'auto' ? `The payment request for “${m.name}” will be sent straight away.` : `“${m.name}” will wait for an admin to approve its payment request.`)),
+        confirmLabel: 'Move and complete',
+      })
+      if (!ok) return
+    }
     updateTask(job.id, { milestoneId: milestone?.id })
-    useToast.getState().show({ title: 'Job moved', detail: `${job.title} → ${milestone?.name || 'No milestone'}`, actions: [{ label: 'Undo', onClick: () => useStore.getState().updateTask(job.id, { milestoneId: before }) }] })
+    if (!finishes.length) useToast.getState().show({ title: 'Job moved', detail: `${job.title} → ${milestone?.name || 'No milestone'}`, actions: [{ label: 'Undo', onClick: () => useStore.getState().updateTask(job.id, { milestoneId: before }) }] })
   }
 
   if (!milestones.length && !jobs.length) {
@@ -170,16 +193,23 @@ function Board({ project, milestones, jobs, write, isAdmin, isMine, onOpen }) {
           <Link to="/milestones"><Button size="sm" variant="secondary"><Plus size={14} /> Add or edit milestones</Button></Link>
         </div>
       )}
-      <div className="flex gap-4 overflow-x-auto pb-3 items-start">
+      <div ref={scroller} className={clsx('flex overflow-x-auto pb-3 p-0.5', isAdmin ? 'gap-4 items-start' : 'gap-3 items-stretch')}>
         {columns.map(m => {
           const list = m ? jobs.filter(t => t.milestoneId === m.id) : unlinked
           const pr = m ? milestoneProgress(m, jobs) : null
           const achieved = m?.status === 'completed'
+          const key = m?.id || 'none'
+          if (!isAdmin && milestones.length && key !== focusId) {
+            return <OutlineColumn key={key} milestone={m} jobs={list} mine={list.filter(isMine).length} progress={pr} onFocus={() => setPicked(key)} onDrop={() => drop(m)} />
+          }
           return (
-            <section key={m?.id || 'none'} aria-label={m?.name || 'No milestone'} className="w-72 shrink-0 flex flex-col rounded-lg bg-surface-100 border border-surface-200" onDragOver={e => e.preventDefault()} onDrop={() => drop(m)}>
+            <section key={key} aria-label={m?.name || 'No milestone'} data-focused={isAdmin ? undefined : 'true'} className={clsx('shrink-0 flex flex-col rounded-lg bg-surface-100 border', isAdmin ? 'w-72 border-surface-200' : 'w-80 max-sm:w-[17rem] border-brand-600 ring-1 ring-brand-600')} onDragOver={e => e.preventDefault()} onDrop={() => drop(m)}>
               <header className="p-3 flex flex-col gap-2 border-b border-surface-200">
                 <div className="flex items-start justify-between gap-2">
-                  <h3 className="text-sm font-semibold text-surface-900 leading-snug">{m?.name || 'No milestone'}</h3>
+                  <div className="min-w-0">
+                    {!isAdmin && <p className="text-2xs font-semibold uppercase tracking-wide text-brand-700 mb-0.5">{key === activeId ? 'Active milestone' : 'Viewing'}</p>}
+                    <h3 className="text-sm font-semibold text-surface-900 leading-snug">{m?.name || 'No milestone'}</h3>
+                  </div>
                   <CountBadge count={list.length} />
                 </div>
                 {m ? (
@@ -220,6 +250,35 @@ function Board({ project, milestones, jobs, write, isAdmin, isMine, onOpen }) {
         })}
       </div>
     </div>
+  )
+}
+
+// A milestone that is not in focus: enough to read the shape of the project, drawn as a skeleton.
+function OutlineColumn({ milestone: m, jobs, mine, progress, onFocus, onDrop }) {
+  const name = m?.name || 'No milestone'
+  const state = !m ? 'Unlinked jobs' : m.status === 'completed' ? 'Achieved' : m.status === 'in-progress' ? 'In progress' : 'Upcoming'
+  const count = jobs.length ? `${jobs.length} job${jobs.length > 1 ? 's' : ''}${progress ? ` · ${progress.done} done` : ''}` : 'No jobs yet'
+  return (
+    <section aria-label={name} data-focused="false" className="flex-1 min-w-32 max-sm:flex-none max-sm:w-36 flex" onDragOver={e => e.preventDefault()} onDrop={onDrop}>
+      <button type="button" onClick={onFocus} aria-label={`${name}, ${state}, ${count}. Show its jobs`} className="group w-full flex flex-col gap-2 text-left rounded-lg border border-dashed border-surface-300 bg-surface-25 p-3 hover:border-surface-400 hover:bg-surface-0 transition-colors">
+        <span className={clsx('flex items-center gap-1 text-2xs font-semibold uppercase tracking-wide', m?.status === 'completed' ? 'text-success-dark' : 'text-surface-500')}>
+          {m?.status === 'completed' && <Check size={12} />}{state}
+        </span>
+        <span className="text-xs font-semibold text-surface-600 leading-snug line-clamp-3 group-hover:text-surface-900">{name}</span>
+        {m && <span className="text-2xs text-surface-500">Due {m.dueDate}</span>}
+        <span className="text-2xs text-surface-500">{count}</span>
+        {mine > 0 && <span className="w-fit rounded-full bg-brand-50 border border-brand-200 px-2 py-0.5 text-2xs font-semibold text-brand-700">{mine} yours</span>}
+        <span data-skeleton aria-hidden="true" className="flex flex-col gap-2 mt-1">
+          {Array.from({ length: Math.min(3, Math.max(2, jobs.length)) }, (_, i) => (
+            <span key={i} className={clsx('flex flex-col gap-1.5 rounded-md border border-surface-200 bg-surface-0 p-2', !jobs.length && 'opacity-50')}>
+              <span className="h-2 rounded-full bg-surface-200" style={{ width: `${[90, 70, 80][i]}%` }} />
+              <span className={clsx('h-2 w-2/5 rounded-full', m?.status === 'completed' ? 'bg-success-border' : 'bg-surface-200')} />
+            </span>
+          ))}
+        </span>
+        <span className="mt-auto pt-1 text-2xs font-semibold text-brand-700 opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 max-md:opacity-100">Show jobs</span>
+      </button>
+    </section>
   )
 }
 

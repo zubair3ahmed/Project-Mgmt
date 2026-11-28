@@ -313,6 +313,19 @@ export default function TaskFormModal({ open, onClose, task, presetStatus, defau
           </div>
         )}
 
+        <FormField label="Milestone" hint={!form.projectId ? 'Pick a project first' : projectMilestones.length === 0 ? 'This project has no open milestones yet. The admin sets them up.' : 'The job counts toward this milestone. When the last one is done, the milestone completes and its payment request is raised.'}>
+          <Select value={form.milestoneId} disabled={!form.projectId || projectMilestones.length === 0} onChange={e => setForm(f => ({ ...f, milestoneId: e.target.value }))}>
+            <option value="">Not linked to a milestone</option>
+            {projectMilestones.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
+          </Select>
+          {msProgress && (
+            <div className="flex items-center gap-3 mt-1">
+              <div className="flex-1 h-1.5 rounded-full bg-surface-200 overflow-hidden"><div className="h-full bg-brand-600 rounded-full" style={{ width: `${msProgress.pct}%` }} /></div>
+              <span className="text-xs text-surface-500 whitespace-nowrap">{msProgress.done} of {msProgress.total} jobs done{task?.milestoneId === ms.id ? '' : ' · this adds one'}</span>
+            </div>
+          )}
+        </FormField>
+
         <FormField label="Job type">
           <div className="flex flex-wrap gap-2">
             {TYPES.map(([v, l]) => <Chip key={v} active={form.type === v} onClick={() => setField('type', v)}>{l}</Chip>)}
@@ -337,18 +350,6 @@ export default function TaskFormModal({ open, onClose, task, presetStatus, defau
           </FormField>
         </div>
 
-        <FormField label="Milestone" hint={!form.projectId ? 'Pick a project first' : projectMilestones.length === 0 ? 'This project has no open milestones yet. The admin sets them up.' : 'The job counts toward this milestone. When the last one is done, the milestone completes and its payment request is raised.'}>
-          <Select value={form.milestoneId} disabled={!form.projectId || projectMilestones.length === 0} onChange={e => setForm(f => ({ ...f, milestoneId: e.target.value }))}>
-            <option value="">Not linked to a milestone</option>
-            {projectMilestones.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
-          </Select>
-          {msProgress && (
-            <div className="flex items-center gap-3 mt-1">
-              <div className="flex-1 h-1.5 rounded-full bg-surface-200 overflow-hidden"><div className="h-full bg-brand-600 rounded-full" style={{ width: `${msProgress.pct}%` }} /></div>
-              <span className="text-xs text-surface-500 whitespace-nowrap">{msProgress.done} of {msProgress.total} jobs done{task?.milestoneId === ms.id ? '' : ' · this adds one'}</span>
-            </div>
-          )}
-        </FormField>
 
         <FormField label="Attachments">
           <DropZone compact count={attachments.length} onAdd={atts => setAttachments(a => [...a, ...atts])} />
