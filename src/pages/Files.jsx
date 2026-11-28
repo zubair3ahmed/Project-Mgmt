@@ -26,7 +26,7 @@ const emptyForm = { name: '', projectId: '', folder: '', type: 'pdf', size: '', 
 export default function FilesPage() {
   const allFiles = useStore(s => s.files)
   const allProjects = useStore(s => s.projects)
-  const { isAdmin, staffId, myProjects, myProjectIds } = useAccess()
+  const { isAdmin, staffId, myProjects, myProjectIds, writableProjects, canWrite } = useAccess()
   const projects = isAdmin ? allProjects : myProjects
   const files = isAdmin ? allFiles : allFiles.filter(f => myProjectIds.has(f.projectId))
   const staff = useStore(s => s.staff)
@@ -72,7 +72,7 @@ export default function FilesPage() {
       <Header
         title="Files"
         subtitle={`${files.length} files across ${projects.length} projects`}
-        actions={<Button onClick={() => setShowForm(true)}><Upload size={14} /> Upload</Button>}
+        actions={(isAdmin || writableProjects.length > 0) && <Button onClick={() => setShowForm(true)}><Upload size={14} /> Upload</Button>}
       />
 
       <div className="px-6 py-3 border-b border-surface-100 bg-surface-0 flex flex-wrap items-center gap-3">
@@ -87,62 +87,82 @@ export default function FilesPage() {
       </div>
 
       <div className="flex-1 overflow-y-auto p-6">
-        {folders.map(folder => {
-          const folderFiles = filtered.filter(f => f.folder === folder)
-          return (
-            <div key={folder} className="mb-6">
-              <div className="flex items-center gap-2 mb-3">
-                <FolderOpen size={16} className="text-brand-500" />
-                <h3 className="text-sm font-semibold text-surface-800">{folder}</h3>
-                <CountBadge count={folderFiles.length} />
-              </div>
-              <div className="bg-surface-0 border border-surface-300 rounded-lg shadow-sm overflow-hidden">
-                <table className="data-table w-full text-sm">
-                  <tbody>
+        {folders.length > 0 && (
+          <div className="bg-surface-0 border border-surface-300 rounded-lg shadow-sm overflow-hidden">
+            <table className="w-full table-fixed max-md:table-auto text-sm">
+              <colgroup>
+                <col />
+                <col className="md:w-48" />
+                <col className="md:w-32" />
+                <col className="md:w-24" />
+                <col className="md:w-28" />
+              </colgroup>
+              <thead>
+                <tr className="bg-surface-200 text-xs font-semibold text-surface-700">
+                  <th className="text-left px-4 py-3">File</th>
+                  <th className="text-left px-4 py-3 max-md:hidden">Uploaded by</th>
+                  <th className="text-left px-4 py-3 max-md:hidden">Date</th>
+                  <th className="text-right px-4 py-3 max-md:hidden">Size</th>
+                  <th className="text-right px-4 py-3">Actions</th>
+                </tr>
+              </thead>
+              {folders.map(folder => {
+                const folderFiles = filtered.filter(f => f.folder === folder)
+                return (
+                  <tbody key={folder}>
+                    <tr className="bg-surface-50 border-t border-surface-200">
+                      <th colSpan={5} scope="rowgroup" className="text-left px-4 py-2">
+                        <span className="flex items-center gap-2">
+                          <FolderOpen size={16} className="text-brand-500 shrink-0" />
+                          <span className="text-sm font-semibold text-surface-800">{folder}</span>
+                          <CountBadge count={folderFiles.length} />
+                        </span>
+                      </th>
+                    </tr>
                     {folderFiles.map(f => {
                       const Icon = FILE_ICONS[f.type] || FileText
                       const uploader = staff.find(s => s.id === f.uploadedBy)
                       const project = projects.find(p => p.id === f.projectId)
                       return (
-                        <tr key={f.id} className="">
-                          <td className="px-4 py-3">
-                            <div className="flex items-center gap-3">
+                        <tr key={f.id} className="h-16 border-t border-surface-200 hover:bg-brand-50">
+                          <td className="px-4 py-2 align-middle max-md:w-full max-md:max-w-0">
+                            <div className="flex items-center gap-3 min-w-0">
                               <Icon size={16} className="text-surface-400 shrink-0" />
-                              <div>
-                                <p className="text-sm font-medium text-surface-800">{f.name}</p>
-                                <p className="text-2xs text-surface-400">{project?.name}</p>
+                              <div className="min-w-0">
+                                <p className="text-sm font-medium text-surface-800 truncate" title={f.name}>{f.name}</p>
+                                <p className="text-2xs text-surface-500 truncate">{project?.name}</p>
                               </div>
                             </div>
                           </td>
-                          <td className="px-4 py-3">
-                            <div className="flex items-center gap-2">
+                          <td className="px-4 py-2 align-middle max-md:hidden">
+                            <div className="flex items-center gap-2 min-w-0">
                               {uploader && <Avatar name={uploader.name} size="sm" />}
-                              <span className="text-xs text-surface-500">{uploader?.name}</span>
+                              <span className="text-xs text-surface-600 truncate">{uploader?.name || '—'}</span>
                             </div>
                           </td>
-                          <td className="px-4 py-3 text-xs text-surface-500">{f.date}</td>
-                          <td className="px-4 py-3 text-xs font-mono text-surface-500">{f.size}</td>
-                          <td className="px-4 py-3">
-                            <div className="flex items-center gap-1">
+                          <td className="px-4 py-2 align-middle text-xs text-surface-600 whitespace-nowrap max-md:hidden">{f.date}</td>
+                          <td className="px-4 py-2 align-middle text-xs font-mono text-surface-600 text-right whitespace-nowrap max-md:hidden">{f.size || '—'}</td>
+                          <td className="px-4 py-2 align-middle">
+                            <div className="flex items-center justify-end gap-1">
                               {f.url ? <a href={f.url} download={f.name} aria-label={`Download ${f.name}`} className="w-8 h-8 flex items-center justify-center rounded-md hover:bg-surface-100 text-surface-500"><Download size={14} /></a> : <span className="w-8 h-8 flex items-center justify-center rounded-md text-surface-300" title="Demo file, no download"><Download size={14} /></span>}
-                              {(isAdmin || f.uploadedBy === staffId) && (
-                                <button onClick={() => handleDelete(f)} className="w-8 h-8 flex items-center justify-center rounded-md hover:bg-red-50 text-surface-400 hover:text-danger"><Trash2 size={13} /></button>
-                              )}
+                              {isAdmin || (f.uploadedBy === staffId && canWrite(f.projectId)) ? (
+                                <button onClick={() => handleDelete(f)} aria-label={`Delete ${f.name}`} className="w-8 h-8 flex items-center justify-center rounded-md hover:bg-red-50 text-surface-400 hover:text-danger"><Trash2 size={13} /></button>
+                              ) : <span className="w-8 h-8" aria-hidden="true" />}
                             </div>
                           </td>
                         </tr>
                       )
                     })}
                   </tbody>
-                </table>
-              </div>
-            </div>
-          )
-        })}
+                )
+              })}
+            </table>
+          </div>
+        )}
         {folders.length === 0 && (
           <EmptyState icon={FolderOpen} title={files.length === 0 ? 'No files yet' : 'No files match'}
             description={files.length === 0 ? 'Drawings, calculations and reports are filed under a project and folder. Upload the first one to start the library.' : 'Try another project, or clear the search.'}
-            action={files.length === 0 ? { label: 'Upload a file', icon: Upload, onClick: () => setShowForm(true) } : undefined} />
+            action={files.length === 0 && (isAdmin || writableProjects.length > 0) ? { label: 'Upload a file', icon: Upload, onClick: () => setShowForm(true) } : undefined} />
         )}
       </div>
 
@@ -155,7 +175,7 @@ export default function FilesPage() {
             <FormField label="Project" required>
               <Select value={form.projectId} onChange={e => setForm(f => ({ ...f, projectId: e.target.value }))} required>
                 <option value="">Select project…</option>
-                {projects.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+                {(isAdmin ? projects : writableProjects).map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
               </Select>
             </FormField>
             <FormField label="Folder" required>

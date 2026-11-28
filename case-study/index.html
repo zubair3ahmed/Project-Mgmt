@@ -225,6 +225,29 @@ footer a{color:#fff}
 .body-gap{display:grid;gap:36px}
 @media(prefers-reduced-motion:reduce){.pin::before{animation:none}.cursor{transition:none}*{scroll-behavior:auto!important}}
 :focus-visible{outline:2px solid var(--signal);outline-offset:2px}
+
+/* user flows */
+.uf-tabs{display:flex;flex-wrap:wrap;gap:4px;border-bottom:1px solid var(--line2)}
+.uf-tabs button{font:inherit;font-size:14.5px;font-weight:600;background:transparent;border:0;border-bottom:3px solid transparent;margin-bottom:-1px;padding:10px 14px;color:var(--mute)}
+.uf-tabs button:hover{color:var(--ink)}
+.uf-tabs button[aria-selected=true]{color:var(--ink);border-bottom-color:var(--signal)}
+.uf-pane[hidden]{display:none}
+.uf-grid{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:28px;align-items:start;margin-top:20px}
+.uf-canvas{background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:auto;padding:8px}
+.uf-canvas svg{display:block;margin:0 auto}
+.uf-why{position:sticky;top:76px}
+.uf-why h3{font-size:18px}
+.uf-why ul{list-style:none;padding:0;margin-top:12px;border-top:1px solid var(--line2)}
+.uf-why li{padding:12px 0;border-bottom:1px solid var(--line);font-size:14.5px;color:var(--ink2)}
+.uf-why li b{display:block;color:var(--ink)}
+.uf-legend{display:flex;flex-wrap:wrap;gap:16px;font-size:12.5px;color:var(--mute);margin-top:12px}
+.uf-legend span{display:flex;align-items:center;gap:7px}
+.uf-legend i{width:24px;height:14px;border-radius:3px;border:1.5px solid}
+.nt{width:100%;height:100%;display:flex;align-items:center;justify-content:center;text-align:center;font-family:var(--sans);font-size:12.5px;line-height:1.35;font-weight:500;padding:0 14px;color:#101828}
+.nt.start,.nt.end{font-weight:700}
+.nt.start{color:#fff}
+.uf-swipe{display:none;font-size:13px;color:var(--mute);margin-top:12px}
+@media(max-width:960px){.uf-grid{grid-template-columns:1fr}.uf-why{position:static}.uf-swipe{display:block}}
 </style>
 </head>
 <body>
@@ -232,7 +255,7 @@ footer a{color:#fff}
 <div class="bar"><div class="wrap">
   <b>StructFlow</b><span class="eyebrow" style="color:#8A92A3">Case study</span>
   <nav>
-    <a href="prototype.html" target="_blank" rel="noopener" style="color:#FF8A4C;font-weight:600">Open prototype ↗</a><a href="#walkthrough">Walkthrough</a><a href="#brief">Brief</a><a href="#process">Process</a><a href="#decisions">Decisions</a><a href="#ai">AI creation</a><a href="#workspace">AI workspace</a><a href="#outcome">Outcome</a>
+    <a href="prototype.html" target="_blank" rel="noopener" style="color:#FF8A4C;font-weight:600">Open prototype ↗</a><a href="#walkthrough">Walkthrough</a><a href="#brief">Brief</a><a href="#process">Process</a><a href="#flows">User flows</a><a href="#decisions">Decisions</a><a href="#ai">AI creation</a><a href="#workspace">AI workspace</a><a href="#outcome">Outcome</a>
   </nav>
 </div></div>
 
@@ -338,7 +361,7 @@ footer a{color:#fff}
         <tr><td>Problem 1: profit margin</td><td>Reports: revenue, staff cost and margin per project.</td></tr>
         <tr><td>Problem 2: contribution</td><td>Time log feeds on-time rate, utilisation and a performance score.</td></tr>
         <tr><td>Problem 3: scheduling</td><td>Task board, due dates and a Needs attention list.</td></tr>
-        <tr><td>Milestones trigger payment</td><td>A confirm step before completing a milestone or changing a payment status.</td></tr>
+        <tr><td>Milestones trigger payment</td><td>Finishing a milestone&#39;s last task raises the payment request, automatically or after admin approval.</td></tr>
       </tbody>
     </table></div>
   </div>
@@ -360,10 +383,46 @@ footer a{color:#fff}
 </div>
 </section>
 
-<!-- 04 DECISIONS -->
+<!-- 04 USER FLOWS -->
+<section class="sec" id="flows">
+<div class="wrap">
+  <header><span class="no">04</span><h2>User flows</h2><p>Three of the thirteen I mapped: the ones that carry the business value, the AI design and the everyday experience.</p></header>
+  <div class="uf-tabs" role="tablist" aria-label="Choose a user flow"><button type="button" role="tab" id="uft-handoff" aria-controls="ufp-handoff" aria-selected="true" data-flow="handoff">Contract to payment</button><button type="button" role="tab" id="uft-a-task" aria-controls="ufp-a-task" aria-selected="false" data-flow="a-task">AI-assisted task creation</button><button type="button" role="tab" id="uft-m-day" aria-controls="ufp-m-day" aria-selected="false" data-flow="m-day">A team member's day</button></div>
+  <p class="uf-swipe">Swipe the chart sideways to follow the branches.</p>
+  <div class="uf-legend">
+    <span><i style="background:#101828;border-color:#101828;border-radius:999px"></i>Start</span>
+    <span><i style="background:#fff;border-color:#98a2b3"></i>User step</span>
+    <span><i style="background:#fffaeb;border-color:#f79009"></i>Decision</span>
+    <span><i style="background:#eff8ff;border-color:#53b1fd;border-style:dashed"></i>System does it</span>
+    <span><i style="background:#fef3f2;border-color:#f97066"></i>Error</span>
+    <span><i style="background:#ecfdf3;border-color:#32d583;border-radius:999px"></i>Outcome</span>
+  </div>
+    <div class="uf-pane" id="ufp-handoff" role="tabpanel" aria-labelledby="uft-handoff">
+      <div class="uf-grid">
+        <div class="uf-canvas" id="ufc-handoff" tabindex="0" aria-label="Contract to payment flow chart, scrolls sideways on small screens"></div>
+        <aside class="uf-why"><h3>Money follows the work</h3><ul><li><b>Milestones own the money</b>The brief ties payment to milestones, never to tasks. Tasks only say which milestone they count toward.</li><li><b>Two trigger modes</b>The payment request goes out automatically, or waits as Ready to invoice for the admin to approve.</li><li><b>Roles stay clean</b>The team member never sees an amount. They finish work and the admin handles money.</li></ul></aside>
+      </div>
+    </div>
+    <div class="uf-pane" id="ufp-a-task" role="tabpanel" aria-labelledby="uft-a-task" hidden>
+      <div class="uf-grid">
+        <div class="uf-canvas" id="ufc-a-task" tabindex="0" aria-label="AI-assisted task creation flow chart, scrolls sideways on small screens"></div>
+        <aside class="uf-why"><h3>One line, with checks where it can be wrong</h3><ul><li><b>Type it, don't fill it</b>One sentence fills project, person, priority, date, estimate and type.</li><li><b>Doubt is a visible branch</b>An unclear project is flagged Needs review instead of guessed.</li><li><b>A way back</b>Every create ends with Undo, and Create another keeps the project for the next task.</li></ul></aside>
+      </div>
+    </div>
+    <div class="uf-pane" id="ufp-m-day" role="tabpanel" aria-labelledby="uft-m-day" hidden>
+      <div class="uf-grid">
+        <div class="uf-canvas" id="ufc-m-day" tabindex="0" aria-label="A team member&#39;s day flow chart, scrolls sideways on small screens"></div>
+        <aside class="uf-why"><h3>The shortest path to Done</h3><ul><li><b>Next thing first</b>My Work orders tasks by due date, with Start and Done on the row.</li><li><b>Review is optional</b>It is a status, not an approval gate, so small tasks are not held up.</li><li><b>Feedback closes the loop</b>Finishing a milestone's last task tells the member the admin has been told.</li></ul></aside>
+      </div>
+    </div>
+  <p style="margin-top:18px"><a href="user-flows.html" target="_blank" rel="noopener" style="font-weight:600">See all 13 flows, with the role permissions ↗</a></p>
+</div>
+</section>
+
+<!-- 05 DECISIONS -->
 <section class="sec" id="decisions">
 <div class="wrap">
-  <header><span class="no">04</span><h2>Design decisions</h2><p>Five calls that shaped how it looks and behaves. Every screenshot is live: click the pins.</p></header>
+  <header><span class="no">05</span><h2>Design decisions</h2><p>Five calls that shaped how it looks and behaves. Every screenshot is live: click the pins.</p></header>
 
   <div class="dec">
     <div class="hs" id="hs-dash">
@@ -426,10 +485,10 @@ footer a{color:#fff}
 </div>
 </section>
 
-<!-- 05 AI -->
+<!-- 06 AI -->
 <section class="sec" id="ai">
 <div class="wrap">
-  <header><span class="no">05</span><h2>AI-assisted creation</h2><p>The centerpiece: task and project forms that fill themselves, and show their working.</p></header>
+  <header><span class="no">06</span><h2>AI-assisted creation</h2><p>The centerpiece: task and project forms that fill themselves, and show their working.</p></header>
   <div class="body-gap">
     <p class="lg">A task has 11 fields. Nobody wants to fill 11 fields, so the only required work is typing the title, and the title can carry the rest.</p>
 
@@ -496,10 +555,10 @@ footer a{color:#fff}
 </div>
 </section>
 
-<!-- 06 WORKSPACE -->
+<!-- 07 WORKSPACE -->
 <section class="sec" id="workspace">
 <div class="wrap">
-  <header><span class="no">06</span><h2>My AI-native workspace</h2><p>How the work actually got done, with numbers from the session log.</p></header>
+  <header><span class="no">07</span><h2>My AI-native workspace</h2><p>How the work actually got done, with numbers from the session log.</p></header>
   <div class="body-gap">
     <p class="lg">I direct and judge. Claude builds and checks. The loop is short, and every step ends in something I can see.</p>
     <div class="loop">
@@ -556,10 +615,10 @@ footer a{color:#fff}
 </div>
 </section>
 
-<!-- 07 OUTCOME -->
+<!-- 08 OUTCOME -->
 <section class="sec" id="outcome">
 <div class="wrap">
-  <header><span class="no">07</span><h2>Outcome and next</h2><p>What shipped, and what I would not claim yet.</p></header>
+  <header><span class="no">08</span><h2>Outcome and next</h2><p>What shipped, and what I would not claim yet.</p></header>
   <div class="body-gap">
     <div class="g2">
       <div><h3>Delivered</h3><ul>
@@ -763,6 +822,114 @@ footer a{color:#fff}
   }
   tw.addEventListener('click',function(){ tab(false); });
   tl.addEventListener('click',function(){ tab(true); });
+})();
+</script>
+<script>
+/* user flows: data and renderer taken from user-flows.html */
+(function(){
+const FLOWS = [
+{group:'Both roles', id:'handoff', role:'both', title:'End to end: from contract to payment', goal:'How work passes between the admin, the system and the team member.', lanes:['Admin','StructFlow','Team member'],
+ nodes:[
+  ['p','s',0,0,'Create the project'],['m','a',0,1,'Set up milestones (% of contract value)'],['t','a',0,2,'Create tasks, assign people, link to a milestone'],
+  ['n','y',1,3,'Member tab updates live: new task toast'],['st','a',2,3,'Start the task'],
+  ['w','a',2,4,'Work: comment, attach files, log hours'],['dn','a',2,5,'Mark task Done'],
+  ['q','d',1,5,'Last task in the milestone?'],['wait','y',1,6,'Milestone stays open. Progress updates'],
+  ['mc','y',1,7,'Milestone completes'],['md','d',1,8,'Payment mode automatic?'],
+  ['ap','a',0,8,'Ready to invoice: review, then Approve and invoice'],
+  ['inv','y',1,9,'Status: Invoiced (request sent)'],['pd','a',0,10,'Client pays: set status to Paid'],['rv','e',1,10,'Counts in revenue and margin']],
+ edges:[['p','m'],['m','t'],['t','n','','vh'],['n','st'],['st','w'],['w','dn'],['dn','q'],['q','wait','No'],['q','mc','Yes','L'],['mc','md'],['md','ap','No'],['md','inv','Yes'],['ap','inv','','B'],['inv','pd','','hv'],['pd','rv']],
+ notes:['The admin tab also gets a live toast when a member finishes or creates a task. Live updates work between tabs of one browser; other devices need the backend.','Team members never see amounts. They see "Milestone complete. Admin has been notified."']},
+
+{group:'Admin', id:'a-task', role:'admin', title:'A3. Create and assign a task', goal:'Type the work the way you would say it, then confirm what was understood.',
+ nodes:[
+  ['s','s',1,0,'Tasks: New Task'],['ty','a',1,1,'Type e.g. "Column schedule Prestige Towers @Amit !high due fri 8h"'],
+  ['pa','y',1,2,'Fills project, assignee, priority, due date, estimate, type'],
+  ['q','d',1,3,'Project understood?'],['nr','a',2,3,'Needs review tag: pick the project'],
+  ['as','d',1,4,'Assignee named?'],['sg','y',2,4,'Suggests by skills and workload. Or Assign to me'],
+  ['ms','a',1,5,'Optional: link a milestone, add files, notes, tags'],['v','d',1,6,'Title, project, assignee set?'],['er','x',0,6,'Errors shown on the fields'],
+  ['cr','y',1,7,'Task created. History starts'],['more','d',1,8,'"Create another" ticked?'],['again','a',0,8,'Form resets, project kept'],
+  ['e','e',1,9,'Toast with Undo. Assignee sees it live']],
+ edges:[['s','ty'],['ty','pa'],['pa','q'],['q','nr','No'],['q','as','Yes'],['nr','as','','B'],['as','sg','No'],['as','ms','Yes'],['sg','ms','','vh'],['ms','v'],['v','er','No'],['v','cr','Yes'],['cr','more'],['more','again','Yes'],['more','e','No'],['again','ty','Next task','L']],
+ notes:['Only open milestones of the chosen project are offered. Completed ones are closed to new tasks.']},
+
+{group:'Team member', id:'m-day', role:'member', title:'M1. Work through the day', goal:'See what is next and finish it with as few clicks as possible.',
+ nodes:[
+  ['s','s',1,0,'Sign in: My Work'],['q','d',1,1,'Anything assigned?'],['none','e',2,1,'"Nothing assigned yet": add a task or log time'],
+  ['up','a',1,2,'Up next, ordered by due date'],['live','y',2,2,'New assignment arrives: live toast with View'],
+  ['go','a',1,3,'Press Start. Status: In Progress'],['wk','a',1,4,'Open the task: comment, @mention, attach files'],
+  ['rv','d',1,5,'Needs a check first?'],['re','a',2,5,'Move to Review'],
+  ['dn','a',1,6,'Press Done'],['ms','d',1,7,'Finished the milestone\'s last task?'],['nt','y',2,7,'"Milestone complete. Admin has been notified"'],
+  ['e','e',1,8,'Toast with Undo. Admin sees it live']],
+ edges:[['s','q'],['q','none','No'],['q','up','Yes'],['live','up'],['up','go'],['go','wk'],['wk','rv'],['rv','re','Yes'],['rv','dn','No'],['re','dn','When checked','vh'],['dn','ms'],['ms','nt','Yes'],['ms','e','No'],['nt','e','','vh']],
+ notes:['Review is a status, not an approval gate: a member can mark their own task Done directly.']}
+];
+
+const CW = 236, RH = 100, NW = 196, NH = 66, PAD = 34;
+const STYLE = {
+  s:{fill:'#101828',stroke:'#101828'}, a:{fill:'#ffffff',stroke:'#98a2b3'}, d:{fill:'#fffaeb',stroke:'#f79009'},
+  y:{fill:'#eff8ff',stroke:'#53b1fd',dash:'5 4'}, x:{fill:'#fef3f2',stroke:'#f97066'}, e:{fill:'#ecfdf3',stroke:'#32d583'}
+};
+const CLS = {s:'start',e:'end'};
+const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;');
+
+function draw(flow){
+  const maxC = Math.max(...flow.nodes.map(n=>n[2])), maxR = Math.max(...flow.nodes.map(n=>n[3]));
+  const top = flow.lanes ? 44 : 14;
+  const W = (maxC+1)*CW + PAD*2, H = (maxR+1)*RH + top + 14;
+  const N = {};
+  flow.nodes.forEach(([id,t,c,r,text])=>{ const cx = PAD + c*CW + CW/2, cy = top + r*RH + RH/2; N[id]={id,t,c,r,text,cx,cy,l:cx-NW/2,rt:cx+NW/2,tp:cy-NH/2,bt:cy+NH/2}; });
+  const mk = 'm-'+flow.id;
+  let s = `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(flow.title)} flow chart"><defs><marker id="${mk}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#667085"/></marker></defs>`;
+  if(flow.lanes) flow.lanes.forEach((l,i)=>{ const x=PAD+i*CW; s+=`<rect x="${x+4}" y="6" width="${CW-8}" height="${H-12}" rx="10" fill="${i%2?'#ffffff':'#f9fafb'}" stroke="#eaecf0"/><text x="${x+CW/2}" y="28" text-anchor="middle" font-family="Schibsted Grotesk,sans-serif" font-size="12" font-weight="800" fill="#344054" letter-spacing=".04em">${l.toUpperCase()}</text>`; });
+  let labels = '';
+  flow.edges.forEach(([f,t,label,route])=>{
+    const a=N[f], b=N[t]; let pts, lp;
+    const right = b.cx > a.cx, sideX = right ? a.rt : a.l;
+    if(route==='L'){ const gx = Math.min(a.l,b.l)-18; pts=[[a.l,a.cy],[gx,a.cy],[gx,b.cy],[b.l,b.cy]]; lp=[gx+4,(a.cy+b.cy)/2,'start']; }
+    else if(route==='R'){ const gx = Math.max(a.rt,b.rt)+18; pts=[[a.rt,a.cy],[gx,a.cy],[gx,b.cy],[b.rt,b.cy]]; lp=[gx-6,(a.cy+b.cy)/2,'end']; }
+    else if(route==='B'){ /* drop into the row gap, travel sideways, then enter the target from above */
+      const gy = a.bt+11; pts=[[a.cx,a.bt],[a.cx,gy],[b.cx,gy],[b.cx,b.tp]]; lp=[(a.cx+b.cx)/2,gy,'middle']; }
+    else if(route==='T'){ /* loop back up through the gutter to the right of the source */
+      const gx=a.rt+16, gy=b.cy; pts=[[a.rt,a.cy],[gx,a.cy],[gx,gy],[b.rt,gy]]; lp=[(gx+b.rt)/2,gy,'middle']; }
+    else if(route==='hv'){ const down=b.cy>a.cy; pts=[[sideX,a.cy],[b.cx,a.cy],[b.cx,down?b.tp:b.bt]]; lp=[(sideX+b.cx)/2,a.cy,'middle']; }
+    else if(route==='vh'){ const down=b.cy>a.cy, endX = a.cx>b.cx ? b.rt : b.l; if(Math.abs(a.cy-b.cy)<1){pts=[[sideX,a.cy],[right?b.l:b.rt,b.cy]];} else { pts=[[a.cx,down?a.bt:a.tp],[a.cx,b.cy],[endX,b.cy]]; } lp=[a.cx+6,(a.bt+b.cy)/2,'start']; }
+    else if(a.c===b.c){ const down=b.r>a.r; pts=[[a.cx,down?a.bt:a.tp],[b.cx,down?b.tp:b.bt]]; lp=[a.cx+8,(pts[0][1]+pts[1][1])/2,'start']; }
+    else if(a.r===b.r){ pts=[[sideX,a.cy],[right?b.l:b.rt,b.cy]]; lp=[(pts[0][0]+pts[1][0])/2,a.cy-9,'middle']; }
+    else { const down=b.r>a.r, gy = down ? a.bt+16 : a.tp-16; pts=[[a.cx,down?a.bt:a.tp],[a.cx,gy],[b.cx,gy],[b.cx,down?b.tp:b.bt]]; lp=[(a.cx+b.cx)/2,gy,'middle']; }
+    s+=`<polyline points="${pts.map(p=>p.join(',')).join(' ')}" fill="none" stroke="#667085" stroke-width="1.4" stroke-linejoin="round" marker-end="url(#${mk})"/>`;
+    if(label){ const w=label.length*6.1+10, x = lp[2]==='middle'?lp[0]-w/2 : lp[2]==='end'?lp[0]-w : lp[0];
+      labels+=`<rect x="${x}" y="${lp[1]-9}" width="${w}" height="17" rx="4" fill="#fff" stroke="#eaecf0"/><text x="${x+w/2}" y="${lp[1]+3.5}" text-anchor="middle" font-family="Schibsted Grotesk,sans-serif" font-size="10.5" font-weight="700" fill="#475467">${esc(label)}</text>`; }
+  });
+  Object.values(N).forEach(n=>{
+    const st=STYLE[n.t], attr=`fill="${st.fill}" stroke="${st.stroke}" stroke-width="1.5"${st.dash?` stroke-dasharray="${st.dash}"`:''}`;
+    if(n.t==='d') s+=`<polygon points="${n.l+16},${n.tp} ${n.rt-16},${n.tp} ${n.rt},${n.cy} ${n.rt-16},${n.bt} ${n.l+16},${n.bt} ${n.l},${n.cy}" ${attr}/>`;
+    else s+=`<rect x="${n.l}" y="${n.tp}" width="${NW}" height="${NH}" rx="${n.t==='s'||n.t==='e'?NH/2:10}" ${attr}/>`;
+    s+=`<foreignObject x="${n.l}" y="${n.tp}" width="${NW}" height="${NH}"><div xmlns="http://www.w3.org/1999/xhtml" class="nt ${CLS[n.t]||''}">${esc(n.text)}</div></foreignObject>`;
+  });
+  return s+labels+'</svg>';
+}
+
+
+FLOWS.forEach(f => { document.getElementById('ufc-' + f.id).innerHTML = draw(f); });
+const tabs = [...document.querySelectorAll('.uf-tabs button')];
+/* on narrow screens the chart scrolls sideways: open it on the starting step, not the left edge */
+function centre(id){
+  const box = document.getElementById("ufc-" + id), f = FLOWS.find(x => x.id === id), s = f.nodes.find(n => n[1] === "s");
+  if (box.scrollWidth > box.clientWidth) box.scrollLeft = PAD + s[2] * CW + CW / 2 + 8 - box.clientWidth / 2;
+}
+function show(id){
+  tabs.forEach(b => { const on = b.dataset.flow === id; b.setAttribute('aria-selected', on); b.tabIndex = on ? 0 : -1; document.getElementById('ufp-' + b.dataset.flow).hidden = !on; });
+  centre(id);
+}
+tabs.forEach((b, i) => {
+  b.addEventListener('click', () => show(b.dataset.flow));
+  b.addEventListener('keydown', e => {
+    if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+    const n = tabs[(i + (e.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length];
+    n.focus(); show(n.dataset.flow);
+  });
+});
+show('handoff');
 })();
 </script>
 </body>

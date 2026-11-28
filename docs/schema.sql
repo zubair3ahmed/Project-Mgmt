@@ -56,6 +56,7 @@ create table projects (
   contract_value numeric(14,2) not null,
   description text,
   manager_id text not null references staff(id) on delete restrict,
+  access text,
   current_stage text references project_stages(id) on delete set null,
   progress integer,
   created_at timestamptz not null default now(),

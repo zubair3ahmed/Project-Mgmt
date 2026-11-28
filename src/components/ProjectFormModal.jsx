@@ -3,24 +3,25 @@ import { ChevronDown, CornerDownLeft, Plus } from 'lucide-react'
 import clsx from 'clsx'
 import Modal from './Modal'
 import Avatar from './Avatar'
-import { FormField, Input, Select, Textarea, Button, Alert } from './FormField'
+import { FormField, Input, Select, Textarea, Button, Alert, Checkbox } from './FormField'
 import useStore from '../store/useStore'
 import useToast from '../store/useToast'
 import useAuth from '../store/useAuth'
 import { AutoTag, SmartSummary, Starters } from './SmartFill'
 import { DropZone, AttachmentList } from './Attachments'
 import { extOf, folderFor, formatSize } from '../lib/attachments'
+import { ACCESS_LEVELS } from '../lib/access'
 import { addDays, iso } from '../lib/smartTask'
 import { PROJECT_TYPES, TYPE_MONTHS, addMonths, parseProjectText, suggestManager, suggestTeam, clientMatches } from '../lib/smartProject'
 
 const PRIORITIES = ['low', 'medium', 'high', 'urgent']
-const STATUSES = [['planning', 'Planning'], ['in-progress', 'In Progress'], ['on-hold', 'On Hold'], ['completed', 'Completed']]
+const STATUSES = [['planning', 'To Do'], ['in-progress', 'In Progress'], ['completed', 'Completed']]
 const AUTO_KEYS = ['clientId', 'managerId', 'type', 'location', 'priority', 'contractValue', 'startDate', 'endDate']
 const VALUE_CHIPS = [['₹10L', 1e6], ['₹25L', 2.5e6], ['₹50L', 5e6], ['₹1Cr', 1e7], ['₹2Cr', 2e7]]
 const DURATION_CHIPS = [3, 6, 12, 18]
 const DEFAULTS = {
   raw: '', clientId: '', managerId: '', type: 'Residential', location: '', priority: 'medium', status: 'planning',
-  contractValue: '', startDate: '', endDate: '', description: '', teamIds: [],
+  contractValue: '', startDate: '', endDate: '', description: '', teamIds: [], access: {},
 }
 
 const fullINR = n => '₹' + Number(n).toLocaleString('en-IN')
@@ -61,6 +62,7 @@ export default function ProjectFormModal({ open, onClose, project, onAddClient }
   const [more, setMore] = useState(false)
   const [valueStage, setValueStage] = useState(null)
   const [attachments, setAttachments] = useState([])
+  const [stageTemplate, setStageTemplate] = useState(true)
 
   function autofill(f) {
     const n = { ...f }
@@ -94,12 +96,13 @@ export default function ProjectFormModal({ open, onClose, project, onAddClient }
     setErrors({})
     setValueStage(null)
     setAttachments([])
+    setStageTemplate(true)
     if (project) {
       touched.current = new Set([...Object.keys(DEFAULTS), 'teamIds'])
       setForm({
         raw: project.name, clientId: project.clientId, managerId: project.managerId, type: project.type, location: project.location,
         priority: project.priority, status: project.status, contractValue: String(project.contractValue), startDate: project.startDate,
-        endDate: project.endDate, description: project.description || '', teamIds: [...project.teamIds],
+        endDate: project.endDate, description: project.description || '', teamIds: [...project.teamIds], access: { ...(project.access || {}) },
       })
       setMore(true)
     } else {
@@ -188,6 +191,7 @@ export default function ProjectFormModal({ open, onClose, project, onAddClient }
       name, clientId: form.clientId, type: form.type, location: form.location.trim(), priority: form.priority,
       status: form.status, startDate: form.startDate, endDate: form.endDate, contractValue: Number(form.contractValue),
       description: form.description, managerId: form.managerId, teamIds: form.teamIds,
+      access: Object.fromEntries(form.teamIds.map(id => [id, form.access[id] || 'write'])),
     }
     if (editing) {
       updateProject(project.id, data)
@@ -195,6 +199,7 @@ export default function ProjectFormModal({ open, onClose, project, onAddClient }
     }
     else {
       const newId = addProject(data)
+      if (stageTemplate) useStore.getState().addMilestonesFromTemplate(newId)
       const me = useAuth.getState().user
       attachments.forEach(a => useStore.getState().addFile({
         name: a.name, projectId: newId, folder: folderFor(a), type: extOf(a.name) || 'file',
@@ -347,7 +352,7 @@ export default function ProjectFormModal({ open, onClose, project, onAddClient }
           </div>
         </FormField>
 
-        <FormField label="Team" hint="Suggested from skills and current workload. Tap to change.">
+        <FormField label="Team and access" hint="Only these people (and the manager) see the project. Tap to add or remove, then set what each can do.">
           <div className="flex flex-wrap gap-2">
             {teamPool.map(s => {
               const on = form.teamIds.includes(s.id)
@@ -367,7 +372,29 @@ export default function ProjectFormModal({ open, onClose, project, onAddClient }
               )
             })}
           </div>
+          {form.teamIds.length > 0 && (
+            <ul className="mt-2 border border-surface-300 rounded-lg divide-y divide-surface-200">
+              {form.teamIds.map(id => {
+                const person = staff.find(x => x.id === id)
+                if (!person) return null
+                const level = form.access[id] || 'write'
+                return (
+                  <li key={id} className="flex items-center gap-3 px-3 py-2">
+                    <Avatar name={person.name} size="sm" interactive={false} />
+                    <span className="flex-1 min-w-0 text-sm text-surface-800 truncate">{person.name}</span>
+                    <Select size="sm" className="w-40" value={level} onChange={e => setForm(f => ({ ...f, access: { ...f.access, [id]: e.target.value } }))}>
+                      {ACCESS_LEVELS.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
+                    </Select>
+                  </li>
+                )
+              })}
+            </ul>
+          )}
         </FormField>
+
+        {!editing && (
+          <Checkbox checked={stageTemplate} onChange={e => setStageTemplate(e.target.checked)} label="Start with the six stage milestones" supporting="Work Order through Roof Details, weighted 5, 10, 25, 20, 30 and 10%. You can edit them afterwards." />
+        )}
 
         {!editing && (
           <FormField label="Attachments" hint="Work order, contract, drawings or site photos. They are filed in the project's Files.">

@@ -3,8 +3,8 @@
 // Tasks only say which milestone they count toward.
 
 export const PAYMENT_MODES = [
-  ['auto', 'Automatic', 'When the last task is done, the payment request is sent straight away.'],
-  ['manual', 'Manual', 'When the last task is done, it waits as "Ready to invoice" for an admin to approve.'],
+  ['auto', 'Automatic', 'When the last job is done, the payment request is sent straight away.'],
+  ['manual', 'Manual', 'When the last job is done, it waits as "Ready to invoice" for an admin to approve.'],
 ]
 
 // Predefined milestones taken from the client's six delivery stages. Weights add up to 100.

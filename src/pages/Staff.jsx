@@ -87,7 +87,7 @@ export default function StaffPage() {
       message: activating
         ? 'They will be able to sign in again and will appear in assignee lists.'
         : 'They will lose access to StructFlow and will no longer appear in assignee lists. Their history is kept.',
-      details: !activating && open ? [`${open} open task${open > 1 ? 's' : ''} stay assigned to them until you reassign ${open > 1 ? 'them' : 'it'}.`] : [],
+      details: !activating && open ? [`${open} open job${open > 1 ? 's' : ''} stay assigned to them until you reassign ${open > 1 ? 'them' : 'it'}.`] : [],
       confirmLabel: activating ? 'Activate' : 'Deactivate',
       tone: activating ? 'primary' : 'danger',
     })
@@ -164,7 +164,7 @@ export default function StaffPage() {
                   </div>
                 </div>
                 <div className="grid grid-cols-4 gap-3 mt-4 pt-3 border-t border-surface-50">
-                  <div><p className="text-2xs text-surface-400">Tasks</p><p className="text-sm font-semibold text-surface-800">{metrics.tasks}</p></div>
+                  <div><p className="text-2xs text-surface-400">Jobs</p><p className="text-sm font-semibold text-surface-800">{metrics.tasks}</p></div>
                   <div><p className="text-2xs text-surface-400">Completed</p><p className="text-sm font-semibold text-success">{metrics.completed}</p></div>
                   <div><p className="text-2xs text-surface-400">In Progress</p><p className="text-sm font-semibold text-info">{metrics.inProgress}</p></div>
                   <div><p className="text-2xs text-surface-400">Hours</p><p className="text-sm font-semibold text-surface-800 font-mono">{metrics.totalHours}h</p></div>
@@ -380,7 +380,7 @@ function StaffDetail({ person, tasks: allTasks, timeLogs, staff, onEdit, onToggl
       </div>
 
       <div>
-        <p className="text-xs text-surface-400 mb-2">Assigned Tasks</p>
+        <p className="text-xs text-surface-400 mb-2">Assigned Jobs</p>
         <div className="space-y-1">
           {assignedTasks.slice(0, 8).map(t => (
             <div key={t.id} className="flex items-center justify-between py-2 border-b border-surface-50 last:border-0">

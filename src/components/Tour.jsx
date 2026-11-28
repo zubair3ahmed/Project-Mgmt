@@ -10,22 +10,22 @@ import { Button } from './FormField'
 // sidebar step points at the menu button instead. A step with no visible target is skipped.
 const ADMIN_STEPS = [
   { welcome: true, title: 'Welcome to StructFlow', body: 'A two-minute tour of where things live and the shortcuts worth knowing. You can skip it now and replay it any time from your account menu.' },
-  { targets: ['nav', 'menu'], title: 'Everything is in the sidebar', body: 'Workspace has your projects, tasks and time log. Management is admin only: staff, milestones and reports.', place: 'right' },
-  { targets: ['search'], title: 'Find anything in a keystroke', body: 'Press ⌘K (Ctrl K on Windows) anywhere to search projects, tasks, people and files.', place: 'bottom' },
-  { route: '/', targets: ['kpis'], title: 'Your morning numbers', body: 'Active projects, open tasks, revenue and completion. Charts and the Needs attention list sit right below.', place: 'bottom' },
-  { route: '/projects', targets: ['action'], title: 'Create a project from one line', body: 'Try "Prestige Tech Park Bangalore ₹2.5Cr client Prestige 12 months @Priya". Fields fill themselves, and anything it is unsure of is flagged for you.', place: 'bottom' },
-  { route: '/tasks', targets: ['action'], title: 'Tasks work the same way', body: 'Type "Column schedule Prestige Towers @Amit !high due fri 8h". Link it to a milestone. When the last task of a milestone is done, its payment request is raised.', place: 'bottom' },
-  { route: '/milestones', targets: ['milestones'], title: 'Money lives on milestones', body: 'Milestones carry the money. Open one to see its tasks. When the last one is done, the request goes out automatically or waits here for your approval.', place: 'top' },
+  { targets: ['nav', 'menu'], title: 'Everything is in the sidebar', body: 'Workspace has your projects, jobs and time log. Management is admin only: staff, milestones and reports.', place: 'right' },
+  { targets: ['search'], title: 'Find anything in a keystroke', body: 'Press ⌘K (Ctrl K on Windows) anywhere to search projects, jobs, people and files.', place: 'bottom' },
+  { route: '/', targets: ['kpis'], title: 'Your morning numbers', body: 'Active projects, open jobs, revenue and completion. Charts and the Needs attention list sit right below.', place: 'bottom' },
+  { route: '/projects', targets: ['create'], title: 'Add a project from anywhere', body: 'This button is always here. Type "Prestige Tech Park Bangalore ₹2.5Cr client Prestige 12 months @Priya" and the fields fill themselves. Open a project to see its milestones and jobs, or use the pencil to edit it.', place: 'bottom' },
+  { route: '/jobs', targets: ['action'], title: 'Jobs work the same way', body: 'Type "Column schedule Prestige Towers @Amit !high due fri 8h". Link it to a milestone. When the last job of a milestone is done, its payment request is raised.', place: 'bottom' },
+  { route: '/milestones', targets: ['milestones'], title: 'Money lives on milestones', body: 'Milestones carry the money. Open one to see its jobs. When the last one is done, the request goes out automatically or waits here for your approval.', place: 'top' },
   { targets: ['account'], title: 'You are set', body: 'Replay this tour or sign out from here whenever you like.', place: 'bottom' },
 ]
 
 const MEMBER_STEPS = [
-  { welcome: true, title: 'Welcome to StructFlow', body: 'Here is a quick look at your tasks, hours and where to find things. You can skip it and replay it from your account menu.' },
-  { route: '/', targets: ['up-next', 'kpis'], title: 'Your work, in order', body: 'Up next lists what you should do now. Start a task or mark it Done right from the row.', place: 'bottom' },
-  { targets: ['nav', 'menu'], title: 'Where things live', body: 'My Tasks, Projects you are on, your Time Log and Files are all one tap away.', place: 'right' },
-  { targets: ['search'], title: 'Find anything fast', body: 'Press ⌘K (Ctrl K on Windows) to search your projects, tasks and files.', place: 'bottom' },
-  { route: '/tasks', targets: ['action'], title: 'Add a task by typing a line', body: 'Try "Site visit report Prestige Towers due fri 4h". It fills the project, date and estimate for you. You can also link it to a milestone.', place: 'bottom' },
-  { route: '/time-log', targets: ['action'], title: 'Log your hours', body: 'Record time against a task so your contribution and on-time rate are counted.', place: 'bottom' },
+  { welcome: true, title: 'Welcome to StructFlow', body: 'Here is a quick look at your jobs, hours and where to find things. You can skip it and replay it from your account menu.' },
+  { route: '/', targets: ['up-next', 'kpis'], title: 'Your work, in order', body: 'Up next lists what you should do now. Start a job or mark it Done right from the row.', place: 'bottom' },
+  { targets: ['nav', 'menu'], title: 'Where things live', body: 'Projects you have been added to, My Jobs, your Time Log and Files are all one tap away.', place: 'right' },
+  { targets: ['search'], title: 'Find anything fast', body: 'Press ⌘K (Ctrl K on Windows) to search your projects, jobs and files.', place: 'bottom' },
+  { route: '/jobs', targets: ['create'], title: 'Add a job by typing a line', body: 'Try "Site visit report Prestige Towers due fri 4h". It fills the project, date and estimate for you. You can add jobs to projects where your admin has given you write access.', place: 'bottom' },
+  { route: '/time-log', targets: ['action'], title: 'Log your hours', body: 'See your hours for each day across projects. Log them here, or with the Log hours button on any job.', place: 'bottom' },
   { targets: ['account'], title: 'You are set', body: 'Replay this tour or sign out from here whenever you like.', place: 'bottom' },
 ]
 

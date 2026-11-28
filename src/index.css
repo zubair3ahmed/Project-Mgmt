@@ -221,8 +221,6 @@ input, button, select, textarea {
   .data-table[data-m-hide~="6"] :is(th, td):nth-child(6),
   .data-table[data-m-hide~="7"] :is(th, td):nth-child(7),
   .data-table[data-m-hide~="8"] :is(th, td):nth-child(8) { display: none; }
-  /* header actions become icon-only buttons */
-  .m-actions button:has(svg) { font-size: 0; gap: 0; padding-left: 0.625rem; padding-right: 0.625rem; }
   /* toast clears the bottom edge */
   [role="status"].fixed { bottom: 1rem; }
 }

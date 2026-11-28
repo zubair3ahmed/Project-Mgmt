@@ -19,7 +19,7 @@ function Highlight({ text, q }) {
   return parts.map((p, i) => (p.toLowerCase() === q.toLowerCase() ? <mark key={i} className="bg-transparent text-brand-700 font-semibold">{p}</mark> : p))
 }
 
-const GROUP_ORDER = ['Pages', 'Projects', 'Tasks', 'People', 'Files']
+const GROUP_ORDER = ['Pages', 'Projects', 'Jobs', 'People', 'Files']
 
 export default function CommandPalette() {
   const open = useSearch(s => s.open)
@@ -62,7 +62,7 @@ export default function CommandPalette() {
     const pages = [
       { to: '/', title: isAdmin ? 'Dashboard' : 'My Work', icon: LayoutDashboard },
       { to: '/projects', title: 'Projects', icon: FolderKanban },
-      { to: '/tasks', title: isAdmin ? 'Tasks' : 'My Tasks', icon: ListTodo },
+      { to: '/jobs', title: isAdmin ? 'Jobs' : 'My Jobs', icon: ListTodo },
       { to: '/time-log', title: 'Time Log', icon: Clock },
       { to: '/files', title: 'Files', icon: FileText },
       ...(isAdmin ? [
@@ -82,7 +82,7 @@ export default function CommandPalette() {
         kind: 'Projects', id: p.id, title: p.name, sub: `${p.type} · ${p.location}`, to: `/projects/${p.id}`, icon: FolderKanban, status: p.status,
       })).sort(byScore).slice(0, 5),
       ...tasks.filter(t => match(t.title, t.id, (t.tags || []).join(' '), staffName(t.assigneeId), t.type, projectName(t.projectId))).map(t => ({
-        kind: 'Tasks', id: t.id, title: t.title, sub: `${projectName(t.projectId)} · ${staffName(t.assigneeId)}`, to: `/tasks?task=${t.id}`, icon: ListTodo, status: t.status,
+        kind: 'Jobs', id: t.id, title: t.title, sub: `${projectName(t.projectId)} · ${staffName(t.assigneeId)}`, to: `/jobs?task=${t.id}`, icon: ListTodo, status: t.status,
       })).sort(byScore).slice(0, 6),
       ...(isAdmin ? staff.filter(s => match(s.name, s.role, s.email, (s.skills || []).join(' '))).map(s => ({
         kind: 'People', id: s.id, title: s.name, sub: s.role, to: `/staff?person=${s.id}`, person: s.name,
@@ -124,7 +124,7 @@ export default function CommandPalette() {
             ref={inputRef}
             value={q}
             onChange={e => setQ(e.target.value)}
-            placeholder={isAdmin ? 'Search projects, tasks, people, files…' : 'Search your projects, tasks, files…'}
+            placeholder={isAdmin ? 'Search projects, jobs, people, files…' : 'Search your projects, jobs, files…'}
             className="flex-1 h-full bg-transparent text-base text-surface-900 placeholder:text-surface-400 outline-none"
           />
           <kbd className="px-2 py-0.5 rounded-sm border border-surface-300 bg-surface-50 text-xs font-sans text-surface-500">Esc</kbd>
@@ -132,7 +132,7 @@ export default function CommandPalette() {
 
         <div ref={listRef} className="flex-1 overflow-y-auto p-2">
           {groups.length === 0 && (
-            <p className="px-3 py-10 text-center text-sm text-surface-500">No results for “{q}”. Try a project name, task title or person.</p>
+            <p className="px-3 py-10 text-center text-sm text-surface-500">No results for “{q}”. Try a project name, job title or person.</p>
           )}
           {groups.map(({ g, rows }) => (
             <div key={g} className="mb-2 last:mb-0">

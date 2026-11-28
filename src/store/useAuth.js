@@ -41,7 +41,8 @@ const useAuth = create(
         if (acct.status === 'inactive' || (acct.staffId && isInactive?.(acct.staffId))) {
           return { ok: false, code: 'inactive', error: 'Your account is deactivated. Contact your admin.' }
         }
-        if (acct.role !== as) {
+        // the account decides the role; `as` is only checked when a caller asks for a specific one
+        if (as && acct.role !== as) {
           return { ok: false, code: 'wrong-role', correctRole: acct.role, error: as === 'admin' ? 'This account is not an admin.' : 'This is an admin account.' }
         }
         const { password: _p, status: _s, ...user } = acct

@@ -236,7 +236,7 @@ export default function MilestonesPage() {
                           <button type="button" onClick={() => toggle(m.id)} aria-expanded={open.has(m.id)} className="flex items-center gap-2 text-left hover:text-brand-700">
                             <ChevronRight size={14} className={clsx('shrink-0 text-surface-400 transition-transform', open.has(m.id) && 'rotate-90')} />
                             <span>{m.name}</span>
-                            {(() => { const pr = milestoneProgress(m, tasks); return pr.total ? <span className={clsx('text-2xs font-semibold px-1.5 py-0.5 rounded-full border whitespace-nowrap', pr.complete ? 'bg-success-light text-success-dark border-success-border' : 'bg-surface-100 text-surface-600 border-surface-300')}>{pr.done}/{pr.total} tasks</span> : <span className="text-2xs text-surface-400 whitespace-nowrap">no tasks linked</span> })()}
+                            {(() => { const pr = milestoneProgress(m, tasks); return pr.total ? <span className={clsx('text-2xs font-semibold px-1.5 py-0.5 rounded-full border whitespace-nowrap', pr.complete ? 'bg-success-light text-success-dark border-success-border' : 'bg-surface-100 text-surface-600 border-surface-300')}>{pr.done}/{pr.total} jobs</span> : <span className="text-2xs text-surface-400 whitespace-nowrap">no jobs linked</span> })()}
                           </button>
                         </td>
                         <td className="px-4 py-3">
@@ -288,7 +288,7 @@ export default function MilestonesPage() {
         ))}
         {Object.keys(projectGroups).length === 0 && projects.length === 0 && (
           <EmptyState icon={Milestone} title="No milestones yet"
-            description="A milestone is a slice of the contract value. Tasks are linked to it, and when the last one is done its payment request is raised. Create a project first, then set its milestones here."
+            description="A milestone is a slice of the contract value. Jobs are linked to it, and when the last one is done its payment request is raised. Create a project first, then set its milestones here."
             action={{ label: 'Create a project', to: '/projects' }} />
         )}
       </div>
@@ -315,7 +315,7 @@ export default function MilestonesPage() {
               <Input type="number" value={form.paymentAmount} onChange={e => setForm(f => ({ ...f, paymentAmount: e.target.value }))} placeholder="500000" required />
             </FormField>
           </div>
-          <FormField label="When a task is done" hint="How its share of this milestone's payment is triggered">
+          <FormField label="When a job is done" hint="How its share of this milestone's payment is triggered">
             <div className="grid grid-cols-2 gap-3">
               {PAYMENT_MODES.map(([v, l, d]) => (
                 <button key={v} type="button" onClick={() => setForm(f => ({ ...f, paymentMode: v }))} className={clsx('text-left rounded-lg border p-3 transition-colors', form.paymentMode === v ? 'border-brand-600 bg-brand-50' : 'border-surface-300 hover:bg-surface-50')}>
@@ -345,18 +345,18 @@ function ProgressPanel({ m, tasks, staff, onApprove, onMode }) {
         <div className="min-w-[14rem] flex-1">
           <div className="flex items-baseline justify-between text-xs mb-1.5">
             <span className="font-semibold text-surface-800">Milestone progress · pays {inr(m.paymentAmount)} ({m.weightage}% of the contract)</span>
-            <span className="font-mono font-semibold text-surface-700">{pr.done} of {pr.total} tasks</span>
+            <span className="font-mono font-semibold text-surface-700">{pr.done} of {pr.total} jobs</span>
           </div>
           <ProgressBar value={pr.pct} />
           <p className="text-xs text-surface-500 mt-1.5">
-            {m.paymentStatus === 'ready' ? 'Every task is done. This payment request is waiting for your approval.'
+            {m.paymentStatus === 'ready' ? 'Every job is done. This payment request is waiting for your approval.'
               : m.paymentStatus === 'invoiced' ? 'The payment request has been sent to the client.'
               : m.paymentStatus === 'paid' ? 'The client has paid this milestone.'
-              : pr.total ? 'The payment request is raised when the last task is marked done.' : 'Link tasks to this milestone when creating them.'}
+              : pr.total ? 'The payment request is raised when the last job is marked done.' : 'Link jobs to this milestone when creating them.'}
           </p>
         </div>
         <label className="flex items-center gap-2 text-xs text-surface-600">
-          When the last task is done
+          When the last job is done
           <Select size="sm" className="w-auto min-w-44" value={m.paymentMode || 'manual'} onChange={e => onMode(e.target.value)}>
             {PAYMENT_MODES.map(([v, l]) => <option key={v} value={v}>{l === 'Automatic' ? 'Send request automatically' : 'Wait for my approval'}</option>)}
           </Select>
@@ -364,11 +364,11 @@ function ProgressPanel({ m, tasks, staff, onApprove, onMode }) {
         {m.paymentStatus === 'ready' && <Button size="sm" onClick={() => onApprove(m)}>Approve and invoice</Button>}
       </div>
       {pr.total === 0 ? (
-        <p className="text-sm text-surface-500">No tasks are linked to this milestone yet. When anyone creates a task, they can pick this milestone, and finishing every linked task completes it.</p>
+        <p className="text-sm text-surface-500">No jobs are linked to this milestone yet. When anyone creates a job, they can pick this milestone, and finishing every linked job completes it.</p>
       ) : (
         <div className="border border-surface-300 rounded-lg overflow-hidden bg-surface-0">
           <table className="w-full text-sm">
-            <thead><tr className="bg-surface-100 text-xs text-surface-600"><th className="text-left font-semibold px-4 py-2">Task</th><th className="text-left font-semibold px-4 py-2 max-sm:hidden">Assignee</th><th className="text-left font-semibold px-4 py-2">Status</th></tr></thead>
+            <thead><tr className="bg-surface-100 text-xs text-surface-600"><th className="text-left font-semibold px-4 py-2">Job</th><th className="text-left font-semibold px-4 py-2 max-sm:hidden">Assignee</th><th className="text-left font-semibold px-4 py-2">Status</th></tr></thead>
             <tbody>
               {pr.list.map(t => {
                 const who = staff.find(x => x.id === t.assigneeId)

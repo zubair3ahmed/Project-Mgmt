@@ -43,7 +43,7 @@ export const PROJECTS = [
   },
   {
     id: 'P003', name: 'Godrej Villa Park', type: 'Residential', location: 'Pune', clientId: 'C003',
-    managerId: 'S005', teamIds: ['S003', 'S004', 'S006'], status: 'in-progress', priority: 'medium',
+    managerId: 'S005', teamIds: ['S003', 'S004', 'S006'], access: { S004: 'read' }, status: 'in-progress', priority: 'medium',
     startDate: '2026-09-01', endDate: '2027-02-28', contractValue: 1800000,
     currentStage: 'stage-1', progress: 18,
     description: 'Row houses development. 48 units across 4 blocks. Load-bearing masonry with RCC roof.',

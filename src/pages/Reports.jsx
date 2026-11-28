@@ -94,7 +94,7 @@ export default function Reports() {
                   <th className="text-right px-4 py-3">Staff Cost</th>
                   <th className="text-right px-4 py-3">Margin</th>
                   <th className="text-right px-4 py-3">Hours</th>
-                  <th className="text-left px-4 py-3">Tasks</th>
+                  <th className="text-left px-4 py-3">Jobs</th>
                 </tr>
               </thead>
               <tbody>
@@ -137,7 +137,7 @@ export default function Reports() {
                 <tr>
                   <th className="text-left px-4 py-3">Staff</th>
                   <th className="text-left px-4 py-3">Role</th>
-                  <th className="text-center px-4 py-3">Tasks</th>
+                  <th className="text-center px-4 py-3">Jobs</th>
                   <th className="text-center px-4 py-3">Completed</th>
                   <th className="text-center px-4 py-3">On-time %</th>
                   <th className="text-right px-4 py-3">Hours</th>

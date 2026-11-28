@@ -1,3 +1,4 @@
+import MilestoneProgress from '../components/MilestoneProgress'
 import EmptyState from '../components/EmptyState'
 import { Rocket } from 'lucide-react'
 import { Link } from 'react-router-dom'
@@ -6,7 +7,6 @@ import Header from '../components/Header'
 import StatCard from '../components/StatCard'
 import { StatusBadge, Badge, CountBadge, toneForStatus } from '../components/Badge'
 import Avatar from '../components/Avatar'
-import ProgressBar from '../components/ProgressBar'
 import { AnimatedNumber, BarChart, Donut } from '../components/charts'
 import useStore from '../store/useStore'
 import useAuth from '../store/useAuth'
@@ -77,9 +77,9 @@ function AdminDashboard() {
           <EmptyState icon={Rocket} title="Your workspace is ready"
             description="Numbers, charts and what needs attention appear here once there is work to track. Three steps get you started."
             steps={[
-              { title: 'Add your team', desc: 'Engineers, drafters and managers who will pick up tasks.', label: 'Add staff', to: '/staff' },
+              { title: 'Add your team', desc: 'Engineers, drafters and managers who will pick up jobs.', label: 'Add staff', to: '/staff' },
               { title: 'Create a project', desc: 'One typed line is enough: name, client, value and duration.', label: 'New project', to: '/projects' },
-              { title: 'Create a task', desc: 'Link it to a milestone so finishing the last one raises its payment request.', label: 'New task', to: '/tasks' },
+              { title: 'Create a job', desc: 'Link it to a milestone so finishing the last one raises its payment request.', label: 'New job', to: '/jobs' },
             ]} />
         </div>
       </div>
@@ -93,15 +93,15 @@ function AdminDashboard() {
         <div className="flex flex-col gap-6">
           <div data-tour="kpis" className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             <StatCard label="Active projects" value={<AnimatedNumber value={activeProjects.length} />} sub={`${projects.length} total`} />
-            <StatCard label="Open tasks" value={<AnimatedNumber value={open.length} />} sub={overdue.length ? `${overdue.length} overdue` : 'None overdue'} />
+            <StatCard label="Open jobs" value={<AnimatedNumber value={open.length} />} sub={overdue.length ? `${overdue.length} overdue` : 'None overdue'} />
             <StatCard label="Revenue collected" value={<AnimatedNumber value={collected} format={formatCurrency} />} sub={`${formatCurrency(pending)} pending`} />
-            <StatCard label="Tasks completed" value={<AnimatedNumber value={donePct} format={n => `${Math.round(n)}%`} />} sub={`${doneCount} of ${tasks.length}`} />
+            <StatCard label="Jobs completed" value={<AnimatedNumber value={donePct} format={n => `${Math.round(n)}%`} />} sub={`${doneCount} of ${tasks.length}`} />
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-5 gap-6">
-            <Section title="Task status" className="xl:col-span-2">
+            <Section title="Job status" className="xl:col-span-2">
               <div className="flex items-center gap-6">
-                <Donut data={statusData} centerValue={tasks.length} centerLabel="tasks" />
+                <Donut data={statusData} centerValue={tasks.length} centerLabel="jobs" />
                 <ul className="flex-1 flex flex-col gap-3">
                   {statusData.map(s => (
                     <li key={s.key} className="flex items-center gap-3 text-sm">
@@ -123,10 +123,10 @@ function AdminDashboard() {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-            <Section title="Needs attention" to="/tasks" className="lg:col-span-3">
+            <Section title="Needs attention" to="/jobs" className="lg:col-span-3">
               {overdue.length > 0 && (
                 <div className="flex items-center gap-2 text-sm text-danger-dark mb-4">
-                  <AlertTriangle size={16} /> {overdue.length} task{overdue.length > 1 ? 's are' : ' is'} past due
+                  <AlertTriangle size={16} /> {overdue.length} job{overdue.length > 1 ? 's are' : ' is'} past due
                 </div>
               )}
               <ul className="flex flex-col divide-y divide-surface-100 -my-3">
@@ -177,9 +177,8 @@ function AdminDashboard() {
                         <p className="text-sm font-semibold text-surface-900 truncate group-hover:text-brand-700">{p.name}</p>
                         <p className="text-xs text-surface-500">{p.location}</p>
                       </div>
-                      <span className="text-sm font-semibold text-surface-900">{p.progress}%</span>
                     </div>
-                    <ProgressBar value={p.progress} size="md" />
+                    <MilestoneProgress project={p} compact />
                   </Link>
                 </li>
               ))}
