@@ -106,8 +106,8 @@ export default function ProjectDetail() {
           </dl>
           <MilestoneProgress project={project} />
           {closed && (
-            <div className="flex items-start gap-2 rounded-lg border border-surface-300 bg-surface-50 px-3 py-2.5 text-sm text-surface-600">
-              <Lock size={15} className="shrink-0 mt-0.5 text-surface-500" />
+            <div className="flex items-start gap-2 rounded-lg border border-brand-200 bg-brand-50 px-3 py-2.5 text-sm text-surface-700">
+              <Lock size={15} className="shrink-0 mt-0.5 text-brand-700" />
               <p>This project is completed. Its milestones, jobs and hours are kept as a record and cannot be changed.{isAdmin && <> Payments can still be marked paid on <Link to="/milestones" className="font-semibold text-brand-700 hover:underline">Milestones</Link>. Reopen the project to change anything else.</>}</p>
             </div>
           )}
