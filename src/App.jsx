@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate, Outlet } from 'react-router-dom'
+import { Routes, Route, Navigate, Outlet, useLocation } from 'react-router-dom'
 import Sidebar from './components/Sidebar'
 import Dashboard from './pages/Dashboard'
 import Projects from './pages/Projects'
@@ -18,6 +18,7 @@ import CommandPalette from './components/CommandPalette'
 import PersonDialog from './components/PersonDialog'
 import ConfirmDialog from './components/ConfirmDialog'
 import Tour from './components/Tour'
+import GlobalModals from './components/GlobalModals'
 import LiveSync from './components/LiveSync'
 
 function Shell() {
@@ -36,12 +37,19 @@ function Shell() {
       </main>
       <Toast />
       <CommandPalette />
+      <GlobalModals />
       <PersonDialog />
       <ConfirmDialog />
       <Tour />
       <LiveSync />
     </div>
   )
+}
+
+// old /tasks links keep working
+function OldTasksLink() {
+  const { search } = useLocation()
+  return <Navigate to={`/jobs${search}`} replace />
 }
 
 function AdminOnly({ children }) {
@@ -57,7 +65,8 @@ export default function App() {
         <Route path="/" element={<Dashboard />} />
         <Route path="/projects" element={<Projects />} />
         <Route path="/projects/:id" element={<ProjectDetail />} />
-        <Route path="/tasks" element={<Tasks />} />
+        <Route path="/jobs" element={<Tasks />} />
+        <Route path="/tasks" element={<OldTasksLink />} />
         <Route path="/time-log" element={<TimeLog />} />
         <Route path="/files" element={<Files />} />
         <Route path="/settings" element={<Settings />} />

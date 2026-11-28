@@ -37,11 +37,12 @@ Generated from `src/design-system/backendSpec.js`. Regenerate with `npm run docs
 - Task.completedDate is set when status becomes "done" and cleared when it moves back.
 - Every change to a task's status, assignee, priority or due date inserts a TaskComment with type="system" (the History tab).
 - TimeLog create, update and delete must recompute Task.loggedHours.
-- Project.progress = round(stage.order / totalStages * 100). Updating currentStage recomputes it.
 - Milestone payment amount = Project.contractValue x weightage / 100. Total weightage per project should equal 100.
 - Money lives on the milestone only. Tasks never carry an amount; they link to a milestone through Task.milestoneId.
 - When the last task linked to a milestone becomes done, set the milestone to completed. paymentMode=auto then sets paymentStatus=invoiced; manual sets it to ready for an admin to approve. Moving a task back out of done reopens the milestone unless it is already invoiced or paid.
 - Only an admin creates, edits or approves milestones, from the six-stage template or as custom ones. Anyone may link their own task to an open milestone.
+- Project access is per person: write may add jobs and upload files in that project, read may only view it. Either may change status and log hours on jobs assigned to them. Only an admin changes access. When an admin assigns a job to someone outside the project, add them with read access.
+- Project progress = sum of weightage of completed milestones / total weightage.
 - Enforce role scoping on the server. The React app hides UI by role but the API must refuse the request too.
 - Members must never receive hourlyRate, monthlySalary or contractValue. They can link their own tasks to a milestone but cannot see or change contract money.
 - Uploads are limited to 10 MB per file and 10 files per task. Validate size and type on the server.
@@ -128,6 +129,7 @@ A client engagement. Progress is derived from currentStage.
 | description | string |  |  |
 | managerId | id -> Staff | yes |  |
 | teamIds | id[] -> Staff |  | Members of the project team (manager excluded). |
+| access | string |  | JSON map of staffId to "write" or "read" for people in teamIds. The manager and admins always have write. Only these people can see the project. |
 | currentStage | id -> ProjectStage |  |  |
 | progress | integer |  | read-only. 0-100, computed from currentStage order. |
 

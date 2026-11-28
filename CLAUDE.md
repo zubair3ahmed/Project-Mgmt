@@ -33,6 +33,14 @@ npm run docs:backend # regenerate docs/openapi.yaml, schema.sql, BACKEND.md from
 - Task and project creation use one typed line ("Column schedule Prestige Towers @Amit !high due fri 8h").
   The parser is rule-based (`src/lib/smartTask.js`, `smartProject.js`), not an LLM.
 
+- **The interface says "job", the code says `task`.** The industry word is job; keep identifiers, API names and storage keys as `task`.
+- **Information order:** Project → Milestones → Jobs. A project's page is a board with one column per milestone.
+- **Progress is milestone achievement** (weightage of completed milestones), drawn with `components/MilestoneProgress.jsx`.
+- **Access is per project and set by the admin:** `write` (add jobs, upload files) or `read` (view only). People see only
+  projects they are on. Anyone can update status and log hours on jobs assigned to them. Rules live in `lib/access.js`.
+- Project categories: To Do (`planning`), In Progress, Completed. The six delivery stages are the milestone template.
+- Top bar: centred search with one global action (admin: Add project, staff: Add job). Other actions sit in the page bar.
+
 ## Where things are
 
 - `src/pages/` screens, `src/components/` shared UI, `src/store/` Zustand stores, `src/lib/` helpers.

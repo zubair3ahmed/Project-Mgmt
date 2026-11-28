@@ -1,3 +1,4 @@
+import { STAGE_TEMPLATE } from '../lib/payments'
 import { useState } from 'react'
 import Header from '../components/Header'
 import { FormField, Input, Select, Button, Toggle } from '../components/FormField'
@@ -55,17 +56,17 @@ export default function Settings() {
 
           {isAdmin && (
           <section>
-            <h2 className="text-sm font-semibold text-surface-900 mb-3">Project Defaults</h2>
+            <h2 className="text-sm font-semibold text-surface-900 mb-3">Milestone Template</h2>
             <div className="bg-surface-0 border border-surface-300 rounded-lg shadow-sm p-6 space-y-4">
               <div>
-                <p className="text-xs text-surface-500 mb-1">Default Project Stages</p>
-                <p className="text-xs text-surface-400 mb-2">Stages used when creating new projects</p>
+                <p className="text-xs text-surface-500 mb-1">The six delivery stages</p>
+                <p className="text-xs text-surface-400 mb-2">Used as the starting milestones of a new project</p>
                 <div className="space-y-2">
                   {projectStages.map(stage => (
                     <div key={stage.id} className="flex items-center gap-3 py-2">
                       <span className="w-6 h-6 rounded-md bg-surface-100 text-surface-500 text-xs flex items-center justify-center font-medium">{stage.order}</span>
                       <span className="text-sm text-surface-700">{stage.name}</span>
-                      {stage.optional && <span className="text-2xs text-surface-400 ml-auto">Optional</span>}
+                      <span className="text-xs font-mono text-surface-500 ml-auto">{STAGE_TEMPLATE[stage.order - 1]?.[1]}%</span>
                     </div>
                   ))}
                 </div>
@@ -78,8 +79,8 @@ export default function Settings() {
             <h2 className="text-sm font-semibold text-surface-900 mb-3">Notifications</h2>
             <div className="bg-surface-0 border border-surface-300 rounded-lg shadow-sm p-6 space-y-4">
               {[
-                { key: 'taskAssignment', label: 'Task assignments' },
-                { key: 'statusChange', label: 'Task status changes' },
+                { key: 'taskAssignment', label: 'Job assignments' },
+                { key: 'statusChange', label: 'Job status changes' },
                 { key: 'milestoneComplete', label: 'Milestone completions' },
                 { key: 'fileUpload', label: 'File uploads' },
                 { key: 'timeReminder', label: 'Time log reminders' },
@@ -91,9 +92,9 @@ export default function Settings() {
 
           {isAdmin && (
           <section>
-            <h2 className="text-sm font-semibold text-surface-900 mb-3">Task Types</h2>
+            <h2 className="text-sm font-semibold text-surface-900 mb-3">Job Types</h2>
             <div className="bg-surface-0 border border-surface-300 rounded-lg shadow-sm p-6">
-              <p className="text-xs text-surface-400 mb-3">Available task types for the organization</p>
+              <p className="text-xs text-surface-400 mb-3">Available job types for the organization</p>
               <div className="flex gap-2 flex-wrap">
                 {['Design', 'Drafting', 'Review / QC', 'Analysis', 'Estimation', 'Report', 'Site Visit', 'Coordination'].map(t => (
                   <span key={t} className="inline-flex items-center h-8 px-3 text-xs font-medium bg-surface-50 text-surface-600 border border-surface-200 rounded-md">{t}</span>

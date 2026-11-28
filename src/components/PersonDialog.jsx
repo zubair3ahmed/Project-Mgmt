@@ -62,7 +62,7 @@ export default function PersonDialog() {
         </div>
 
         <div className="grid grid-cols-3 gap-3">
-          <Stat label="Open tasks" value={open.length} />
+          <Stat label="Open jobs" value={open.length} />
           <Stat label="In progress" value={inProgress} />
           <Stat label="Completed" value={done} />
         </div>
@@ -92,11 +92,11 @@ export default function PersonDialog() {
 
         {open.length > 0 && (
           <div className="flex flex-col gap-2">
-            <p className="text-sm font-semibold text-surface-800">Current tasks</p>
+            <p className="text-sm font-semibold text-surface-800">Current jobs</p>
             <ul className="flex flex-col gap-1">
               {open.slice(0, 4).map(t => (
                 <li key={t.id}>
-                  <button type="button" onClick={() => go(`/tasks?task=${t.id}`)} className="w-full flex items-center justify-between gap-3 min-h-9 px-3 py-1.5 rounded-md text-sm text-surface-700 hover:bg-surface-50 text-left">
+                  <button type="button" onClick={() => go(`/jobs?task=${t.id}`)} className="w-full flex items-center justify-between gap-3 min-h-9 px-3 py-1.5 rounded-md text-sm text-surface-700 hover:bg-surface-50 text-left">
                     <span className="truncate">{t.title}</span>
                     <StatusBadge status={t.status} />
                   </button>

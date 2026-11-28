@@ -661,6 +661,9 @@ components:
           type: array
           items: { type: string }
           description: "Members of the project team (manager excluded)."
+        access:
+          type: string
+          description: "JSON map of staffId to \"write\" or \"read\" for people in teamIds. The manager and admins always have write. Only these people can see the project."
         currentStage:
           type: string
         progress:

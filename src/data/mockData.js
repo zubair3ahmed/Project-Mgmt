@@ -43,7 +43,7 @@ export const PROJECTS = [
   },
   {
     id: 'P003', name: 'Godrej Villa Park', type: 'Residential', location: 'Pune', clientId: 'C003',
-    managerId: 'S005', teamIds: ['S003', 'S004', 'S006'], status: 'in-progress', priority: 'medium',
+    managerId: 'S005', teamIds: ['S003', 'S004', 'S006'], access: { S004: 'read' }, status: 'in-progress', priority: 'medium',
     startDate: '2026-09-01', endDate: '2027-02-28', contractValue: 1800000,
     currentStage: 'stage-1', progress: 18,
     description: 'Row houses development. 48 units across 4 blocks. Load-bearing masonry with RCC roof.',
@@ -81,8 +81,8 @@ export const TASKS = [
   { id: 'T011', title: 'Soil investigation review', projectId: 'P003', assigneeId: 'S003', reporterId: 'S005', status: 'review', priority: 'medium', type: 'review', createdDate: '2026-09-15', dueDate: '2026-10-30', estimatedHours: 8, loggedHours: 6, description: 'Review geotechnical report and recommend foundation type for villa development.', tags: ['geotech', 'review'], milestoneId: 'M010' },
   { id: 'T012', title: 'Structural estimate - DLF Tower 3', projectId: 'P005', assigneeId: 'S001', reporterId: 'S005', status: 'backlog', priority: 'medium', type: 'estimation', createdDate: '2026-11-20', dueDate: '2027-01-10', estimatedHours: 20, loggedHours: 0, description: 'Prepare structural quantity estimate and cost analysis for the DLF project proposal.', tags: ['estimation', 'proposal'] },
   { id: 'T013', title: 'Seismic analysis - Tower 3', projectId: 'P005', assigneeId: 'S007', reporterId: 'S005', status: 'backlog', priority: 'high', type: 'analysis', createdDate: '2026-11-20', dueDate: '2027-02-15', estimatedHours: 48, loggedHours: 0, description: 'Perform seismic analysis as per IS 1893:2016 for the high-rise structure.', tags: ['seismic', 'analysis'] },
-  { id: 'T014', title: 'QC check - Floor 2 drawings', projectId: 'P001', assigneeId: 'S005', reporterId: 'S002', status: 'review', priority: 'high', type: 'review', createdDate: '2026-11-01', dueDate: '2026-11-20', estimatedHours: 8, loggedHours: 6, description: 'Quality check on 2nd floor structural drawings before client submission.', tags: ['qc', 'review'] },
-  { id: 'T015', title: 'Site visit report - Prestige Towers', projectId: 'P001', assigneeId: 'S004', reporterId: 'S001', status: 'todo', priority: 'low', type: 'report', createdDate: '2026-11-18', dueDate: '2026-11-28', estimatedHours: 4, loggedHours: 0, description: 'Conduct site visit and prepare report on construction progress vs design intent.', tags: ['site-visit', 'report'] },
+  { id: 'T014', title: 'QC check - Floor 2 drawings', projectId: 'P001', assigneeId: 'S005', reporterId: 'S002', status: 'review', priority: 'high', type: 'review', createdDate: '2026-11-01', dueDate: '2026-11-20', estimatedHours: 8, loggedHours: 6, description: 'Quality check on 2nd floor structural drawings before client submission.', tags: ['qc', 'review'], milestoneId: 'M003' },
+  { id: 'T015', title: 'Site visit report - Prestige Towers', projectId: 'P001', assigneeId: 'S004', reporterId: 'S001', status: 'todo', priority: 'low', type: 'report', createdDate: '2026-11-18', dueDate: '2026-11-28', estimatedHours: 4, loggedHours: 0, description: 'Conduct site visit and prepare report on construction progress vs design intent.', tags: ['site-visit', 'report'], milestoneId: 'M003' },
 ]
 
 export const TIME_LOGS = [

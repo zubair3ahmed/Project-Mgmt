@@ -2,13 +2,11 @@ import { NavLink, useLocation } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import {
   LayoutDashboard, FolderKanban, ListTodo, Users, Clock, FileText, Milestone, BarChart3,
-  Settings, PanelLeftClose, PanelLeft, LogOut, Palette, ExternalLink, Workflow,
+  Settings, PanelLeftClose, PanelLeft, Palette, ExternalLink, Workflow,
 } from 'lucide-react'
 import clsx from 'clsx'
-import Avatar from './Avatar'
 import { CountBadge } from './Badge'
 import useStore from '../store/useStore'
-import useAuth from '../store/useAuth'
 import { useAccess } from '../lib/access'
 
 function NavItem({ to, href, icon: Icon, label, count, collapsed, end }) {
@@ -74,8 +72,7 @@ export default function Sidebar() {
   const collapsed = storedCollapsed && isDesktop
   const toggle = useStore(s => s.toggleSidebar)
   const tasks = useStore(s => s.tasks)
-  const logout = useAuth(s => s.logout)
-  const { user, isAdmin, staffId, myProjects } = useAccess()
+  const { isAdmin, staffId, myProjects } = useAccess()
 
   const openTasks = tasks.filter(t => t.status !== 'done' && (isAdmin || t.assigneeId === staffId)).length
   const activeProjects = myProjects.filter(p => p.status === 'in-progress').length
@@ -86,7 +83,7 @@ export default function Sidebar() {
       items: [
         { to: '/', icon: LayoutDashboard, label: isAdmin ? 'Dashboard' : 'My Work', end: true },
         { to: '/projects', icon: FolderKanban, label: 'Projects', count: activeProjects },
-        { to: '/tasks', icon: ListTodo, label: isAdmin ? 'Tasks' : 'My Tasks', count: openTasks },
+        { to: '/jobs', icon: ListTodo, label: isAdmin ? 'Jobs' : 'My Jobs', count: openTasks },
         { to: '/time-log', icon: Clock, label: 'Time Log' },
       ],
     },
@@ -112,7 +109,7 @@ export default function Sidebar() {
         mobileOpen ? 'translate-x-0' : 'max-md:-translate-x-full'
       )}
     >
-      <div className={clsx('h-12 shrink-0 flex items-center border-b border-surface-300', collapsed ? 'justify-center' : 'px-4 justify-between')}>
+      <div className={clsx('h-14 shrink-0 flex items-center border-b border-surface-300', collapsed ? 'justify-center' : 'px-4 justify-between')}>
         <div className="flex items-center gap-3 min-w-0">
           <div className="w-8 h-8 bg-brand-600 rounded-md flex items-center justify-center text-white text-xs font-bold shrink-0 shadow-xs">SF</div>
           {!collapsed && <span className="text-base font-bold text-surface-900 tracking-tight truncate">StructFlow</span>}
@@ -156,20 +153,6 @@ export default function Sidebar() {
             <PanelLeft size={20} />
           </button>
         )}
-        <div className={clsx('flex items-center gap-2 rounded-lg border border-surface-300 bg-surface-0', collapsed ? 'justify-center p-2' : 'p-2')}>
-          <Avatar name={user?.name} initials={user?.avatar} size="md" interactive={false} />
-          {!collapsed && (
-            <>
-              <div className="min-w-0 flex-1">
-                <p className="text-sm font-semibold text-surface-900 truncate">{user?.name}</p>
-                <p className="text-xs text-surface-500 truncate">{user?.title}</p>
-              </div>
-              <button onClick={logout} aria-label="Sign out" title="Sign out" className="w-8 h-8 flex items-center justify-center rounded-md text-surface-400 hover:bg-surface-200 hover:text-danger transition-colors">
-                <LogOut size={18} />
-              </button>
-            </>
-          )}
-        </div>
       </div>
     </aside>
     </>

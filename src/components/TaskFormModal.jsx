@@ -44,10 +44,11 @@ function Chip({ active, onClick, children, className }) {
 
 const fmtDate = d => new Date(d + 'T00:00:00').toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' })
 
-export default function TaskFormModal({ open, onClose, task, presetStatus, defaultProjectId }) {
+export default function TaskFormModal({ open, onClose, task, presetStatus, defaultProjectId, defaultMilestoneId }) {
   const allProjects = useStore(s => s.projects)
-  const { isAdmin, staffId, myProjects } = useAccess()
-  const projects = isAdmin ? allProjects : myProjects
+  const { isAdmin, staffId, myProjects, writableProjects } = useAccess()
+  // new jobs can only go into projects where this person has write access
+  const projects = isAdmin ? allProjects : task ? myProjects : writableProjects
   const staff = useStore(s => s.staff)
   const tasks = useStore(s => s.tasks)
   const allMilestones = useStore(s => s.milestones)
@@ -109,9 +110,10 @@ export default function TaskFormModal({ open, onClose, task, presetStatus, defau
       setMore(true)
     } else {
       touched.current = new Set()
-      const pid = defaultProjectId || lastProjectId
+      const wanted = defaultProjectId || lastProjectId
+      const pid = projects.some(p => p.id === wanted) ? wanted : ''
       if (pid) touched.current.add('projectId')
-      setForm(autofill({ ...DEFAULTS, status: presetStatus || 'backlog', projectId: pid || '' }))
+      setForm(autofill({ ...DEFAULTS, status: presetStatus || 'backlog', projectId: pid, milestoneId: pid === defaultProjectId ? defaultMilestoneId || '' : '' }))
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, task])
@@ -135,8 +137,8 @@ export default function TaskFormModal({ open, onClose, task, presetStatus, defau
   const nameOf = id => staff.find(s => s.id === id)?.name
   const assumed = editing ? [] : [
     isAuto('projectId') && !found.projectId && { key: 'projectId', label: 'Project', value: projects.find(p => p.id === form.projectId)?.name, why: defaultProjectId ? 'The project you are filtering by.' : 'The last project you used.' },
-    isAdmin && isAuto('assigneeId') && found.assigneeId === undefined && { key: 'assigneeId', label: 'Assignee', value: nameOf(form.assigneeId), why: `Best fit for ${typeLabel} work: matching skills, fewest open tasks.` },
-    isAuto('estimatedHours') && found.estimatedHours === undefined && { key: 'estimatedHours', label: 'Estimate', value: `${form.estimatedHours}h`, why: `Typical for ${typeLabel} tasks.` },
+    isAdmin && isAuto('assigneeId') && found.assigneeId === undefined && { key: 'assigneeId', label: 'Assignee', value: nameOf(form.assigneeId), why: `Best fit for ${typeLabel} work: matching skills, fewest open jobs.` },
+    isAuto('estimatedHours') && found.estimatedHours === undefined && { key: 'estimatedHours', label: 'Estimate', value: `${form.estimatedHours}h`, why: `Typical for ${typeLabel} jobs.` },
     isAuto('reporterId') && { key: 'reporterId', label: 'Reporter', value: nameOf(form.reporterId), why: 'The project manager is the default reporter.' },
   ].filter(Boolean).map(a => ({ ...a, onUndo: () => setField(a.key, '') }))
   const notes = projectUnclear ? ["I couldn't tell which project this belongs to. Pick one below."] : []
@@ -163,7 +165,7 @@ export default function TaskFormModal({ open, onClose, task, presetStatus, defau
     e?.preventDefault()
     const title = editing ? form.raw.trim() : (parsed.title || form.raw.trim())
     const errs = {}
-    if (!title) errs.raw = 'Give the task a title'
+    if (!title) errs.raw = 'Give the job a title'
     if (!form.projectId) errs.projectId = 'Pick a project'
     if (!form.assigneeId) errs.assigneeId = 'Pick an assignee'
     setErrors(errs)
@@ -188,7 +190,7 @@ export default function TaskFormModal({ open, onClose, task, presetStatus, defau
     }
     const newId = addTask({ ...data, attachments })
     useToast.getState().show({
-      title: 'Task created',
+      title: 'Job created',
       detail: `${title} · ${staff.find(x => x.id === form.assigneeId)?.name || 'Unassigned'}${form.dueDate ? ' · due ' + fmtDate(form.dueDate) : ''}${attachments.length ? ` · ${attachments.length} file${attachments.length > 1 ? 's' : ''}` : ''}`,
       actions: [{ label: 'Undo', onClick: () => useStore.getState().deleteTask(newId) }],
     })
@@ -222,18 +224,18 @@ export default function TaskFormModal({ open, onClose, task, presetStatus, defau
     <>
       <div className="flex items-center gap-4 min-w-0">
         {!editing && <Checkbox checked={another} onChange={e => setAnother(e.target.checked)} label="Create another" />}
-        {created > 0 && <span className="text-sm text-success-dark font-medium">Task created</span>}
+        {created > 0 && <span className="text-sm text-success-dark font-medium">Job created</span>}
       </div>
       <div className="flex items-center gap-2 shrink-0">
         <span className="hidden sm:flex items-center gap-1 text-xs text-surface-400 mr-1"><kbd className="font-sans">⌘</kbd><CornerDownLeft size={12} /></span>
         <Button type="button" variant="secondary" onClick={onClose}>Cancel</Button>
-        <Button type="submit" form="task-form">{editing ? 'Save Changes' : 'Create Task'}</Button>
+        <Button type="submit" form="task-form">{editing ? 'Save Changes' : 'Create Job'}</Button>
       </div>
     </>
   )
 
   return (
-    <Modal open={open} onClose={onClose} title={editing ? 'Edit Task' : 'New Task'} wide footer={footer}>
+    <Modal open={open} onClose={onClose} title={editing ? 'Edit Job' : 'New Job'} wide footer={footer}>
       <form
         id="task-form"
         onSubmit={submit}
@@ -268,7 +270,11 @@ export default function TaskFormModal({ open, onClose, task, presetStatus, defau
           <FormField label="Assignee" required tag={isAdmin && isAuto('assigneeId') ? <AutoTag why={found.assigneeId !== undefined ? 'From your @mention' : `Best fit for ${typeLabel} work`} /> : null}>
             <Select value={form.assigneeId} disabled={!isAdmin} onChange={e => setField('assigneeId', e.target.value)} className={errors.assigneeId && 'border-danger'}>
               <option value="">Select assignee…</option>
-              {activeStaff.map(s => <option key={s.id} value={s.id}>{s.name}{s.id === staffId ? ' (you)' : ''} — {s.role}</option>)}
+              {activeStaff.map(s => {
+                const proj = allProjects.find(p => p.id === form.projectId)
+                const outside = isAdmin && proj && proj.managerId !== s.id && !(proj.teamIds || []).includes(s.id) && s.department !== 'Administration'
+                return <option key={s.id} value={s.id}>{s.name}{s.id === staffId ? ' (you)' : ''} — {s.role}{outside ? ' · gets view access' : ''}</option>
+              })}
             </Select>
             {errors.assigneeId && <p className="text-xs text-danger">{errors.assigneeId}</p>}
           </FormField>
@@ -307,7 +313,20 @@ export default function TaskFormModal({ open, onClose, task, presetStatus, defau
           </div>
         )}
 
-        <FormField label="Task type">
+        <FormField label="Milestone" hint={!form.projectId ? 'Pick a project first' : projectMilestones.length === 0 ? 'This project has no open milestones yet. The admin sets them up.' : 'The job counts toward this milestone. When the last one is done, the milestone completes and its payment request is raised.'}>
+          <Select value={form.milestoneId} disabled={!form.projectId || projectMilestones.length === 0} onChange={e => setForm(f => ({ ...f, milestoneId: e.target.value }))}>
+            <option value="">Not linked to a milestone</option>
+            {projectMilestones.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
+          </Select>
+          {msProgress && (
+            <div className="flex items-center gap-3 mt-1">
+              <div className="flex-1 h-1.5 rounded-full bg-surface-200 overflow-hidden"><div className="h-full bg-brand-600 rounded-full" style={{ width: `${msProgress.pct}%` }} /></div>
+              <span className="text-xs text-surface-500 whitespace-nowrap">{msProgress.done} of {msProgress.total} jobs done{task?.milestoneId === ms.id ? '' : ' · this adds one'}</span>
+            </div>
+          )}
+        </FormField>
+
+        <FormField label="Job type">
           <div className="flex flex-wrap gap-2">
             {TYPES.map(([v, l]) => <Chip key={v} active={form.type === v} onClick={() => setField('type', v)}>{l}</Chip>)}
           </div>
@@ -331,18 +350,6 @@ export default function TaskFormModal({ open, onClose, task, presetStatus, defau
           </FormField>
         </div>
 
-        <FormField label="Milestone" hint={!form.projectId ? 'Pick a project first' : projectMilestones.length === 0 ? 'This project has no open milestones yet. The admin sets them up.' : 'The task counts toward this milestone. When the last one is done, the milestone completes and its payment request is raised.'}>
-          <Select value={form.milestoneId} disabled={!form.projectId || projectMilestones.length === 0} onChange={e => setForm(f => ({ ...f, milestoneId: e.target.value }))}>
-            <option value="">Not linked to a milestone</option>
-            {projectMilestones.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
-          </Select>
-          {msProgress && (
-            <div className="flex items-center gap-3 mt-1">
-              <div className="flex-1 h-1.5 rounded-full bg-surface-200 overflow-hidden"><div className="h-full bg-brand-600 rounded-full" style={{ width: `${msProgress.pct}%` }} /></div>
-              <span className="text-xs text-surface-500 whitespace-nowrap">{msProgress.done} of {msProgress.total} tasks done{task?.milestoneId === ms.id ? '' : ' · this adds one'}</span>
-            </div>
-          )}
-        </FormField>
 
         <FormField label="Attachments">
           <DropZone compact count={attachments.length} onAdd={atts => setAttachments(a => [...a, ...atts])} />
@@ -362,7 +369,7 @@ export default function TaskFormModal({ open, onClose, task, presetStatus, defau
         {more && (
           <div className="flex flex-col gap-4">
             <div className="grid grid-cols-2 gap-4">
-              <FormField label="Estimated hours" hint="Pre-filled from the task type">
+              <FormField label="Estimated hours" hint="Pre-filled from the job type">
                 <Input type="number" min="0" value={form.estimatedHours} onChange={e => setField('estimatedHours', e.target.value)} />
               </FormField>
               <FormField label="Status">

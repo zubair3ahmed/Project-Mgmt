@@ -1,3 +1,4 @@
+import MilestoneProgress from '../components/MilestoneProgress'
 import EmptyState from '../components/EmptyState'
 import { Coffee } from 'lucide-react'
 import { Link } from 'react-router-dom'
@@ -5,7 +6,6 @@ import { ArrowRight, Check, Play, Plus } from 'lucide-react'
 import Header from '../components/Header'
 import StatCard from '../components/StatCard'
 import { Badge, PriorityBadge, CountBadge, toneForStatus } from '../components/Badge'
-import ProgressBar from '../components/ProgressBar'
 import { Button } from '../components/FormField'
 import { AnimatedNumber, BarChart, Donut } from '../components/charts'
 import { useAccess } from '../lib/access'
@@ -69,8 +69,8 @@ export default function MemberDashboard() {
         <Header title={`${greeting}, ${user.name.split(' ')[0]}`} subtitle={new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long' })} />
         <div className="flex-1 overflow-y-auto p-6">
           <EmptyState icon={Coffee} title="Nothing assigned to you yet"
-            description="When your admin adds you to a project or assigns you a task, it shows up here with one-click Start and Done. You can also add a task of your own."
-            action={{ label: 'Add a task', icon: Plus, to: '/tasks' }} secondary={{ label: 'Log time', to: '/time-log' }} />
+            description="When your admin adds you to a project or assigns you a job, it shows up here with one-click Start and Done. You can also add a job of your own."
+            action={{ label: 'Open time log', to: '/time-log' }} />
         </div>
       </div>
     )
@@ -81,19 +81,18 @@ export default function MemberDashboard() {
       <Header
         title={`${greeting}, ${user.name.split(' ')[0]}`}
         subtitle={new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long' })}
-        actions={<Link to="/time-log"><Button size="sm"><Plus size={16} /> Log time</Button></Link>}
       />
       <div className="flex-1 overflow-y-auto p-6">
         <div className="flex flex-col gap-6">
           <div data-tour="kpis" className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            <StatCard label="My open tasks" value={<AnimatedNumber value={open.length} />} sub={overdue.length ? `${overdue.length} overdue` : 'None overdue'} />
+            <StatCard label="My open jobs" value={<AnimatedNumber value={open.length} />} sub={overdue.length ? `${overdue.length} overdue` : 'None overdue'} />
             <StatCard label="Due this week" value={<AnimatedNumber value={dueSoon.length} />} sub="including overdue" />
-            <StatCard label="Hours logged" value={<AnimatedNumber value={totalHours} format={n => `${Math.round(n)}h`} />} sub="all time" />
             <StatCard label="Completed" value={<AnimatedNumber value={done} />} sub={`of ${mine.length} assigned`} />
+            <StatCard label="Hours logged" value={<AnimatedNumber value={totalHours} format={n => `${Math.round(n)}h`} />} sub="all time" />
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-            <div data-tour="up-next" className="lg:col-span-3 flex flex-col"><Card title="Up next" to="/tasks" className="flex-1">
+            <div data-tour="up-next" className="lg:col-span-3 flex flex-col"><Card title="Up next" to="/jobs" className="flex-1">
               <ul className="flex flex-col divide-y divide-surface-100 -my-3">
                 {queue.map(t => {
                   const d = t.dueDate ? dayDiff(t.dueDate) : null
@@ -117,14 +116,14 @@ export default function MemberDashboard() {
                     </li>
                   )
                 })}
-                {queue.length === 0 && <li className="py-8 text-sm text-surface-500 text-center">You're all caught up. No open tasks.</li>}
+                {queue.length === 0 && <li className="py-8 text-sm text-surface-500 text-center">You're all caught up. No open jobs.</li>}
               </ul>
             </Card>
           </div>
 
-            <Card title="My task status" className="lg:col-span-2">
+            <Card title="My job status" className="lg:col-span-2">
               <div className="flex items-center gap-5">
-                <Donut data={statusData} size={140} stroke={18} centerValue={mine.length} centerLabel="tasks" />
+                <Donut data={statusData} size={140} stroke={18} centerValue={mine.length} centerLabel="jobs" />
                 <ul className="flex-1 flex flex-col gap-3">
                   {statusData.map(s => (
                     <li key={s.key} className="flex items-center gap-3 text-sm">
@@ -149,9 +148,8 @@ export default function MemberDashboard() {
                     <Link to={`/projects/${p.id}`} className="block group">
                       <div className="flex items-center justify-between gap-2 mb-2">
                         <p className="text-sm font-medium text-surface-900 truncate group-hover:text-brand-700">{p.name}</p>
-                        <span className="text-sm font-semibold text-surface-900">{p.progress}%</span>
                       </div>
-                      <ProgressBar value={p.progress} size="md" />
+                      <MilestoneProgress project={p} compact />
                     </Link>
                   </li>
                 ))}

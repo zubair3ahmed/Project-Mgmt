@@ -67,17 +67,20 @@ th{background:#f2f4f7;font-size:12px;color:var(--ink2);border-top:0}
     <div class="tblw"><table>
       <thead><tr><th>Area</th><th>Admin</th><th>Team member</th></tr></thead>
       <tbody>
-        <tr><td>Home</td><td>Dashboard: projects, open tasks, revenue, completion, needs attention</td><td>My Work: own tasks, due this week, hours, own projects</td></tr>
-        <tr><td>Projects</td><td>See all, create. Sees contract value</td><td>Only projects they manage or are on. No contract value</td></tr>
-        <tr><td>Tasks</td><td>See all, create, assign anyone, edit, change status, delete</td><td>See tasks on their projects. Create tasks for themselves. Edit and change status on their own only. No delete</td></tr>
+        <tr><td>Home</td><td>Dashboard: projects, open jobs, revenue, completion, needs attention</td><td>My Work: open jobs, due this week, completed, hours</td></tr>
+        <tr><td>Top bar action</td><td>Add project, on every page</td><td>Add job (off if they have no write access)</td></tr>
+        <tr><td>Projects</td><td>See all, add, edit, set access. Sees contract value</td><td>Only projects they were added to. No contract value</td></tr>
+        <tr><td>Project access: Can add jobs</td><td>Granted per person per project</td><td>Add jobs and upload files in that project</td></tr>
+        <tr><td>Project access: View only</td><td>Granted per person per project</td><td>View it. Still update and log hours on jobs assigned to them</td></tr>
+        <tr><td>Jobs</td><td>All jobs: create, assign anyone, edit, status, delete</td><td>My Jobs shows their own. A project board shows all its jobs. No delete</td></tr>
         <tr><td>Comments and attachments</td><td>Add; edit or remove anyone's</td><td>Add; edit or remove their own</td></tr>
-        <tr><td>Time log</td><td>See everyone's, log for anyone</td><td>See and log their own hours</td></tr>
-        <tr><td>Files</td><td>All projects. Upload, delete any</td><td>Their projects. Upload, delete their own</td></tr>
+        <tr><td>Time log</td><td>Everyone's hours per day; log for anyone</td><td>Their own hours per day; log on their own jobs</td></tr>
+        <tr><td>Files</td><td>All projects. Upload, delete any</td><td>Their projects. Upload where they have write access; delete their own</td></tr>
         <tr><td>Staff</td><td>Add, edit, deactivate, activate, view profile with revenue and profit</td><td>No page. Can open a short person card from an avatar</td></tr>
-        <tr><td>Milestones and payments</td><td>Create (template or custom), edit, delete, approve, set payment status</td><td>No page. Can link own task to a milestone by name</td></tr>
+        <tr><td>Milestones and payments</td><td>Create, edit, delete, approve, set payment status</td><td>See milestone names and job progress. No amounts or payment status</td></tr>
         <tr><td>Reports</td><td>Project margin and staff performance</td><td>No access (redirects home)</td></tr>
-        <tr><td>Settings</td><td>Organization, project stages, task types, notifications</td><td>Notifications only</td></tr>
-        <tr><td>Search (⌘K)</td><td>Projects, tasks, people, files</td><td>Own projects, their tasks and files</td></tr>
+        <tr><td>Settings</td><td>Organization, milestone template, job types, notifications</td><td>Notifications only</td></tr>
+        <tr><td>Search (⌘K)</td><td>Projects, jobs, people, files</td><td>Their projects, those projects' jobs and files</td></tr>
       </tbody>
     </table></div>
   </section>
@@ -100,83 +103,92 @@ th{background:#f2f4f7;font-size:12px;color:var(--ink2);border-top:0}
 const FLOWS = [
 {group:'Both roles', id:'signin', role:'both', title:'Sign in and first run', goal:'Get the right person into the right workspace, and explain every way it can fail.',
  nodes:[
-  ['o','s',1,0,'Open StructFlow'],['p','a',1,1,'Sign-in page. Pick Team member or Admin'],['f','a',2,1,'Forgot password: ask your admin to reset it'],
-  ['i','a',1,2,'Enter work email and password, or press Fill for a demo account'],
+  ['o','s',1,0,'Open StructFlow'],['p','a',1,1,'Sign-in page. No role picker: the account decides'],['f','a',2,1,'Forgot password: ask your admin to reset it'],
+  ['i','a',1,2,'Enter work email and password (prototype: Fill a demo account)'],
   ['v','d',1,3,'Fields filled and email valid?'],['ve','x',0,3,'Field error shown. Focus jumps to it'],
   ['on','d',1,4,'Online?'],['off','x',0,4,'Offline warning with Retry'],
   ['c','d',1,5,'Email and password correct?'],['bad','d',2,5,'5th wrong try?'],['lock','x',3,5,'Sign-in paused for 30 seconds'],['warn','x',2,4,'Error shown. Warns from the 3rd try'],
   ['ac','d',1,6,'Account active?'],['de','x',0,6,'Deactivated: contact admin, or use another account'],
-  ['ro','d',1,7,'Matches the chosen role?'],['sw','x',2,7,'Wrong role: one-click Switch sign in'],
-  ['ft','d',1,8,'First sign-in on this browser?'],['tour','y',2,8,'Guided tour: 8 steps for admin, 7 for member. Skippable'],
-  ['home','e',1,9,'Admin: Dashboard. Member: My Work']],
- edges:[['o','p'],['p','f','Forgot?'],['p','i'],['i','v'],['v','ve','No'],['v','on','Yes'],['on','off','No'],['on','c','Yes'],['c','bad','No'],['bad','lock','Yes'],['bad','warn','No'],['c','ac','Yes'],['ac','de','No'],['ac','ro','Yes'],['ro','sw','No'],['ro','ft','Yes'],['ft','tour','Yes'],['ft','home','No'],['tour','home','','vh']],
- notes:['A refresh keeps you signed in. Opening the app again starts at sign-in.','Each browser tab has its own session, so an admin and a member can be signed in side by side.','"Take the tour" in the account menu replays the walkthrough.']},
+  ['ft','d',1,7,'First sign-in on this browser?'],['tour','y',2,7,'Guided tour: 8 steps for admin, 7 for member. Skippable'],
+  ['home','e',1,8,'Admin: Dashboard. Member: My Work']],
+ edges:[['o','p'],['p','f','Forgot?'],['p','i'],['i','v'],['v','ve','No'],['v','on','Yes'],['on','off','No'],['on','c','Yes'],['c','bad','No'],['bad','lock','Yes'],['bad','warn','No'],['c','ac','Yes'],['ac','de','No'],['ac','ft','Yes'],['ft','tour','Yes'],['ft','home','No'],['tour','home','','vh']],
+ notes:['A refresh keeps you signed in. Opening the app again starts at sign-in.','Each browser tab has its own session, so an admin and a member can be signed in side by side.','The demo account buttons are for the prototype only and would not ship.']},
 
 {group:'Both roles', id:'handoff', role:'both', title:'End to end: from contract to payment', goal:'How work passes between the admin, the system and the team member.', lanes:['Admin','StructFlow','Team member'],
  nodes:[
-  ['p','s',0,0,'Create the project'],['m','a',0,1,'Set up milestones (% of contract value)'],['t','a',0,2,'Create tasks, assign people, link to a milestone'],
-  ['n','y',1,3,'Member tab updates live: new task toast'],['st','a',2,3,'Start the task'],
-  ['w','a',2,4,'Work: comment, attach files, log hours'],['dn','a',2,5,'Mark task Done'],
-  ['q','d',1,5,'Last task in the milestone?'],['wait','y',1,6,'Milestone stays open. Progress updates'],
-  ['mc','y',1,7,'Milestone completes'],['md','d',1,8,'Payment mode automatic?'],
+  ['p','s',0,0,'Add the project and its team'],['m','a',0,1,'Set up milestones (% of contract value)'],['t','a',0,2,'Create jobs under each milestone and assign them'],
+  ['n','y',1,3,'Member tab updates live: new job toast'],['st','a',2,3,'Start the job'],
+  ['w','a',2,4,'Work: comment, attach files, log hours'],['dn','a',2,5,'Mark job Done'],
+  ['q','d',1,5,'Last job in the milestone?'],['wait','y',1,6,'Milestone stays open. Progress updates'],
+  ['mc','y',1,7,'Milestone achieved. Project progress moves'],['md','d',1,8,'Payment mode automatic?'],
   ['ap','a',0,8,'Ready to invoice: review, then Approve and invoice'],
   ['inv','y',1,9,'Status: Invoiced (request sent)'],['pd','a',0,10,'Client pays: set status to Paid'],['rv','e',1,10,'Counts in revenue and margin']],
  edges:[['p','m'],['m','t'],['t','n','','vh'],['n','st'],['st','w'],['w','dn'],['dn','q'],['q','wait','No'],['q','mc','Yes','L'],['mc','md'],['md','ap','No'],['md','inv','Yes'],['ap','inv','','B'],['inv','pd','','hv'],['pd','rv']],
- notes:['The admin tab also gets a live toast when a member finishes or creates a task. Live updates work between tabs of one browser; other devices need the backend.','Team members never see amounts. They see "Milestone complete. Admin has been notified."']},
+ notes:['The order of information is Project, then Milestones, then Jobs.','The admin tab also gets a live toast when a member finishes or creates a job. Live updates work between tabs of one browser; other devices need the backend.','Team members never see amounts. They see "Milestone complete. Admin has been notified."']},
 
-{group:'Admin', id:'a-setup', role:'admin', title:'A1. Set up an empty workspace', goal:'The order that makes the numbers work: people, project, milestones, then tasks.',
+{group:'Admin', id:'a-setup', role:'admin', title:'A1. Set up an empty workspace', goal:'The order that makes the numbers work: people, project, milestones, then jobs.',
  nodes:[
-  ['s','s',1,0,'Dashboard: "Your workspace is ready"'],['t','a',1,1,'1. Add team members on Staff'],['pr','a',1,2,'2. Create a project'],
-  ['q','d',1,3,'Use the six delivery stages?'],['tm','a',0,4,'Use stage template: 5, 10, 25, 20, 30, 10 %'],['cu','a',2,4,'Add custom milestones one by one'],
+  ['s','s',1,0,'Dashboard: "Your workspace is ready"'],['t','a',1,1,'1. Add team members on Staff'],['pr','a',1,2,'2. Add a project from the top bar. Choose team and access'],
+  ['q','d',1,3,'Start with the six stage milestones?'],['tm','a',0,4,'Keep the box ticked: 5, 10, 25, 20, 30, 10 %'],['cu','a',2,4,'Untick it and add custom milestones'],
   ['w','d',1,5,'Weightages total 100%?'],['fx','x',2,5,'Warning on the project. Edit weightages'],
-  ['tk','a',1,6,'3. Create tasks and link them to milestones'],['e','e',1,7,'Dashboard fills with live numbers']],
+  ['tk','a',1,6,'3. Add jobs under each milestone'],['e','e',1,7,'Dashboard fills with live numbers']],
  edges:[['s','t'],['t','pr'],['pr','q'],['q','tm','Yes','hv'],['q','cu','No','hv'],['tm','w','','vh'],['cu','w','','B'],['w','fx','No'],['w','tk','Yes'],['tk','e']],
- notes:['The warning does not block you: tasks can be created while weightages are off.','The account menu has "Start with empty workspace" and "Load demo data" to try this flow.']},
+ notes:['The six delivery stages are the milestone template; there is no separate stage tracker.','The warning does not block you: jobs can be created while weightages are off.']},
 
-{group:'Admin', id:'a-project', role:'admin', title:'A2. Create a project from one line', goal:'One typed sentence fills the form; money gets an explicit check.',
+{group:'Admin', id:'a-project', role:'admin', title:'A2. Add a project from one line', goal:'One typed sentence fills the form; money gets an explicit check.',
  nodes:[
-  ['s','s',1,0,'Projects: New Project'],['ty','a',1,1,'Type e.g. "Prestige Tech Park Bangalore ₹2.5Cr client Prestige 12 months @Priya"'],
+  ['s','s',1,0,'Top bar: Add project (on every page)'],['ty','a',1,1,'Type e.g. "Prestige Tech Park Bangalore ₹2.5Cr client Prestige 12 months @Priya"'],
   ['pa','y',1,2,'Fills client, type, city, value, duration, manager. Tags each Auto'],
   ['cl','d',1,3,'Client clear?'],['nc','a',2,3,'Needs review: pick a client or add a new one'],
-  ['ed','a',1,4,'Review and edit any field. "Why these?" explains fills'],['sub','a',1,5,'Press Create Project'],
+  ['ed','a',1,4,'Review fields. Set each person: Can add jobs or View only'],['sub','a',1,5,'Press Create Project'],
   ['rq','d',1,6,'Required fields complete?'],['re','x',0,6,'Errors shown on the fields'],
   ['mv','d',1,7,'Value read from text?'],['cf','a',2,7,'Check "₹2,50,00,000. Is that right?"'],['em','a',3,7,'Edit amount'],
-  ['cr','y',1,8,'Project created in Work Order stage'],['e','e',1,9,'Toast with Undo. Team sees it live']],
+  ['cr','y',1,8,'Project created under To Do, with stage milestones if ticked'],['e','e',1,9,'Toast with Undo. Its team sees it live']],
  edges:[['s','ty'],['ty','pa'],['pa','cl'],['cl','nc','No'],['cl','ed','Yes'],['nc','ed','','vh'],['ed','sub'],['sub','rq'],['rq','re','No'],['rq','mv','Yes'],['mv','cf','Yes'],['cf','em','Edit'],['mv','cr','No'],['cf','cr','Yes, create','vh'],['em','sub','Fix and resubmit','T'],['cr','e']],
- notes:['The reader is rule-based, not a language model.','Files can be attached while creating the project.']},
+ notes:['The reader is rule-based, not a language model.','Only people added to the project can see it.']},
 
-{group:'Admin', id:'a-task', role:'admin', title:'A3. Create and assign a task', goal:'Type the work the way you would say it, then confirm what was understood.',
+{group:'Admin', id:'a-edit', role:'admin', title:'A3. Edit a project and manage access', goal:'Change a project after it is created, and decide who can do what inside it.',
  nodes:[
-  ['s','s',1,0,'Tasks: New Task'],['ty','a',1,1,'Type e.g. "Column schedule Prestige Towers @Amit !high due fri 8h"'],
+  ['s','s',1,0,'Projects: All, To Do, In Progress, Completed'],['q','d',1,1,'What needs changing?'],
+  ['ed','a',0,2,'Pencil in the list, or Edit project'],['ac','a',1,2,'Open Team & access'],['bd','a',2,2,'Open Milestones & jobs board'],
+  ['fm','a',0,3,'Change details, status, value or team'],['lv','a',1,3,'Set a person: Can add jobs or View only'],['mv','a',2,3,'Drag a job to another milestone'],
+  ['sv','y',0,4,'Saved. Milestones not yet invoiced are re-priced'],['up','y',1,4,'Access applies at once. Undo offered'],['pg','y',2,4,'Progress recalculates. Undo offered'],
+  ['e','e',1,5,'The team sees the change live']],
+ edges:[['s','q'],['q','ed','Details','hv'],['q','ac','Access'],['q','bd','Work','hv'],['ed','fm'],['ac','lv'],['bd','mv'],['fm','sv'],['lv','up'],['mv','pg'],['sv','e','','vh'],['up','e'],['pg','e','','vh']],
+ notes:['An unfinished job cannot be dragged into a milestone that is already achieved.','A drag that would complete a milestone asks for confirmation first, because it raises the payment request.','Assigning a job to someone outside the project gives them View only access.']},
+
+{group:'Admin', id:'a-task', role:'admin', title:'A4. Create and assign a job', goal:'Type the work the way you would say it, then confirm what was understood.',
+ nodes:[
+  ['s','s',1,0,'Jobs: New Job, or Add job on a milestone column'],['ty','a',1,1,'Type e.g. "Column schedule Prestige Towers @Amit !high due fri 8h"'],
   ['pa','y',1,2,'Fills project, assignee, priority, due date, estimate, type'],
   ['q','d',1,3,'Project understood?'],['nr','a',2,3,'Needs review tag: pick the project'],
   ['as','d',1,4,'Assignee named?'],['sg','y',2,4,'Suggests by skills and workload. Or Assign to me'],
-  ['ms','a',1,5,'Optional: link a milestone, add files, notes, tags'],['v','d',1,6,'Title, project, assignee set?'],['er','x',0,6,'Errors shown on the fields'],
-  ['cr','y',1,7,'Task created. History starts'],['more','d',1,8,'"Create another" ticked?'],['again','a',0,8,'Form resets, project kept'],
+  ['ms','a',1,5,'Link a milestone, add files, notes, tags'],['v','d',1,6,'Title, project, assignee set?'],['er','x',0,6,'Errors shown on the fields'],
+  ['cr','y',1,7,'Job created. An outsider gets View only access'],['more','d',1,8,'"Create another" ticked?'],['again','a',0,8,'Form resets, project kept'],
   ['e','e',1,9,'Toast with Undo. Assignee sees it live']],
- edges:[['s','ty'],['ty','pa'],['pa','q'],['q','nr','No'],['q','as','Yes'],['nr','as','','B'],['as','sg','No'],['as','ms','Yes'],['sg','ms','','vh'],['ms','v'],['v','er','No'],['v','cr','Yes'],['cr','more'],['more','again','Yes'],['more','e','No'],['again','ty','Next task','L']],
- notes:['Only open milestones of the chosen project are offered. Completed ones are closed to new tasks.']},
+ edges:[['s','ty'],['ty','pa'],['pa','q'],['q','nr','No'],['q','as','Yes'],['nr','as','','B'],['as','sg','No'],['as','ms','Yes'],['sg','ms','','vh'],['ms','v'],['v','er','No'],['v','cr','Yes'],['cr','more'],['more','again','Yes'],['more','e','No'],['again','ty','Next job','L']],
+ notes:['From a milestone column, the project and milestone are already filled in.','Only open milestones of the chosen project are offered.']},
 
-{group:'Admin', id:'a-manage', role:'admin', title:'A4. Manage a task', goal:'Move work along, discuss it, and remove it safely.',
+{group:'Admin', id:'a-manage', role:'admin', title:'A5. Manage a job', goal:'Move work along, discuss it, record time, and remove it safely.',
  nodes:[
-  ['s','s',1,0,'Tasks: board or list. Filter by project'],['op','a',1,1,'Drag a card, or open the task'],['q','d',1,2,'What do you need?'],
-  ['st','a',0,3,'Change status: Backlog, To Do, In Progress, Review, Done'],['cm','a',1,3,'Comment with @mention, add files, read history'],['ed','a',2,3,'Edit details or reassign'],['dl','a',3,3,'Delete'],
+  ['s','s',1,0,'Jobs page, or a project board'],['op','a',1,1,'Drag a card, or open the job'],['q','d',1,2,'What do you need?'],
+  ['st','a',0,3,'Change status: Backlog, To Do, In Progress, Review, Done'],['cm','a',1,3,'Comment, attach files, edit, or Log hours'],['ed','a',2,3,'Edit details or reassign'],['dl','a',3,3,'Delete'],
   ['cf','d',3,4,'Confirm delete?'],
-  ['h','y',1,5,'Change saved and written to task history'],['del','y',3,5,'Removed. Toast with Undo'],['e','e',1,6,'Milestone progress and dashboard update']],
- edges:[['s','op'],['op','q'],['q','st','Status','hv'],['q','cm','Discuss'],['q','ed','Edit','hv'],['q','dl','Delete','hv'],['st','h','','vh'],['cm','h'],['ed','h','','vh'],['dl','cf'],['cf','del','Yes'],['h','e']],
- notes:['Choosing No on the delete confirmation leaves the task as it was.']},
+  ['h','y',1,5,'Change saved and written to job history'],['del','y',3,5,'Removed. Toast with Undo'],['e','e',1,6,'Milestone progress and dashboard update']],
+ edges:[['s','op'],['op','q'],['q','st','Status','hv'],['q','cm','Work'],['q','ed','Edit','hv'],['q','dl','Delete','hv'],['st','h','','vh'],['cm','h'],['ed','h','','vh'],['dl','cf'],['cf','del','Yes'],['h','e']],
+ notes:['Choosing No on the delete confirmation leaves the job as it was.']},
 
-{group:'Admin', id:'a-pay', role:'admin', title:'A5. Milestones and payments', goal:'Money lives on milestones. Tasks drive their completion.',
+{group:'Admin', id:'a-pay', role:'admin', title:'A6. Milestones and payments', goal:'Money lives on milestones. Jobs drive their completion.',
  nodes:[
-  ['s','s',1,0,'Milestones page'],['o','a',1,1,'Open a milestone: progress, linked tasks'],['md','a',1,2,'Choose: send automatically, or wait for approval'],
-  ['q','d',1,3,'All linked tasks done?'],['op','y',0,3,'Open. Shows "3 of 4 tasks"'],
+  ['s','s',1,0,'Milestones page'],['o','a',1,1,'Open a milestone: progress, linked jobs'],['md','a',1,2,'Choose: send automatically, or wait for approval'],
+  ['q','d',1,3,'All linked jobs done?'],['op','y',0,3,'Open. Shows "3 of 4 jobs"'],
   ['c','y',1,4,'Completes by itself'],['a','d',1,5,'Mode automatic?'],['rd','y',2,5,'Ready to invoice'],['ap','a',2,6,'Approve and invoice (confirm)'],
   ['in','y',1,6,'Invoiced. Toast shown'],['pd','a',1,7,'When the client pays, set Paid (confirm)'],['e','e',1,8,'Revenue and margin update'],
-  ['ro','d',3,4,'A task leaves Done?'],['re','y',3,5,'Reopens if not yet invoiced or paid']],
+  ['ro','d',3,4,'A job leaves Done?'],['re','y',3,5,'Reopens if not yet invoiced or paid']],
  edges:[['s','o'],['o','md'],['md','q'],['q','op','No'],['q','c','Yes'],['c','a'],['a','rd','No'],['a','in','Yes'],['rd','ap'],['ap','in'],['in','pd'],['pd','e'],['c','ro','Later'],['ro','re','Yes']],
  notes:['Payment status can also be changed by hand from the table; each change asks for confirmation and offers Undo.','A milestone can also be marked complete by hand (see Gaps).']},
 
-{group:'Admin', id:'a-staff', role:'admin', title:'A6. Manage the team', goal:'Add people, and take access away only on purpose.',
+{group:'Admin', id:'a-staff', role:'admin', title:'A7. Manage the team', goal:'Add people, and take access away only on purpose.',
  nodes:[
   ['s','s',1,0,'Staff page'],['q','d',1,1,'What do you need?'],
   ['ad','a',0,2,'Add member: name, role, email, rate, skills'],['vw','a',1,2,'Open profile: workload, revenue, profit'],['de','a',2,2,'Deactivate'],['av','a',3,2,'Activate an inactive person'],
@@ -184,61 +196,62 @@ const FLOWS = [
   ['c2','d',2,4,'Second check: absolutely sure?'],['kp','e',1,5,'Cancel at either step: nothing changes'],
   ['dn','y',2,5,'Inactive. Sign-in blocked, history kept'],['on','y',3,5,'Active again'],['t','e',2,6,'Toast with Undo']],
  edges:[['s','q'],['q','ad','Add','hv'],['q','vw','View'],['q','de','Remove access','hv'],['q','av','Restore','hv'],['ad','ok'],['vw','ed'],['de','c1'],['av','c3'],['c1','c2','Yes'],['c2','dn','Yes'],['c2','kp','No'],['c3','on','Yes'],['dn','t'],['on','t','','vh']],
- notes:['The first confirmation lists open tasks that stay assigned to the person.']},
+ notes:['The first confirmation lists open jobs that stay assigned to the person.']},
 
-{group:'Admin', id:'a-monitor', role:'admin', title:'A7. Daily review', goal:'Answer the three business questions: margin, contribution and what is about to slip.',
+{group:'Admin', id:'a-monitor', role:'admin', title:'A8. Daily review', goal:'Answer the three business questions: margin, contribution and what is about to slip.',
  nodes:[
   ['s','s',1,0,'Sign in: Dashboard'],['k','a',1,1,'Read the four numbers and charts'],['q','d',1,2,'What needs a look?'],
-  ['sl','a',0,3,'Needs attention: overdue and due soon'],['mg','a',1,3,'Reports: revenue, cost, margin per project'],['pe','a',2,3,'Reports: on-time rate, hours, score per person'],['pj','a',3,3,'Project page: tasks, milestones, files, stage'],
-  ['ac1','e',0,4,'Reassign or reprioritise'],['ac2','e',1,4,'Chase invoices on Milestones'],['ac3','e',2,4,'Inform bonus and salary review'],['ac4','e',3,4,'Move the project stage on']],
+  ['sl','a',0,3,'Needs attention: overdue and due soon'],['mg','a',1,3,'Reports: revenue, cost, margin per project'],['pe','a',2,3,'Reports and Time Log: hours per person per day'],['pj','a',3,3,'Project board: milestones and their jobs'],
+  ['ac1','e',0,4,'Reassign or reprioritise'],['ac2','e',1,4,'Chase invoices on Milestones'],['ac3','e',2,4,'Inform bonus and salary review'],['ac4','e',3,4,'Unblock the milestone that is behind']],
  edges:[['s','k'],['k','q'],['q','sl','Slipping','hv'],['q','mg','Money'],['q','pe','People','hv'],['q','pj','A project','hv'],['sl','ac1'],['mg','ac2'],['pe','ac3'],['pj','ac4']],
- notes:['Time Log (everyone\'s hours), Files and ⌘K search are available from any step.']},
+ notes:['Project progress is the share of the project whose milestones are achieved.']},
 
 {group:'Team member', id:'m-day', role:'member', title:'M1. Work through the day', goal:'See what is next and finish it with as few clicks as possible.',
  nodes:[
-  ['s','s',1,0,'Sign in: My Work'],['q','d',1,1,'Anything assigned?'],['none','e',2,1,'"Nothing assigned yet": add a task or log time'],
+  ['s','s',1,0,'Sign in: My Work'],['q','d',1,1,'Anything assigned?'],['none','e',2,1,'"Nothing assigned to you yet"'],
   ['up','a',1,2,'Up next, ordered by due date'],['live','y',2,2,'New assignment arrives: live toast with View'],
-  ['go','a',1,3,'Press Start. Status: In Progress'],['wk','a',1,4,'Open the task: comment, @mention, attach files'],
+  ['go','a',1,3,'Press Start. Status: In Progress'],['wk','a',1,4,'Work: comment, attach files, Log hours on the job'],
   ['rv','d',1,5,'Needs a check first?'],['re','a',2,5,'Move to Review'],
-  ['dn','a',1,6,'Press Done'],['ms','d',1,7,'Finished the milestone\'s last task?'],['nt','y',2,7,'"Milestone complete. Admin has been notified"'],
+  ['dn','a',1,6,'Press Done'],['ms','d',1,7,'Finished the milestone\'s last job?'],['nt','y',2,7,'"Milestone complete. Admin has been notified"'],
   ['e','e',1,8,'Toast with Undo. Admin sees it live']],
  edges:[['s','q'],['q','none','No'],['q','up','Yes'],['live','up'],['up','go'],['go','wk'],['wk','rv'],['rv','re','Yes'],['rv','dn','No'],['re','dn','When checked','vh'],['dn','ms'],['ms','nt','Yes'],['ms','e','No'],['nt','e','','vh']],
- notes:['Review is a status, not an approval gate: a member can mark their own task Done directly.']},
+ notes:['Review is a status, not an approval gate: a member can mark their own job Done directly.']},
 
-{group:'Team member', id:'m-task', role:'member', title:'M2. Add or update a task', goal:'Members can create their own work, and only change what is theirs.',
+{group:'Team member', id:'m-task', role:'member', title:'M2. Add or update a job', goal:'Members add work only where the admin allows it, and change only what is theirs.',
  nodes:[
-  ['s','s',1,0,'My Tasks'],['f','a',1,1,'Switch Mine or Team. Filter by project'],['q','d',1,2,'New work, or existing?'],
-  ['nw','a',0,3,'New Task: type one line'],['pa','y',0,4,'Assigned to you. Fills the rest from your projects'],['ms','a',0,5,'Optional: link a milestone (names only)'],['cr','e',0,6,'Created. Toast with Undo. Admin sees it live'],
-  ['op','a',2,3,'Open a task'],['mine','d',2,4,'Assigned to you?'],['ed','a',1,5,'Edit, change status, drag on the board'],['ro','x',3,5,'View only. Can still comment and attach'],
-  ['h','e',1,6,'Saved to task history']],
- edges:[['s','f'],['f','q'],['q','nw','New','hv'],['q','op','Existing','hv'],['nw','pa'],['pa','ms'],['ms','cr'],['op','mine'],['mine','ed','Yes','hv'],['mine','ro','No','hv'],['ed','h']],
- notes:['Members cannot delete tasks.','If the project cannot be read from the line, it is flagged Needs review, as for the admin.']},
+  ['s','s',1,0,'My Jobs: only your own'],['q','d',1,1,'New job, or existing?'],
+  ['wa','d',0,2,'Write access on any project?'],['no','x',0,3,'Add job is off, with the reason'],
+  ['nw','a',1,3,'Add job: type one line. Only writable projects offered'],['cr','y',1,4,'Assigned to you. Link a milestone if you like'],['done','e',1,5,'Created. Toast with Undo. Admin sees it live'],
+  ['op','a',2,2,'Open one of your jobs'],['pw','d',2,3,'Write access on its project?'],['full','a',2,4,'Edit, change status, move milestone, Log hours'],['ro','a',3,3,'View only: change status and Log hours'],
+  ['h','e',2,5,'Saved to job history']],
+ edges:[['s','q'],['q','wa','New','hv'],['q','op','Existing','hv'],['wa','no','No'],['wa','nw','Yes','hv'],['nw','cr'],['cr','done'],['op','pw'],['pw','full','Yes'],['pw','ro','No'],['full','h'],['ro','h','','vh']],
+ notes:['Members cannot delete jobs.','If the project cannot be read from the line, it is flagged Needs review.']},
 
-{group:'Team member', id:'m-time', role:'member', title:'M3. Log time', goal:'Record hours so contribution and project cost are accurate.',
+{group:'Team member', id:'m-time', role:'member', title:'M3. Log hours', goal:'Record hours where you are working, and see each day across projects.',
  nodes:[
-  ['s','s',1,0,'Time Log, or "Log time" on My Work'],['n','a',1,1,'Press Log Time'],['fm','a',1,2,'Choose project and task. Enter date, hours, note'],
-  ['v','d',1,3,'Required fields filled?'],['er','x',0,3,'Form does not save until they are filled'],
-  ['sv','y',1,4,'Entry saved. Task\'s logged hours update'],['q','d',1,5,'Mistake?'],['ed','a',2,5,'Edit the entry, or delete it (confirm, then Undo)'],
-  ['e','e',1,6,'Hours count toward your record and project cost']],
- edges:[['s','n'],['n','fm'],['fm','v'],['v','er','No'],['v','sv','Yes'],['sv','q'],['q','ed','Yes'],['q','e','No'],['ed','e','','vh']],
- notes:['A member only ever sees their own entries.']},
+  ['s','s',1,0,'Log hours on a job, or on Time Log'],['n','a',1,1,'From a job it is preselected. Otherwise pick project and job'],['fm','a',1,2,'Enter date, hours and a note'],
+  ['v','d',1,3,'Project, job and hours (max 12) set?'],['er','x',0,3,'Message says what is missing'],
+  ['sv','y',1,4,'Saved. Job hours update. Toast with Undo'],['dy','a',1,5,'Time Log: hours per day, split by project'],['q','d',1,6,'Mistake?'],['ed','a',2,6,'Edit the entry, or delete it (confirm, then Undo)'],
+  ['e','e',1,7,'Hours count toward your record and project cost']],
+ edges:[['s','n'],['n','fm'],['fm','v'],['v','er','No'],['v','sv','Yes'],['sv','dy'],['dy','q'],['q','ed','Yes'],['q','e','No'],['ed','e','','vh']],
+ notes:['A member only ever sees their own entries, and can log only on their own jobs.']},
 
-{group:'Team member', id:'m-files', role:'member', title:'M4. Projects and files', goal:'Find project context and share documents.',
+{group:'Team member', id:'m-files', role:'member', title:'M4. Projects and files', goal:'See only the projects you are on, and do only what your access allows.',
  nodes:[
-  ['s','s',1,0,'Projects (only yours)'],['o','a',1,1,'Open a project: Tasks, Milestones, Files, Stages'],['q','d',1,2,'Need a document?'],['ctx','e',0,2,'Read status, team, timeline. No contract value'],
-  ['fp','a',1,3,'Files page: filter by project'],['w','d',1,4,'Download or upload?'],['dw','e',0,4,'Download the file'],['up','a',2,4,'Upload: project and folder'],
-  ['ok','y',2,5,'Added to your project'],['own','d',2,6,'Your own upload?'],['del','e',3,6,'Can delete (confirm, then Undo)'],['keep','e',1,6,'Others\' files: no delete']],
- edges:[['s','o'],['o','q'],['q','ctx','No'],['q','fp','Yes'],['fp','w'],['w','dw','Get'],['w','up','Add'],['up','ok'],['ok','own'],['own','del','Yes'],['own','keep','No']],
- notes:['Download is available for files uploaded in the current tab session; the sample files are records without content.','⌘K searches only your projects, tasks and files.']}
+  ['s','s',1,0,'Projects: only the ones you were added to'],['o','a',1,1,'Open one: every milestone shown, the active one in focus'],['q','d',1,2,'Your access on this project?'],
+  ['ro','e',0,3,'View only: read the board, files and team'],
+  ['wr','a',1,3,'Can add jobs: Add job under a milestone'],['fp','a',1,4,'Files page: one table, grouped by folder'],['w','d',1,5,'Get a file, or add one?'],['dw','e',0,5,'Download the file'],['up','a',2,5,'Upload to a writable project'],
+  ['own','e',2,6,'Delete your own uploads (confirm, then Undo)']],
+ edges:[['s','o'],['o','q'],['q','ro','View','hv'],['q','wr','Write'],['wr','fp'],['fp','w'],['w','dw','Get'],['w','up','Add'],['up','own']],
+ notes:['Other milestones appear as outlines. Selecting one brings it into focus.','View-only members can still download files, and update or log hours on jobs assigned to them.','No contract value or payment is shown to members.','Download works for files uploaded in the current tab; the sample files have no content.']}
 ];
 
 const GAPS = [
-  ['Members can change a project\'s stage','On the project page, the Stages tab is clickable for everyone, and one click moves the stage and progress with no confirmation.','Limit to admins and add a confirmation.'],
-  ['"Mark complete" skips the payment request','The tick button on Milestones sets the milestone to Completed but leaves payment as "Not yet earned", so no request is raised.','Run the same step as task-driven completion (Invoiced or Ready to invoice), or remove the button.'],
-  ['No way to edit or delete a project','The project form supports editing, but no screen opens it for an existing project.','Add Edit on the project page (admin), with delete behind a double confirmation.'],
-  ['Members see milestone weightage','The project\'s Milestones tab shows members each milestone\'s percentage of the contract. No rupee amounts are shown.','Decide whether the percentage is sensitive; if so, hide it from members.'],
+  ['"Mark complete" skips the payment request','The tick button on Milestones sets the milestone to Completed but leaves payment as "Not yet earned", so no request is raised.','Run the same step as job-driven completion (Invoiced or Ready to invoice), or remove the button.'],
+  ['A project cannot be deleted','Projects can now be edited, but no screen deletes one.','Add delete for admins behind a double confirmation.'],
   ['Settings do not persist','Save Changes shows "Saved", but organization and notification choices are not stored.','Store them, or mark the page as not yet connected.'],
-  ['No password change or reset','"Forgot password" says to ask the admin, but the admin has no reset action. New members share one default password.','Needs the backend: invite link, first-login password change and admin reset.']
+  ['No password change or reset','"Forgot password" says to ask the admin, but the admin has no reset action. New members share one default password.','Needs the backend: invite link, first-login password change and admin reset.'],
+  ['Access is enforced in the interface only','Project access is checked by the screens. There is no server to refuse a request.','Enforce the same rules in the API (see the backend spec).']
 ];
 
 /* ---------- renderer ---------- */

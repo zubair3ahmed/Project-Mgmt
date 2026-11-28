@@ -1,18 +1,18 @@
 import EmptyState from '../components/EmptyState'
 import { FolderKanban, SearchX } from 'lucide-react'
 import { Link } from 'react-router-dom'
-import { Plus, ArrowUpRight, Search, X } from 'lucide-react'
+import { Plus, ArrowUpRight, Search, X, Pencil } from 'lucide-react'
 import { useState } from 'react'
 import Header from '../components/Header'
 import Tabs from '../components/Tabs'
 import { StatusBadge, PriorityBadge, CountBadge } from '../components/Badge'
 import { AvatarGroup } from '../components/Avatar'
-import ProgressBar from '../components/ProgressBar'
-import Modal from '../components/Modal'
-import ProjectFormModal from '../components/ProjectFormModal'
-import { FormField, Input, Select, Textarea, Button } from '../components/FormField'
+import MilestoneProgress from '../components/MilestoneProgress'
+import useQuickAdd from '../store/useQuickAdd'
+import { projectProgress } from '../lib/progress'
+import { Input, Select, Button } from '../components/FormField'
 import useStore from '../store/useStore'
-import { useAccess } from '../lib/access'
+import { useAccess, accessLevel } from '../lib/access'
 
 const formatContract = n => (n >= 1e7 ? `₹${+(n / 1e7).toFixed(2)}Cr` : `₹${(n / 1e5).toFixed(1)}L`)
 
@@ -21,26 +21,23 @@ const PROJECT_STATUSES = ['planning', 'in-progress', 'on-hold', 'completed']
 
 export default function Projects() {
   const allProjects = useStore(s => s.projects)
-  const { isAdmin, myProjects } = useAccess()
+  const { isAdmin, myProjects, user } = useAccess()
+  const openProject = useQuickAdd(s => s.openProject)
+  const milestones = useStore(s => s.milestones)
+  const jobs = useStore(s => s.tasks)
   const projects = isAdmin ? allProjects : myProjects
   const staff = useStore(s => s.staff)
   const clients = useStore(s => s.clients)
-  const addProject = useStore(s => s.addProject)
-  const updateProject = useStore(s => s.updateProject)
-  const addClient = useStore(s => s.addClient)
 
   const [activeTab, setActiveTab] = useState('all')
   const NO_FILTERS = { q: '', client: 'all', type: 'all', priority: 'all', manager: 'all', sort: 'name' }
   const [f, setF] = useState(NO_FILTERS)
   const setFilter = (k, v) => setF(prev => ({ ...prev, [k]: v }))
-  const [formState, setFormState] = useState({ open: false, project: null })
-  const [showClientForm, setShowClientForm] = useState(false)
-  const [clientForm, setClientForm] = useState({ name: '', contact: '', email: '', phone: '' })
 
   const tabs = [
     { id: 'all', label: 'All Projects', count: projects.length, tone: 'brand' },
-    { id: 'in-progress', label: 'Active', count: projects.filter(p => p.status === 'in-progress').length, tone: 'brand' },
-    { id: 'planning', label: 'Planning', count: projects.filter(p => p.status === 'planning').length, tone: 'gray' },
+    { id: 'planning', label: 'To Do', count: projects.filter(p => p.status === 'planning').length, tone: 'gray' },
+    { id: 'in-progress', label: 'In Progress', count: projects.filter(p => p.status === 'in-progress').length, tone: 'brand' },
     { id: 'completed', label: 'Completed', count: projects.filter(p => p.status === 'completed').length, tone: 'success' },
   ]
 
@@ -49,7 +46,7 @@ export default function Projects() {
   const term = f.q.trim().toLowerCase()
   const SORTS = {
     name: (a, b) => a.name.localeCompare(b.name),
-    progress: (a, b) => b.progress - a.progress,
+    progress: (a, b) => projectProgress(b, milestones, jobs).percent - projectProgress(a, milestones, jobs).percent,
     end: (a, b) => (a.endDate || '9').localeCompare(b.endDate || '9'),
     value: (a, b) => b.contractValue - a.contractValue,
   }
@@ -65,23 +62,13 @@ export default function Projects() {
   const managerOptions = staff.filter(m => projects.some(p => p.managerId === m.id))
   const typeOptions = PROJECT_TYPES.filter(t => projects.some(p => p.type === t))
 
-  function openAdd() {
-    setFormState({ open: true, project: null })
-  }
-
-  function handleAddClient(e) {
-    e.preventDefault()
-    addClient(clientForm)
-    setShowClientForm(false)
-    setClientForm({ name: '', contact: '', email: '', phone: '' })
-  }
+  const openAdd = () => openProject()
 
   return (
     <div className="flex flex-col h-full">
       <Header
         title="Projects"
         subtitle={`${projects.length} projects`}
-        actions={isAdmin && <Button onClick={openAdd}><Plus size={14} /> New Project</Button>}
       />
       <div className="px-6 pt-4">
         <Tabs tabs={tabs} active={activeTab} onChange={setActiveTab} />
@@ -124,17 +111,18 @@ export default function Projects() {
       </div>
       <div className="flex-1 overflow-y-auto p-6">
         <div className="bg-surface-0 border border-surface-300 rounded-lg shadow-sm overflow-hidden">
-          <table data-m-hide="2 4 6" className="data-table w-full text-sm">
+          <table data-m-hide="2 4 6 7" className="data-table w-full text-sm">
             <thead>
               <tr>
                 <th className="text-left px-4 py-3">Project</th>
                 <th className="text-left px-4 py-3">Client</th>
                 <th className="text-left px-4 py-3">Status</th>
                 <th className="text-left px-4 py-3">Priority</th>
-                <th className="text-left px-4 py-3">Progress</th>
+                <th className="text-left px-4 py-3">Milestone progress</th>
                 <th className="text-left px-4 py-3">Team</th>
                 {isAdmin && <th className="text-left px-4 py-3">Contract</th>}
-                <th className="text-left px-4 py-3 w-10"></th>
+                {!isAdmin && <th className="text-left px-4 py-3">Your access</th>}
+                <th className="text-left px-4 py-3 w-20"></th>
               </tr>
             </thead>
             <tbody>
@@ -150,27 +138,26 @@ export default function Projects() {
                     <td className="px-4 py-3 text-xs text-surface-600">{client?.name}</td>
                     <td className="px-4 py-3"><StatusBadge status={p.status} /></td>
                     <td className="px-4 py-3"><PriorityBadge priority={p.priority} /></td>
-                    <td className="px-4 py-3 w-36">
-                      <div className="flex items-center gap-2">
-                        <ProgressBar value={p.progress} />
-                        <span className="text-xs text-surface-500 font-mono w-8 text-right">{p.progress}%</span>
-                      </div>
-                    </td>
+                    <td className="px-4 py-3 w-52"><MilestoneProgress project={p} compact /></td>
                     <td className="px-4 py-3"><AvatarGroup people={team} /></td>
                     {isAdmin && <td className="px-4 py-3 text-xs text-surface-600 font-mono">{formatContract(p.contractValue)}</td>}
+                    {!isAdmin && <td className="px-4 py-3 text-xs text-surface-600 whitespace-nowrap">{accessLevel(p, user) === 'write' ? 'Can add jobs' : 'View only'}</td>}
                     <td className="px-4 py-3">
-                      <Link to={`/projects/${p.id}`} className="w-8 h-8 flex items-center justify-center rounded-md hover:bg-surface-50 text-surface-400">
-                        <ArrowUpRight size={14} />
-                      </Link>
+                      <div className="flex items-center justify-end gap-1">
+                        {isAdmin && <button type="button" onClick={() => openProject(p)} aria-label={`Edit ${p.name}`} title="Edit project" className="w-8 h-8 flex items-center justify-center rounded-md hover:bg-surface-100 text-surface-500"><Pencil size={14} /></button>}
+                        <Link to={`/projects/${p.id}`} aria-label={`Open ${p.name}`} className="w-8 h-8 flex items-center justify-center rounded-md hover:bg-surface-100 text-surface-500">
+                          <ArrowUpRight size={14} />
+                        </Link>
+                      </div>
                     </td>
                   </tr>
                 )
               })}
               {filtered.length === 0 && (
-                <tr><td colSpan={8} className="bg-surface-0">
+                <tr><td colSpan={9} className="bg-surface-0">
                   {projects.length === 0 ? (
                     <EmptyState compact icon={FolderKanban} title="No projects yet"
-                      description={isAdmin ? 'A project holds its tasks, milestones, files and team. Type one line like “Prestige Tech Park Bangalore ₹2.5Cr 12 months” and the rest fills itself.' : 'You have not been added to a project yet. Your admin will add you, and it will appear here.'}
+                      description={isAdmin ? 'A project holds its jobs, milestones, files and team. Type one line like “Prestige Tech Park Bangalore ₹2.5Cr 12 months” and the rest fills itself.' : 'You have not been added to a project yet. Your admin will add you, and it will appear here.'}
                       action={isAdmin ? { label: 'New project', icon: Plus, onClick: openAdd } : undefined} />
                   ) : (
                     <EmptyState compact icon={SearchX} title="No projects match" description="Try a different search, or clear the filters to see everything."
@@ -183,36 +170,6 @@ export default function Projects() {
         </div>
       </div>
 
-      <ProjectFormModal
-        open={formState.open}
-        project={formState.project}
-        onClose={() => setFormState(f => ({ ...f, open: false }))}
-        onAddClient={() => setShowClientForm(true)}
-      />
-
-      {/* Add Client Modal */}
-      <Modal open={showClientForm} onClose={() => setShowClientForm(false)} title="Add Client">
-        <form onSubmit={handleAddClient} className="space-y-4">
-          <FormField label="Company Name" required>
-            <Input value={clientForm.name} onChange={e => setClientForm(f => ({ ...f, name: e.target.value }))} required placeholder="e.g. Prestige Constructions" />
-          </FormField>
-          <FormField label="Contact Person" required>
-            <Input value={clientForm.contact} onChange={e => setClientForm(f => ({ ...f, contact: e.target.value }))} required placeholder="e.g. Rajesh Gupta" />
-          </FormField>
-          <div className="grid grid-cols-2 gap-4">
-            <FormField label="Email">
-              <Input type="email" value={clientForm.email} onChange={e => setClientForm(f => ({ ...f, email: e.target.value }))} placeholder="contact@company.com" />
-            </FormField>
-            <FormField label="Phone">
-              <Input value={clientForm.phone} onChange={e => setClientForm(f => ({ ...f, phone: e.target.value }))} placeholder="+91 98000 12345" />
-            </FormField>
-          </div>
-          <div className="flex justify-end gap-2 pt-2">
-            <Button type="button" variant="secondary" onClick={() => setShowClientForm(false)}>Cancel</Button>
-            <Button type="submit">Add Client</Button>
-          </div>
-        </form>
-      </Modal>
     </div>
   )
 }

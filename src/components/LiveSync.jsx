@@ -12,13 +12,13 @@ function changesFor(user, before, after) {
   const known = new Set(before.tasks.map(t => t.id))
   const prev = Object.fromEntries(before.tasks.map(t => [t.id, t]))
   if (user.role === 'member') {
-    after.tasks.filter(t => t.assigneeId === user.staffId && (!known.has(t.id) || prev[t.id].assigneeId !== user.staffId)).forEach(t => msgs.push({ title: 'New task assigned to you', detail: t.title, to: '/tasks' }))
+    after.tasks.filter(t => t.assigneeId === user.staffId && (!known.has(t.id) || prev[t.id].assigneeId !== user.staffId)).forEach(t => msgs.push({ title: 'New job assigned to you', detail: t.title, to: '/jobs' }))
     const mine = p => p.managerId === user.staffId || (p.teamIds || []).includes(user.staffId)
     const had = new Set(before.projects.filter(mine).map(p => p.id))
     after.projects.filter(p => mine(p) && !had.has(p.id)).forEach(p => msgs.push({ title: 'You were added to a project', detail: p.name, to: '/projects' }))
   } else {
-    after.tasks.filter(t => known.has(t.id) && prev[t.id].status !== 'done' && t.status === 'done').forEach(t => msgs.push({ title: `${name(t.assigneeId)} finished a task`, detail: `${t.title}${t.paymentStatus === 'due' ? ' · payment is due' : ''}`, to: '/tasks' }))
-    after.tasks.filter(t => !known.has(t.id) && t.reporterId && t.reporterId !== user.staffId).forEach(t => msgs.push({ title: `${name(t.reporterId)} created a task`, detail: t.title, to: '/tasks' }))
+    after.tasks.filter(t => known.has(t.id) && prev[t.id].status !== 'done' && t.status === 'done').forEach(t => msgs.push({ title: `${name(t.assigneeId)} finished a job`, detail: `${t.title}${t.paymentStatus === 'due' ? ' · payment is due' : ''}`, to: '/jobs' }))
+    after.tasks.filter(t => !known.has(t.id) && t.reporterId && t.reporterId !== user.staffId).forEach(t => msgs.push({ title: `${name(t.reporterId)} created a job`, detail: t.title, to: '/jobs' }))
   }
   return msgs
 }

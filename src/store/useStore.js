@@ -13,6 +13,17 @@ const actor = () => {
 }
 const STATUS_LABEL = { backlog: 'Backlog', todo: 'To Do', 'in-progress': 'In Progress', review: 'Review', done: 'Done' }
 
+// An admin assigning work to someone outside the project gives them view access to it.
+function withAssigneeAccess(projects, task) {
+  return projects.map(p => {
+    if (p.id !== task.projectId || !task.assigneeId || p.managerId === task.assigneeId || (p.teamIds || []).includes(task.assigneeId)) return p
+    if (useAuth.getState().user?.role !== 'admin') return p
+    return { ...p, teamIds: [...(p.teamIds || []), task.assigneeId], access: { ...(p.access || {}), [task.assigneeId]: 'read' } }
+  })
+}
+
+const merged_ = (projects, old, updates) => (old ? withAssigneeAccess(projects, { ...old, ...updates }) : projects)
+
 // A milestone follows its tasks. When the last linked task is done the milestone completes and its
 // payment request is raised: sent at once (auto) or held as "ready" for an admin to approve (manual).
 // Moving a task back out of done reopens the milestone, unless the invoice has already gone out.
@@ -72,7 +83,9 @@ const dataFor = mode => mode === 'empty'
 const DATA_KEYS = ['tasks', 'projects', 'staff', 'clients', 'timeLogs', 'milestones', 'files', 'activities', 'comments', 'projectStages', 'workspaceMode']
 const persistOptions = {
   name: 'structflow-data',
-  version: 1,
+  // v2 adds per-person project access; older saved demo data is replaced by the new sample data.
+  version: 3,
+  migrate: () => undefined,
   // Blob URLs only exist in the tab that made them, so attachment links are not saved.
   partialize: s => {
     const out = {}
@@ -159,22 +172,17 @@ const useStore = create(persist((set, get) => ({
   updateProject: (id, updates) =>
     set(s => ({
       projects: s.projects.map(p => p.id === id ? { ...p, ...updates } : p),
+      // a changed contract value re-prices milestones that have not been invoiced yet
+      milestones: updates.contractValue === undefined ? s.milestones : s.milestones.map(m =>
+        m.projectId === id && !['invoiced', 'paid'].includes(m.paymentStatus) ? { ...m, paymentAmount: Math.round((updates.contractValue * m.weightage) / 100) } : m
+      ),
     })),
 
   deleteProject: (id) =>
     set(s => ({
       projects: s.projects.filter(p => p.id !== id),
+      milestones: s.milestones.filter(m => m.projectId !== id),
     })),
-
-  updateProjectStage: (projectId, stageId) =>
-    set(s => {
-      const stageOrder = s.projectStages.find(st => st.id === stageId)?.order || 1
-      const totalStages = s.projectStages.length
-      const progress = Math.round((stageOrder / totalStages) * 100)
-      return {
-        projects: s.projects.map(p => p.id === projectId ? { ...p, currentStage: stageId, progress } : p),
-      }
-    }),
 
   // --- Task CRUD ---
   addTask: (task) => {
@@ -189,9 +197,10 @@ const useStore = create(persist((set, get) => ({
         status: task.status || 'backlog',
       }
       return {
+        projects: withAssigneeAccess(s.projects, newTask),
         tasks: [...s.tasks, newTask],
-        comments: [{ id: nextId('CM'), taskId: id, type: 'system', ...actor(), text: 'created this task', timestamp: new Date().toISOString() }, ...s.comments],
-        activities: [{ id: nextId('A'), type: 'task_created', userId: task.reporterId, taskId: id, projectId: task.projectId, timestamp: new Date().toISOString(), message: `created task ${task.title}` }, ...s.activities],
+        comments: [{ id: nextId('CM'), taskId: id, type: 'system', ...actor(), text: 'created this job', timestamp: new Date().toISOString() }, ...s.comments],
+        activities: [{ id: nextId('A'), type: 'task_created', userId: task.reporterId, taskId: id, projectId: task.projectId, timestamp: new Date().toISOString(), message: `created job ${task.title}` }, ...s.activities],
       }
     })
     return id
@@ -219,6 +228,7 @@ const useStore = create(persist((set, get) => ({
       if (fx) notes.push(fx.comment)
       const ts = new Date().toISOString()
       return {
+        projects: merged_(s.projects, old, updates),
         tasks,
         milestones: res.milestones,
         comments: [...notes.map(text => ({ id: nextId('CM'), taskId: id, type: 'system', ...actor(), text, timestamp: ts })), ...s.comments],
